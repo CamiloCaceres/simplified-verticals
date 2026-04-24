@@ -1,0 +1,5 @@
+{
+  "name": "Simplified Verticals",
+  "description": "A workspace of simplified, single-agent verticals — one focused AI hire per vertical, each installable standalone from this bundle. The 'simplified' counterpart to Houston's multi-agent founder workspaces: same output quality, narrower scope, faster to onboard.",
+  "agents": ["seo-content"]
+}
