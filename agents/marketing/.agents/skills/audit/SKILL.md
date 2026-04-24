@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Use when the user says "run an SEO audit / GEO audit / teardown my landing page / audit my form" — I fetch via Composio (Semrush / Ahrefs / Firecrawl / Perplexity), score findings by impact × ease, and return a fix list you can ship this week. Writes to `audits/{surface}-{slug}-{YYYY-MM-DD}.md` — a ranked list, not a warnings dump.
+description: "Use when you say 'run an SEO audit' / 'GEO audit' / 'critique my landing page' / 'audit my form' — I audit the `surface` you pick: `site-seo` via Semrush or Ahrefs · `ai-search` probes ChatGPT / Perplexity / Gemini for your brand and category terms · `landing-page` fetches via Firecrawl and scores 6 dimensions · `form` from paste or URL. Every finding ranked by impact × ease. Writes to `audits/{surface}-{slug}-{date}.md` — a prioritized fix list, not a warnings dump."
 integrations: [semrush, ahrefs, firecrawl, perplexityai]
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: plan-campaign
-description: Use when the user says "plan a paid campaign / launch / welcome sequence / re-activation drip / churn save / announcement" — I draft the full spec via Composio (googleads / metaads / customerio / mailchimp / stripe / hubspot), grounded in positioning + voice + journey events. Writes to `campaigns/{type}-{slug}.md` — specs, not sends. You approve every external touch.
+description: "Use when you say 'plan a paid campaign' / 'plan the {feature} launch' / 'welcome series' / 'design a drip' / 'churn-save email' / 'product announcement' — I plan the full campaign for the `type` you pick (paid / launch / lifecycle-drip / welcome / churn-save / announcement), grounded in your positioning and voice. Writes to `campaigns/{type}-{slug}.md` with audience, timing, and copy drafts. Specs only — I never send or launch."
 integrations: [googleads, metaads, customerio, mailchimp, stripe, hubspot]
 ---
 

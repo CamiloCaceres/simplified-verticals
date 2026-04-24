@@ -1,6 +1,6 @@
 ---
 name: define-positioning
-description: "Use when you say 'help me with positioning' / 'draft my positioning' — I interview you briefly and write the full positioning doc (ICP, category, differentiators, brand voice, pricing stance, primary CTA) to `context/marketing-context.md` at my root. That file is the source of truth the other marketing agents read before they work; until it exists they stop and ask for it."
+description: "Use when you say 'help me with positioning' / 'draft my positioning' — I interview you briefly and write the full positioning doc (ICP, category, differentiators, brand voice, pricing stance, primary CTA) to `context/marketing-context.md`. I read this doc before every other skill I run — until it exists, they stop and ask for it."
 integrations: [googledocs, notion]
 ---
 

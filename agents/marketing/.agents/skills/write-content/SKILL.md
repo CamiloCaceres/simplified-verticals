@@ -1,6 +1,6 @@
 ---
 name: write-content
-description: Use when the user says "draft a blog post / LinkedIn post / X thread / newsletter / Reddit reply on {topic}" — I write channel-native copy in your voice via Composio (googledocs / linkedin / twitter / mailchimp / firecrawl), grounded in your positioning and voice samples. Writes to the right channel folder (`blog-posts/`, `posts/`, `threads/`, `newsletters/`, `community-replies/`) and appends to `outputs.json` — drafts only, you always post.
+description: "Use when you say 'draft a blog post' / 'LinkedIn post' / 'X thread' / 'newsletter' / 'Reddit reply' — I write channel-native copy in your voice, grounded in your positioning. Pick a `channel`: `blog` (2,000–3,000 words, mirrored to Google Docs) · `linkedin` (hook-first native post) · `x-thread` (5–12 tweets) · `newsletter` (one through-line) · `reddit` (value-first reply). Drafts only — you always post."
 integrations: [googledocs, linkedin, twitter, mailchimp, firecrawl]
 ---
 

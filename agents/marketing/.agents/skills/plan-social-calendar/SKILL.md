@@ -1,6 +1,6 @@
 ---
 name: plan-social-calendar
-description: "Use when you say 'plan this week's social' / 'social calendar' / 'content for next week' — I build a Mon–Fri plan per platform (LinkedIn / X / Reddit), keyed to your topics, mixing original posts with repurposed content from the SEO agent's outputs (zero duplicate angles). Writes to `social-calendars/{YYYY-WNN}.md` + appends to a living `social-calendar.md`."
+description: "Use when you say 'plan this week's social' / 'social calendar' / 'content for next week' — I build a Mon–Fri plan per platform (LinkedIn / X / Reddit), keyed to your topics, mixing original posts with repurposed content from this agent's own outputs (zero duplicate angles). Writes to `social-calendars/{YYYY-WNN}.md` + appends to a living `social-calendar.md`."
 ---
 
 # Plan Social Calendar

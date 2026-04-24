@@ -1,6 +1,6 @@
 ---
 name: write-page-copy
-description: Use when the user says "rewrite my homepage / pricing page / signup flow / onboarding copy / paywall / popup" — I fetch the surface via Composio/Firecrawl, then draft replacement copy in your voice grounded in positioning + real customer language. Every change paired Current → Proposed → Why. Writes to `page-copy/{surface}-{slug}.md` — drafts only, you ship.
+description: "Use when you say 'rewrite my homepage' / 'pricing page' / 'signup flow review' / 'in-app onboarding copy' / 'upgrade paywall' / 'exit popup' — I fetch the surface via Firecrawl, then draft replacement copy in your voice grounded in your positioning + real customer language. Pick a `surface` (homepage / pricing / about / landing / signup-flow / onboarding / paywall / popup). Writes to `page-copy/{surface}-{slug}.md` — Current → Proposed → Why, paired per change."
 integrations: [firecrawl]
 ---
 

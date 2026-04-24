@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: Use when the user says "analyze the funnel / content gap / this week's marketing health" — I compute the numbers via Composio (posthog / mixpanel / firecrawl / semrush) or paste, flag the biggest drop / gap / hole, and recommend 2-3 concrete next moves. Writes to `analyses/{subject}-{YYYY-MM-DD}.md` — a ranked action list, not a dashboard.
+description: "Use when you say 'weekly funnel readout' / 'content gap vs {competitor}' / 'Monday marketing health review' — I analyze the `subject` you pick: `funnel` reads your PostHog / GA4 / Mixpanel and flags the biggest leak with 2–3 ranked experiments · `content-gap` crawls a competitor via Firecrawl and ranks takeable gaps · `marketing-health` rolls up every artifact I shipped this week by domain. Writes to `analyses/{subject}-{date}.md`."
 integrations: [posthog, mixpanel, firecrawl, semrush]
 ---
 
