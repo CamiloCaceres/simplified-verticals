@@ -1,6 +1,6 @@
 ---
 name: draft-outreach
-description: "Use when you say 'draft a cold email to {Acme}' / 'cold-call script for {Acme}' / 'follow up on today's call' / 'reply to this inbound' / 'renewal note for {customer}' / 'save email for {downgrade}' — I draft the `stage` you pick: `cold-email` (3-paragraph grounded first-touch) · `cold-script` (60-90s call script with pattern-interrupt) · `followup` (post-call recap + next step) · `inbound-reply` (classify + draft response) · `renewal` (outcomes + expansion + pricing reasoning) · `churn-save` (non-defensive save naming the specific signal). Every draft voice-matched to `config/voice.md`. Writes to `outreach/{channel}-{slug}-{date}.md`."
+description: "Use when you say 'draft a cold email to {Acme}' / 'cold-call script' / 'follow up on today's call' / 'reply to this inbound' / 'renewal note' / 'save email for downgrade' — I draft the `stage` you pick: `cold-email`, `cold-script`, `followup`, `inbound-reply`, `renewal`, or `churn-save`. Voice-matched to your samples. Writes to `outreach/{stage}-{slug}-{date}.md`."
 integrations: [gmail, outlook, hubspot, salesforce, attio, gong, fireflies, stripe]
 ---
 
