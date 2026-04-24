@@ -24,8 +24,12 @@ Use this workspace when:
 | Agent | Hired to… | Domains covered | Good first prompt |
 |-------|-----------|-----------------|-------------------|
 | **Marketing** | Full-stack marketing operator | Positioning · SEO & content · email & lifecycle · social · paid & growth · conversion copy | "Help me write my positioning statement" |
-
-More verticals will be added here as single-agent versions.
+| **Sales** | Full-stack sales operator | Playbook · outbound · inbound · meetings · CRM · retention | "Draft a cold email to this prospect" |
+| **Engineering** | Full-stack engineering operator | Planning · triage · development · reliability · docs | "Triage today's backlog" |
+| **People** | Full-stack people/HR operator | Hiring · onboarding · performance · compliance · culture | "Screen this resume against the role" |
+| **Legal** | Full-stack legal operator | Contracts · compliance · entity · IP · advisory | "Review this NDA and flag the risks" |
+| **Operations** | Full-stack operations operator | Planning · scheduling · finance · vendors · data | "Prep me for this morning's meetings" |
+| **Support** | Full-stack customer support operator | Inbox · help center · success · quality | "Triage my support inbox this morning" |
 
 ---
 
@@ -90,11 +94,17 @@ simplified-verticals/
 ├── README.md               # this file
 ├── .gitignore
 └── agents/
-    └── marketing/          # (and more verticals as they land)
+    ├── marketing/          # 23 skills across 6 domain chips
+    ├── sales/              # 18 skills across 6 domain chips
+    ├── engineering/        # 22 skills across 5 domain chips
+    ├── people/             # 17 skills across 5 domain chips
+    ├── legal/              # 12 skills across 5 domain chips
+    ├── operations/         # 23 skills across 5 domain chips
+    └── support/            # 16 skills across 4 domain chips
         ├── houston.json        # includes useCases for the tile grid
         ├── CLAUDE.md           # identity + domain-grouped skill index
         ├── data-schema.md      # context ledger + artifact folders
         ├── bundle.js           # Overview tiles with filter chips
         ├── icon.png
-        └── .agents/skills/     # 23 skills (17 ports + 6 consolidated)
+        └── .agents/skills/     # ports + consolidated skills
 ```
