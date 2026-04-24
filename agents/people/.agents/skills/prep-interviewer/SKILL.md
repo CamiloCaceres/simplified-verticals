@@ -1,7 +1,9 @@
 ---
 name: prep-interviewer
 description: "Use when you say 'prep me to interview {candidate}' / 'what should I ask {candidate}' / 'interview brief for {candidate}' — builds the interviewer-side brief: background summary, likely questions, red flags to probe, reference themes, scoring rubric. Writes to `interview-loops/{candidate-slug}.md`. Flipped from candidate-side prep — this is for you."
-integrations: [notion, linkedin]
+integrations:
+  docs: [notion]
+  social: [linkedin]
 ---
 
 # Prep Interviewer

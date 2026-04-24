@@ -1,7 +1,8 @@
 ---
 name: research-keywords
 description: "Use when you say 'find keywords for {topic}' / 'build a keyword map' / 'what should we rank for' — I cluster keywords by intent and difficulty via Semrush (or Ahrefs), flag the 3 pillars worth owning, and draft cluster briefs. Maintains a living `keyword-map.md` + per-cluster detail at `keyword-clusters/{slug}.md`. No vanity keyword dumps."
-integrations: [semrush, ahrefs]
+integrations:
+  seo: [semrush, ahrefs]
 ---
 
 # Research Keywords

@@ -1,7 +1,9 @@
 ---
 name: debrief-loop
 description: "Use when you say 'synthesize {candidate}'s panel feedback' / 'hire or no-hire on {candidate}' / 'debrief the loop' — aggregates interviewer feedback from Slack, Notion, or paste, extracts themes, surfaces contradictions, scores against the rubric, and produces a hire / no-hire decision memo at `interview-loops/{candidate-slug}-debrief.md`. Recommendation only — you decide."
-integrations: [slack, notion]
+integrations:
+  messaging: [slack]
+  docs: [notion]
 ---
 
 # Debrief Loop

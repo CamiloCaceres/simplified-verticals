@@ -1,7 +1,8 @@
 ---
 name: groom-backlog
 description: "Use when you say 'groom the backlog' / 'clean up the backlog' / 'what's stale' / 'prune the queue' — I pull all open tickets from Linear, Jira, or GitHub Issues and return three review lists (keep-and-prioritize / merge-as-duplicates / close-as-stale), each with one-line rationales. Writes to `backlog-grooming/{YYYY-MM-DD}.md`. Never closes, merges, or reprioritizes tickets in the tracker — you review and act."
-integrations: [linear, jira, github]
+integrations:
+  dev: [linear, jira, github]
 ---
 
 # Groom Backlog

@@ -1,7 +1,9 @@
 ---
 name: write-docs
 description: "Use when you say 'draft API docs for {endpoint}' / 'human docs for our OpenAPI spec' / 'write the onboarding guide' / 'new-engineer day-1 doc' / 'write a how-to for {feature}' / 'tutorial for {integration}' — I draft the `type` you pick: `api` reads an OpenAPI spec from GitHub or GitLab (or accepts a paste) and writes Stripe-grade per-endpoint docs · `tutorial` produces a Diátaxis-aligned how-to with numbered steps and working code · `onboarding-guide` maintains a single running `onboarding-guide.md` at the agent root. Draft only — I never auto-commit or publish."
-integrations: [github, gitlab, exa, perplexityai]
+integrations:
+  dev: [github, gitlab]
+  search: [exa, perplexityai]
 ---
 
 # Write Docs

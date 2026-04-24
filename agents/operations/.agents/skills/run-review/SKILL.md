@@ -1,7 +1,8 @@
 ---
 name: run-review
 description: "Use when you say 'Monday ops review' / 'weekly readout' / 'weekly metrics pulse' — I roll up what shipped and what moved. Pick `period`: `weekly` aggregates every skill's output last week, cross-references priorities + renewals, flags gaps, recommends next moves · `metrics-rollup` is the cross-metric week-over-week pulse (every tracked metric, WoW change, classification, open anomalies). Writes to `reviews/` or `rollups/`."
-integrations: [googlesheets]
+integrations:
+  files: [googlesheets]
 ---
 
 # Run Review

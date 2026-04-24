@@ -1,7 +1,9 @@
 ---
 name: voice-calibration
 description: "Use when you say 'calibrate my voice' / 'train on how I write' — I pull 10–20 recent outbound replies from your connected inbox (Gmail / Outlook / Intercom / Help Scout), extract tone cues (greeting, sign-off, sentence length, quirks), and write `config/voice.md`. Every `draft-reply` and `write-article` reads this before drafting."
-integrations: [gmail, outlook, intercom, help_scout]
+integrations:
+  inbox: [gmail, outlook]
+  helpdesk: [intercom, help_scout]
 ---
 
 # Voice Calibration

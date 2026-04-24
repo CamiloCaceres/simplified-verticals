@@ -1,7 +1,11 @@
 ---
 name: analyze
 description: "Use when you say 'Monday people review' / 'score retention risk' / 'who's a flight risk' / 'synthesize Glassdoor' / 'what's our employer brand' — I run the `subject` you pick: `people-health` rolls up what shipped this week across hiring, onboarding, performance, and compliance from `outputs.json` · `retention-risk` fuses check-in, sentiment, tenure, and comp signals into GREEN/YELLOW/RED per person · `employer-brand` clusters reviews and survey themes into a leadership readout. Writes to `analyses/{subject}-{YYYY-MM-DD}.md`."
-integrations: [slack, hubspot, posthog, firecrawl]
+integrations:
+  messaging: [slack]
+  crm: [hubspot]
+  analytics: [posthog]
+  scrape: [firecrawl]
 ---
 
 # Analyze

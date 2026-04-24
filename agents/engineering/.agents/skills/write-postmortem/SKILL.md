@@ -1,7 +1,9 @@
 ---
 name: write-postmortem
 description: "Use when you say 'write the postmortem for {incident}' / 'draft a blameless postmortem' / 'write up the {incident} postmortem' — I read the incident timeline + linked logs from Sentry, PostHog, or Datadog and draft a blameless postmortem with Summary, Impact, Timeline, Root cause, Contributing factors, What went well, What went poorly, Action items (each with owner + due date). Writes to `postmortems/{id}.md`."
-integrations: [sentry, posthog, linear, jira]
+integrations:
+  analytics: [sentry, posthog]
+  dev: [linear, jira]
 ---
 
 # Write Postmortem

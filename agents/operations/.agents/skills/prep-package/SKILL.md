@@ -1,7 +1,9 @@
 ---
 name: prep-package
 description: "Use when you say 'prep the Q{N} board pack' / 'draft the monthly investor update' / 'assemble the {quarter} investor letter' — I draft the package you need. Pick `type`: `board-pack` is the standard 8-section deck (TL;DR, business update, metrics, OKRs, wins, challenges, asks, appendix) · `investor-update` is the monthly or quarterly CEO-voice narrative grounded in OKR movement, decisions, and metrics. Both flag every TBD."
-integrations: [googledocs, notion, googledrive]
+integrations:
+  docs: [googledocs, notion]
+  files: [googledrive]
 ---
 
 # Prep Package

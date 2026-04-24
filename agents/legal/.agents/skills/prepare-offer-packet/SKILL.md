@@ -1,7 +1,9 @@
 ---
 name: prepare-offer-packet
 description: "Use when you say 'prepare the offer packet for {candidate}' / 'first-hire paperwork' — I assemble offer letter + CIIAA + option grant notice + exercise agreement anchored to the current 409A (from `universal.entity.four09aDate`), write four markdown files + an index to `offer-packets/{candidate-slug}-{YYYY-MM-DD}/`, and flag `attorneyReviewRequired` if comp structure is non-standard. Drafts only — you send from your own email."
-integrations: [googledocs, googledrive]
+integrations:
+  docs: [googledocs]
+  files: [googledrive]
 ---
 
 # Prepare Offer Packet

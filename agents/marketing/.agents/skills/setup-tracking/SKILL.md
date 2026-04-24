@@ -1,7 +1,8 @@
 ---
 name: setup-tracking
 description: "Use when you say 'spec event tracking' / 'tracking plan for {flow}' / 'UTM plan' — I draft an event-tracking plan (event name, trigger, properties, owner per step) plus a UTM matrix so paid / social / email are comparable in GA4 / your analytics. Writes to `tracking-plans/{slug}.md` — hand to engineering."
-integrations: [posthog, mixpanel]
+integrations:
+  analytics: [posthog, mixpanel]
 ---
 
 # Setup Tracking

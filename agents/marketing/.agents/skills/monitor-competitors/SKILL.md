@@ -1,7 +1,10 @@
 ---
 name: monitor-competitors
 description: "Use when you say 'weekly competitor pulse' / 'teardown of {competitor}' / 'what ads is {rival} running' / 'scan my timeline' — I track one or more competitors across the `source` you pick: `product` scans their blog + releases + pricing via Firecrawl · `ads` pulls from Meta + LinkedIn + Google Ad Libraries · `social-feed` reads your LinkedIn / X / Reddit timeline for engagement signal. Writes to `competitor-briefs/{source}-{slug}.md` — real threats vs noise, not a news dump."
-integrations: [firecrawl, metaads, linkedin, twitter, reddit, instagram]
+integrations:
+  scrape: [firecrawl]
+  ads: [metaads]
+  social: [linkedin, twitter, reddit, instagram]
 ---
 
 # Monitor Competitors

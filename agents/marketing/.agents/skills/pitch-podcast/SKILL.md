@@ -1,7 +1,8 @@
 ---
 name: pitch-podcast
 description: "Use when you say 'pitch me onto podcasts' / 'podcast outreach' / 'find shows for our ICP' — I identify target shows by audience fit (via Listen Notes or similar) and draft per-show pitches: hook based on your positioning, angle, proof, clear ask. No template spam. Writes to `podcast-pitches/{date}.md` — one per show, send from your own email."
-integrations: [listennotes]
+integrations:
+  podcasts: [listennotes]
 ---
 
 # Pitch Podcast

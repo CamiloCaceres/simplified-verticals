@@ -1,7 +1,8 @@
 ---
 name: define-playbook
 description: "Use when you say 'write my sales playbook' / 'draft the playbook' / 'our ICP changed' / 'let's lock pricing' — I interview you briefly and write the full playbook (ICP, buying committee, qualification framework, pricing stance, deal stages, objection handbook, competitors, primary first-call goal) to `context/sales-context.md`. Every other skill reads it first — until it exists, they stop and ask for it."
-integrations: [googledocs, notion]
+integrations:
+  docs: [googledocs, notion]
 ---
 
 # Define Playbook

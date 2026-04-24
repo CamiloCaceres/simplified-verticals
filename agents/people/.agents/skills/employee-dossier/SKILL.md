@@ -1,7 +1,9 @@
 ---
 name: employee-dossier
 description: "Use when you say 'tell me about {employee}' / 'pull everything we know about {employee}' / 'prep me before my 1:1 with {employee}' — aggregates HRIS profile (read-only) plus onboarding plans, recent check-ins, and interview-loop notes into a single-page dossier at `employee-dossiers/{employee-slug}.md` with profile / history / recent signals / upcoming sections."
-integrations: [notion, slack]
+integrations:
+  docs: [notion]
+  messaging: [slack]
 ---
 
 # Employee Dossier

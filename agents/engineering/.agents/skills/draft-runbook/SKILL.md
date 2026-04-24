@@ -1,7 +1,9 @@
 ---
 name: draft-runbook
 description: "Use when you say 'draft a runbook for {system}' / 'write me an ops doc for {failure mode}' / 'document how to {operational task}' — I produce a command-first ops doc with bash snippets + placeholders, dashboard URLs, rollback commands, and if-this-fails decision branches. No prose walls — every section is a command block or a decision branch. Writes to `runbooks/{slug}.md`."
-integrations: [github, gitlab, sentry]
+integrations:
+  dev: [github, gitlab]
+  analytics: [sentry]
 ---
 
 # Draft Runbook

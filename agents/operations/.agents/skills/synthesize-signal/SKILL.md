@@ -1,7 +1,9 @@
 ---
 name: synthesize-signal
 description: "Use when you say 'weekly briefing on {topic}' / 'what's moving in {space}' / 'summarize my X feed' / 'research {company} and give me a brief' — I synthesize news + research + social into a cited, structured brief via Exa, Perplexity, or Firecrawl. Writes to `signals/{slug}-{YYYY-MM-DD}.md`."
-integrations: [exa, perplexityai, firecrawl]
+integrations:
+  search: [exa, perplexityai]
+  scrape: [firecrawl]
 ---
 
 # Synthesize Signal

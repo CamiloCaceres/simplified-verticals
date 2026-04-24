@@ -1,7 +1,11 @@
 ---
 name: research-account
 description: "Use when you say 'research {Acme}' / 'enrich {person}' / 'qualify {url}' / 'warm intros into {Acme}' — I run the `depth` you pick: `quick-qualify` (30-second in-ICP yes/no via Firecrawl) · `full-brief` (site scrape + 12 weeks of news via Exa + tech-stack + socials — one cited brief) · `enrich-contact` (firmographics + recent signals for a named person) · `warm-paths` (first-degree intros via LinkedIn + your CRM). Every claim cites a source. Writes to `accounts/{slug}/` or `leads/{slug}/`."
-integrations: [exa, perplexityai, firecrawl, hubspot, salesforce, attio, linkedin]
+integrations:
+  search: [exa, perplexityai]
+  scrape: [firecrawl]
+  crm: [hubspot, salesforce, attio]
+  social: [linkedin]
 ---
 
 # Research Account

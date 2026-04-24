@@ -24,10 +24,59 @@
   var useCallback = React.useCallback;
   var useMemo = React.useMemo;
 
+  // ── Slug → display-name dictionary (for tile eyebrow) ────────
+  var SLUG_DISPLAY_NAMES = {
+    gmail: "Gmail", outlook: "Outlook", googlecalendar: "Google Calendar",
+    hubspot: "HubSpot", salesforce: "Salesforce", attio: "Attio", pipedrive: "Pipedrive", close: "Close", apollo: "Apollo.io",
+    gong: "Gong", fireflies: "Fireflies",
+    exa: "Exa", perplexityai: "Perplexity",
+    firecrawl: "Firecrawl",
+    semrush: "Semrush", ahrefs: "Ahrefs",
+    googledocs: "Google Docs", notion: "Notion", airtable: "Airtable",
+    googledrive: "Google Drive", googlesheets: "Google Sheets",
+    mailchimp: "Mailchimp", customerio: "Customer.io", loops: "Loops", kit: "Kit", klaviyo: "Klaviyo",
+    googleads: "Google Ads", metaads: "Meta Ads", facebook: "Facebook",
+    posthog: "PostHog", mixpanel: "Mixpanel",
+    stripe: "Stripe",
+    linkedin: "LinkedIn", twitter: "X", reddit: "Reddit", instagram: "Instagram", tiktok: "TikTok",
+    youtube: "YouTube",
+    listennotes: "Listen Notes",
+    github: "GitHub", gitlab: "GitLab", linear: "Linear", jira: "Jira",
+    slack: "Slack", discord: "Discord", microsoftteams: "Microsoft Teams",
+    docusign: "DocuSign", pandadoc: "PandaDoc", dropbox_sign: "Dropbox Sign",
+    intercom: "Intercom", zendesk: "Zendesk", help_scout: "Help Scout",
+    greenhouse: "Greenhouse", lever: "Lever", ashbyhq: "Ashby",
+    workday: "Workday", bamboohr: "BambooHR", gusto: "Gusto", deel: "Deel", rippling: "Rippling",
+    carta: "Carta", pulley: "Pulley"
+  };
+  function displayName(slug) {
+    return SLUG_DISPLAY_NAMES[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
+  }
+  // Flatten a grouped tools map ({category: [slug, ...]}) into an ordered
+  // list of display names, capped at 4 with "… +N" suffix if truncated.
+  function flattenTools(tools) {
+    if (!tools || typeof tools !== "object") return [];
+    var flat = [];
+    var keys = Object.keys(tools);
+    for (var i = 0; i < keys.length; i++) {
+      var arr = tools[keys[i]];
+      if (!arr || !arr.length) continue;
+      for (var j = 0; j < arr.length; j++) {
+        flat.push(displayName(arr[j]));
+      }
+    }
+    if (flat.length > 4) {
+      var extra = flat.length - 4;
+      flat = flat.slice(0, 4);
+      flat.push("… +" + extra);
+    }
+    return flat;
+  }
+
   // ═════════ PER-AGENT CONFIG (injected by generator) ═════════
   var AGENT = {
   "name": "People",
-  "tagline": "Your full-stack people / HR operator. Hiring, onboarding, performance, compliance, and culture \u2014 one agent, one conversation, one shared people-context doc.",
+  "tagline": "Your full-stack people / HR operator. Hiring, onboarding, performance, compliance, and culture — one agent, one conversation, one shared people-context doc.",
   "chips": [
     "Hiring",
     "Onboarding",
@@ -42,10 +91,20 @@
       "blurb": "Ranked list against the role rubric, scraped fresh.",
       "prompt": "Source candidates for {role} from GitHub.",
       "fullPrompt": "Source candidates for the {role} role. Use the source-candidates skill. Pull from my signal source (GitHub / LinkedIn / community posts / OSS repos) via Firecrawl, score each against the must-haves in reqs/{role-slug}.md, and write a ranked list to sourcing-lists/{role-slug}-{YYYY-MM-DD}.md.",
-      "description": "Pulls candidates from GitHub, LinkedIn, community, or OSS via Firecrawl and ranks them against the role rubric. Writes to sourcing-lists/{role-slug}-{date}.md \u2014 top matches first.",
-      "outcome": "Ranked list at sourcing-lists/{role}-{date}.md \u2014 move the top names straight into screening.",
+      "description": "Pulls candidates from GitHub, LinkedIn, community, or OSS via Firecrawl and ranks them against the role rubric. Writes to sourcing-lists/{role-slug}-{date}.md — top matches first.",
+      "outcome": "Ranked list at sourcing-lists/{role}-{date}.md — move the top names straight into screening.",
       "skill": "source-candidates",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "dev": [
+          "github"
+        ],
+        "social": [
+          "linkedin"
+        ]
+      }
     },
     {
       "category": "Hiring",
@@ -56,7 +115,15 @@
       "description": "Parses resume PDFs from Google Drive or Dropbox, bands each as pass / borderline / fail against the role rubric, and ranks the stack. One record per applicant at candidates/{slug}.md.",
       "outcome": "Per-applicant records at candidates/{slug}.md + a ranked summary on the dashboard.",
       "skill": "evaluate-candidate",
-      "tool": "Google Drive"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "files": [
+          "googledrive",
+          "googlesheets"
+        ]
+      }
     },
     {
       "category": "Hiring",
@@ -67,7 +134,15 @@
       "description": "Scrapes a LinkedIn or public-profile URL via Firecrawl and scores 0-100 across level-fit, domain-fit, scope, tenure, and culture-signal. Writes to candidates/{slug}.md.",
       "outcome": "Candidate record at candidates/{slug}.md with total + sub-scores + red flags.",
       "skill": "evaluate-candidate",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "files": [
+          "googledrive",
+          "googlesheets"
+        ]
+      }
     },
     {
       "category": "Hiring",
@@ -75,10 +150,17 @@
       "blurb": "Background, likely questions, red flags, rubric.",
       "prompt": "Prep me to interview {candidate} for {role}.",
       "fullPrompt": "Prep me to interview {candidate} for the {role} role. Use the prep-interviewer skill. Read the candidate record at candidates/{candidate-slug}.md (or run evaluate-candidate first if missing), pull the rubric from reqs/{role-slug}.md, and build an interviewer-side brief: background summary, likely questions, red flags to probe, reference themes, scoring rubric. Write to interview-loops/{candidate-slug}.md.",
-      "description": "Builds an interviewer-side brief: background, likely questions, red flags to probe, reference themes, scoring rubric \u2014 flipped from candidate-side prep.",
-      "outcome": "Brief at interview-loops/{candidate-slug}.md \u2014 open it 5 minutes before the call.",
+      "description": "Builds an interviewer-side brief: background, likely questions, red flags to probe, reference themes, scoring rubric — flipped from candidate-side prep.",
+      "outcome": "Brief at interview-loops/{candidate-slug}.md — open it 5 minutes before the call.",
       "skill": "prep-interviewer",
-      "tool": "Notion"
+      "tools": {
+        "docs": [
+          "notion"
+        ],
+        "social": [
+          "linkedin"
+        ]
+      }
     },
     {
       "category": "Hiring",
@@ -89,18 +171,32 @@
       "description": "Proposes times via Google Calendar or Outlook (free/busy, never sends), runs prep-interviewer per panelist, and appends everything to interview-loops/{slug}.md. You approve and send.",
       "outcome": "Schedule + per-panelist briefs at interview-loops/{slug}.md. You click send.",
       "skill": "coordinate-interviews",
-      "tool": "Google Calendar"
+      "tools": {
+        "calendar": [
+          "googlecalendar"
+        ],
+        "inbox": [
+          "outlook"
+        ]
+      }
     },
     {
       "category": "Hiring",
-      "title": "Debrief {candidate}'s loop \u2014 hire or no-hire?",
+      "title": "Debrief {candidate}'s loop — hire or no-hire?",
       "blurb": "Themes, contradictions, rubric score, decision memo.",
       "prompt": "Debrief {candidate}'s loop.",
-      "fullPrompt": "Debrief {candidate}'s interview loop. Use the debrief-loop skill. Pull interviewer feedback from my connected Slack channel (or Notion / paste fallback), extract themes, surface contradictions across panelists, score against the rubric, and produce a hire / no-hire decision memo at interview-loops/{candidate-slug}-debrief.md. Recommendation only \u2014 I decide.",
+      "fullPrompt": "Debrief {candidate}'s interview loop. Use the debrief-loop skill. Pull interviewer feedback from my connected Slack channel (or Notion / paste fallback), extract themes, surface contradictions across panelists, score against the rubric, and produce a hire / no-hire decision memo at interview-loops/{candidate-slug}-debrief.md. Recommendation only — I decide.",
       "description": "Aggregates interviewer feedback from Slack or Notion, extracts themes, surfaces contradictions, scores against the rubric, and drafts a hire / no-hire memo. You decide.",
       "outcome": "Debrief memo at interview-loops/{slug}-debrief.md with recommendation + rationale.",
       "skill": "debrief-loop",
-      "tool": "Slack"
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "docs": [
+          "notion"
+        ]
+      }
     },
     {
       "category": "Hiring",
@@ -111,51 +207,93 @@
       "description": "Reads comp bands, equity stance, leveling, and voice from your context doc, drafts the offer letter at offers/{slug}.md as a draft. Never sent.",
       "outcome": "Offer draft at offers/{slug}.md. You review, flip to ready, send.",
       "skill": "draft-offer",
-      "tool": "Google Docs"
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ]
+      }
     },
     {
       "category": "Onboarding",
       "title": "Draft a 30-60-90 plan for a new hire starting Monday",
-      "blurb": "Day 0 \u00b7 Week 1 \u00b7 30/60/90 + welcome Slack + welcome email.",
-      "prompt": "{new hire} starts Monday \u2014 draft their onboarding plan.",
+      "blurb": "Day 0 · Week 1 · 30/60/90 + welcome Slack + welcome email.",
+      "prompt": "{new hire} starts Monday — draft their onboarding plan.",
       "fullPrompt": "Draft the onboarding plan for {new hire} starting {date}. Use the draft-onboarding-plan skill. Read leveling and voice from context/people-context.md. Produce a Day 0 / Week 1 / 30-60-90 plan plus welcome Slack and welcome email drafts at onboarding-plans/{employee-slug}.md.",
-      "description": "Day 0 checklist, Week 1 plan, 30-60-90 milestones, welcome Slack message, welcome email \u2014 all scoped to the level in your context doc.",
+      "description": "Day 0 checklist, Week 1 plan, 30-60-90 milestones, welcome Slack message, welcome email — all scoped to the level in your context doc.",
       "outcome": "Full plan at onboarding-plans/{slug}.md. You edit, approve, run Day 0.",
       "skill": "draft-onboarding-plan",
-      "tool": "Slack"
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "docs": [
+          "notion"
+        ]
+      }
     },
     {
       "category": "Onboarding",
       "title": "Prep me before my 1:1 with {employee}",
       "blurb": "HRIS profile + onboarding + check-ins + loop history.",
-      "prompt": "Tell me about {employee} \u2014 prep me for our 1:1.",
+      "prompt": "Tell me about {employee} — prep me for our 1:1.",
       "fullPrompt": "Prep me for my 1:1 with {employee}. Use the employee-dossier skill. Pull HRIS profile from my connected HRIS (read-only), plus onboarding-plans/, recent checkins/, and interview-loops/ into a single-page dossier at employee-dossiers/{employee-slug}.md: profile / history / recent signals / upcoming.",
       "description": "Aggregates HRIS profile (read-only) plus local onboarding plans, check-ins, and interview-loop history into one page. Profile / history / recent signals / upcoming.",
-      "outcome": "Dossier at employee-dossiers/{slug}.md \u2014 read 2 minutes before the 1:1.",
+      "outcome": "Dossier at employee-dossiers/{slug}.md — read 2 minutes before the 1:1.",
       "skill": "employee-dossier",
-      "tool": "Gusto"
+      "tools": {
+        "docs": [
+          "notion"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     },
     {
       "category": "Onboarding",
       "title": "Welcome Slack message in your voice",
-      "blurb": "Day-0 ping \u2014 warm, specific, not corporate.",
+      "blurb": "Day-0 ping — warm, specific, not corporate.",
       "prompt": "Draft the welcome Slack for {new hire}.",
-      "fullPrompt": "Draft the Day-0 welcome Slack for {new hire}. Use the draft-onboarding-plan skill and return just the Slack portion \u2014 warm, specific to their role, in my voice (pulled from context/people-context.md). Write to onboarding-plans/{employee-slug}.md under the `## Welcome Slack` section.",
+      "fullPrompt": "Draft the Day-0 welcome Slack for {new hire}. Use the draft-onboarding-plan skill and return just the Slack portion — warm, specific to their role, in my voice (pulled from context/people-context.md). Write to onboarding-plans/{employee-slug}.md under the `## Welcome Slack` section.",
       "description": "Warm, specific Day-0 Slack message in your voice (pulled from your context doc's voice notes). Slotted into the full onboarding plan file.",
       "outcome": "Welcome Slack draft at onboarding-plans/{slug}.md. Copy-paste into #general on Day 0.",
       "skill": "draft-onboarding-plan",
-      "tool": "Slack"
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "docs": [
+          "notion"
+        ]
+      }
     },
     {
       "category": "Onboarding",
-      "title": "Welcome email \u2014 first-morning checklist",
-      "blurb": "Laptop \u00b7 accounts \u00b7 #channels \u00b7 Day-1 calendar.",
+      "title": "Welcome email — first-morning checklist",
+      "blurb": "Laptop · accounts · #channels · Day-1 calendar.",
       "prompt": "Draft the welcome email for {new hire}'s first morning.",
       "fullPrompt": "Draft the welcome email for {new hire}'s first morning. Use the draft-onboarding-plan skill. Include: laptop shipment / pickup, account setup (Google / Slack / HRIS / GitHub / etc.), which #channels to join, and Day-1 calendar. Voice from context/people-context.md. Write into the `## Welcome Email` section of onboarding-plans/{employee-slug}.md.",
-      "description": "First-morning email: laptop pickup, account setup, #channels to join, Day-1 calendar \u2014 scoped to your stack from the context ledger.",
+      "description": "First-morning email: laptop pickup, account setup, #channels to join, Day-1 calendar — scoped to your stack from the context ledger.",
       "outcome": "Welcome email draft at onboarding-plans/{slug}.md. Send Sunday night or Monday 7am.",
       "skill": "draft-onboarding-plan",
-      "tool": "Gmail"
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "docs": [
+          "notion"
+        ]
+      }
     },
     {
       "category": "Performance",
@@ -163,10 +301,15 @@
       "blurb": "Who responded, who's quiet, themes, flags.",
       "prompt": "Collect this week's check-ins.",
       "fullPrompt": "Collect this week's 1:1 check-ins. Use the collect-checkins skill. Pull the roster from my connected HRIS, send the check-in prompt via my connected Slack channel, gather responses, and write a dated report to checkins/{YYYY-MM-DD}.md with themes, who's quiet, and flagged responses.",
-      "description": "Sends the check-in prompt via Slack, gathers responses, writes a dated report with themes and quiet-flags. Runs weekly \u2014 perfect for a Monday kick-off.",
+      "description": "Sends the check-in prompt via Slack, gathers responses, writes a dated report with themes and quiet-flags. Runs weekly — perfect for a Monday kick-off.",
       "outcome": "Weekly report at checkins/{date}.md. Open flagged responses into stay conversations if needed.",
       "skill": "collect-checkins",
-      "tool": "Slack"
+      "tools": {
+        "messaging": [
+          "slack",
+          "discord"
+        ]
+      }
     },
     {
       "category": "Performance",
@@ -176,69 +319,131 @@
       "fullPrompt": "Score retention risk across the team. Use the analyze skill with subject=retention-risk. Fuse engagement (check-ins, Slack activity, optional PR / ticket cadence), sentiment (check-in tone drift), tenure milestones (cliff vesting, promotion honeymoon, manager change), and comp exposure (vs bands in context/people-context.md). Classify GREEN / YELLOW / RED and write the exact signal combination on every RED. Save to analyses/retention-risk-{YYYY-MM-DD}.md. Founder-eyes-only.",
       "description": "Fuses check-in responsiveness, sentiment, tenure milestones, and comp exposure into GREEN / YELLOW / RED per person. Every RED shows the exact signal combination.",
       "outcome": "Report at analyses/retention-risk-{date}.md. For each RED: run draft-performance-doc type=stay-conversation.",
-      "skill": "analyze"
+      "skill": "analyze",
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "crm": [
+          "hubspot"
+        ],
+        "analytics": [
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Performance",
       "title": "Draft a stay conversation for {employee}",
-      "blurb": "Verbal 1:1 script \u2014 Open \u00b7 Listen \u00b7 Surface \u00b7 Ask \u00b7 Propose.",
-      "prompt": "{employee} flagged RED \u2014 draft the stay conversation.",
-      "fullPrompt": "Draft a stay conversation for {employee}. Use the draft-performance-doc skill with type=stay-conversation. Read voice and hard-nos from context/people-context.md (especially counter-offer policy), pull the retention-score reasoning if present, and draft a verbal 1:1 SCRIPT: Open \u2192 Listen \u2192 Surface \u2192 Ask \u2192 Propose. Write to performance-docs/stay-conversation-{employee-slug}.md. This is a prompt for a verbal 1:1 \u2014 do not send.",
-      "description": "Drafts a verbal 1:1 SCRIPT (not an email): Open \u2192 Listen \u2192 Surface \u2192 Ask \u2192 Propose. Filtered against your counter-offer policy and hard nos.",
+      "blurb": "Verbal 1:1 script — Open · Listen · Surface · Ask · Propose.",
+      "prompt": "{employee} flagged RED — draft the stay conversation.",
+      "fullPrompt": "Draft a stay conversation for {employee}. Use the draft-performance-doc skill with type=stay-conversation. Read voice and hard-nos from context/people-context.md (especially counter-offer policy), pull the retention-score reasoning if present, and draft a verbal 1:1 SCRIPT: Open → Listen → Surface → Ask → Propose. Write to performance-docs/stay-conversation-{employee-slug}.md. This is a prompt for a verbal 1:1 — do not send.",
+      "description": "Drafts a verbal 1:1 SCRIPT (not an email): Open → Listen → Surface → Ask → Propose. Filtered against your counter-offer policy and hard nos.",
       "outcome": "Script at performance-docs/stay-conversation-{slug}.md. Read it before the 1:1, adapt in the moment.",
-      "skill": "draft-performance-doc"
+      "skill": "draft-performance-doc",
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "inbox": [
+          "gmail"
+        ]
+      }
     },
     {
       "category": "Performance",
       "title": "Draft a PIP (with escalation check first)",
-      "blurb": "Context \u00b7 Expectations \u00b7 30/60/90 \u00b7 Support \u00b7 Consequences.",
+      "blurb": "Context · Expectations · 30/60/90 · Support · Consequences.",
       "prompt": "Draft a PIP for {employee}.",
-      "fullPrompt": "Draft a PIP for {employee}. Use the draft-performance-doc skill with type=pip. Run the MANDATORY escalation check against context/people-context.md's escalation rules FIRST. If a protected-class + pretextual-timing trigger fires, STOP and write an escalation note routing to a human lawyer. If clear, draft Context \u2192 Expectations \u2192 30/60/90 Milestones \u2192 Support \u2192 Consequences, tied to the leveling framework. Write to performance-docs/pip-{employee-slug}.md as status draft. Never delivered without my sign-off.",
+      "fullPrompt": "Draft a PIP for {employee}. Use the draft-performance-doc skill with type=pip. Run the MANDATORY escalation check against context/people-context.md's escalation rules FIRST. If a protected-class + pretextual-timing trigger fires, STOP and write an escalation note routing to a human lawyer. If clear, draft Context → Expectations → 30/60/90 Milestones → Support → Consequences, tied to the leveling framework. Write to performance-docs/pip-{employee-slug}.md as status draft. Never delivered without my sign-off.",
       "description": "Runs the escalation check (protected class + pretextual timing) BEFORE drafting. If it fires, stops and routes to a lawyer. If clear, drafts Context / Expectations / 30-60-90 Milestones / Support / Consequences.",
       "outcome": "PIP draft (or escalation note) at performance-docs/pip-{slug}.md. Escalation classification in outputs.json.",
-      "skill": "draft-performance-doc"
+      "skill": "draft-performance-doc",
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "inbox": [
+          "gmail"
+        ]
+      }
     },
     {
       "category": "Performance",
       "title": "Prep the Q{N} review cycle",
       "blurb": "Self-review + manager + calibration + timeline.",
       "prompt": "Prep the Q{N} review cycle.",
-      "fullPrompt": "Prep the Q{N} review cycle. Use the prep-review-cycle skill. Read the leveling framework and review-cycle rhythm from context/people-context.md. Produce the self-review template, the manager-review template, the calibration doc, and the full timeline \u2014 all scoped to the leveling framework. Write to review-cycles/{cycle-slug}.md as status draft until I approve the structure.",
-      "description": "Produces the self-review template, manager-review template, calibration doc, and full timeline \u2014 all scoped to your leveling framework. Draft until you approve the structure.",
+      "fullPrompt": "Prep the Q{N} review cycle. Use the prep-review-cycle skill. Read the leveling framework and review-cycle rhythm from context/people-context.md. Produce the self-review template, the manager-review template, the calibration doc, and the full timeline — all scoped to the leveling framework. Write to review-cycles/{cycle-slug}.md as status draft until I approve the structure.",
+      "description": "Produces the self-review template, manager-review template, calibration doc, and full timeline — all scoped to your leveling framework. Draft until you approve the structure.",
       "outcome": "Full cycle package at review-cycles/{slug}.md. Approve structure before I send to managers.",
       "skill": "prep-review-cycle",
-      "tool": "Notion"
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ]
+      }
     },
     {
       "category": "Performance",
       "title": "The Monday people review",
-      "blurb": "What shipped \u00b7 what's stale \u00b7 what to do next.",
+      "blurb": "What shipped · what's stale · what to do next.",
       "prompt": "Give me the Monday people review.",
       "fullPrompt": "Give me the Monday people review. Use the analyze skill with subject=people-health. Aggregate everything I produced this week across hiring, onboarding, performance, compliance, and culture from outputs.json. Per domain: what shipped, what's stale (>7 days as draft), gaps. Cross-cutting: open-req drift, retention reds without stay-conversation follow-up, compliance near-deadlines, review-cycle drift. Write to analyses/people-health-{YYYY-MM-DD}.md.",
       "description": "Aggregates every artifact this agent produced this week across all 5 domains, flags stale drafts and cross-cutting gaps, recommends next moves per domain. A 2-minute scan.",
       "outcome": "Review at analyses/people-health-{date}.md with recommended next moves + what to flip to ready.",
-      "skill": "analyze"
+      "skill": "analyze",
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "crm": [
+          "hubspot"
+        ],
+        "analytics": [
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Compliance",
       "title": "Build the compliance calendar",
-      "blurb": "I-9 \u00b7 W-4 \u00b7 visa renewals \u00b7 cycle dates \u00b7 policy refresh.",
+      "blurb": "I-9 · W-4 · visa renewals · cycle dates · policy refresh.",
       "prompt": "Build the compliance calendar.",
       "fullPrompt": "Build the compliance calendar. Use the compliance-calendar skill. Scan my connected HRIS for start dates, work-authorization status, and vesting schedules. Pull the review-cycle rhythm from context/people-context.md. Write a living calendar at compliance-calendar.md (updated in place, atomic), and log each substantive update to outputs.json.",
       "description": "Scans your HRIS for I-9 / W-4 / visa renewals, pulls the review-cycle rhythm and policy-refresh cadence from your context doc, produces a living calendar at compliance-calendar.md.",
       "outcome": "Living calendar at compliance-calendar.md. Open it Monday, close the items due this week.",
       "skill": "compliance-calendar",
-      "tool": "Gusto"
+      "tools": {
+        "docs": [
+          "notion"
+        ],
+        "files": [
+          "googlesheets"
+        ]
+      }
     },
     {
       "category": "Compliance",
       "title": "Answer a policy question (and escalate if needed)",
-      "blurb": "Classifier: direct \u00b7 ambiguous \u00b7 escalation. Lawyer-safe.",
+      "blurb": "Classifier: direct · ambiguous · escalation. Lawyer-safe.",
       "prompt": "Does {employee} qualify for {benefit}?",
       "fullPrompt": "Answer this policy question: {question}. Use the answer-policy-question skill. Read the policy canon AND escalation rules from context/people-context.md, classify as direct / ambiguous / escalation, and draft the reply (or escalation note) accordingly. Never answer a legal-sensitive escalation on your own. Write to approvals/{request-slug}.md.",
       "description": "Reads the policy canon + escalation rules, classifies direct / ambiguous / escalation, drafts the reply. Stops and escalates on legal-sensitive categories.",
       "outcome": "Reply or escalation note at approvals/{slug}.md. You review, send, or route to a lawyer.",
-      "skill": "answer-policy-question"
+      "skill": "answer-policy-question",
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ]
+      }
     },
     {
       "category": "Compliance",
@@ -248,7 +453,15 @@
       "fullPrompt": "Review this {type} request: {details}. Use the run-approval-flow skill. Read the approval rubric from context/people-context.md, evaluate the request, classify as approved / escalate / denied with reasoning, and produce an escalation note for any out-of-rubric ask. Write to approvals/{request-slug}.md.",
       "description": "Reads the approval rubric from your context doc, evaluates the request, classifies approved / escalate / denied. Escalation notes explain the trigger.",
       "outcome": "Decision draft at approvals/{slug}.md. Flip to ready after you sign off.",
-      "skill": "run-approval-flow"
+      "skill": "run-approval-flow",
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "docs": [
+          "notion"
+        ]
+      }
     },
     {
       "category": "Compliance",
@@ -259,60 +472,108 @@
       "description": "Scans your HRIS for I-9 / W-4 completeness, missing docs, and next-90-day expirations. Flags go into compliance-calendar.md and outputs.json.",
       "outcome": "Flagged items at compliance-calendar.md. Fix before they block a hire or a renewal.",
       "skill": "compliance-calendar",
-      "tool": "Rippling"
+      "tools": {
+        "docs": [
+          "notion"
+        ],
+        "files": [
+          "googlesheets"
+        ]
+      }
     },
     {
       "category": "Compliance",
       "title": "Draft the PTO policy reply template",
-      "blurb": "Direct \u00b7 ambiguous \u00b7 escalation \u2014 all three paths.",
+      "blurb": "Direct · ambiguous · escalation — all three paths.",
       "prompt": "Draft the PTO policy reply template.",
       "fullPrompt": "Draft the PTO policy reply template. Use the answer-policy-question skill. Read the PTO section of the policy canon from context/people-context.md, then draft three reply variants: (a) direct yes when the ask is clearly inside policy, (b) ambiguous follow-up when I need more context, (c) escalation note when the ask exceeds policy. Write to approvals/pto-reply-template.md for reuse.",
       "description": "Drafts three reusable reply variants (direct / ambiguous / escalation) for any PTO ask. Saves to approvals/pto-reply-template.md.",
       "outcome": "Reusable templates at approvals/pto-reply-template.md. Paste into helpdesk when asks come in.",
-      "skill": "answer-policy-question"
+      "skill": "answer-policy-question",
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ]
+      }
     },
     {
       "category": "Culture",
       "title": "Draft the people-context doc that anchors every artifact",
-      "blurb": "Values \u00b7 leveling \u00b7 comp \u00b7 policies \u00b7 escalation \u00b7 voice.",
+      "blurb": "Values · leveling · comp · policies · escalation · voice.",
       "prompt": "Draft our people-context doc.",
       "fullPrompt": "Draft our people-context doc. Use the define-people-context skill. Interview me briefly, then write context/people-context.md: company values, team shape, leveling framework (IC + manager L1-L5), comp bands, review-cycle rhythm, policy canon, escalation rules, voice notes, hard nos. Every other skill in this agent reads it first.",
       "description": "I interview you briefly and write the shared doc: values, leveling (IC + manager L1-L5), comp bands, policy canon, escalation rules, voice, hard nos. Every other skill reads it first.",
       "outcome": "Locked doc at context/people-context.md. Other skills stop asking baseline questions.",
       "skill": "define-people-context",
-      "tool": "Google Docs"
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ],
+        "files": [
+          "googlesheets"
+        ]
+      }
     },
     {
       "category": "Culture",
       "title": "Build the leveling ladder (IC + manager L1-L5)",
-      "blurb": "Scope \u00b7 seniority markers \u00b7 value-embodiment per level.",
+      "blurb": "Scope · seniority markers · value-embodiment per level.",
       "prompt": "Build our leveling ladder.",
       "fullPrompt": "Build our leveling ladder. Use the define-people-context skill. Focus on the leveling section: IC + manager tracks, L1-L5 by default (ask once if I want higher). For each level: name, one-paragraph expectations, scope of impact, seniority markers, and a value-embodiment line. Update context/people-context.md in place.",
-      "description": "Scaffolds IC + manager tracks (L1-L5 default) inside your context doc \u2014 each level with scope, seniority markers, and a value-embodiment line tied to your company values.",
+      "description": "Scaffolds IC + manager tracks (L1-L5 default) inside your context doc — each level with scope, seniority markers, and a value-embodiment line tied to your company values.",
       "outcome": "Leveling section of context/people-context.md filled in. Used by offers, PIPs, and review cycles.",
-      "skill": "define-people-context"
+      "skill": "define-people-context",
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ],
+        "files": [
+          "googlesheets"
+        ]
+      }
     },
     {
       "category": "Culture",
       "title": "Calibrate my HR voice from past outbound",
-      "blurb": "Offers, onboarding notes, rejections \u2014 tone fingerprint.",
+      "blurb": "Offers, onboarding notes, rejections — tone fingerprint.",
       "prompt": "Calibrate my HR voice.",
-      "fullPrompt": "Calibrate my HR voice. Use the voice-calibration skill. Pull 10-20 of my recent HR-adjacent outbound messages from my connected Gmail (or Outlook), extract a tone fingerprint \u2014 greeting habits, closing habits, sentence length, formality, forbidden phrases, hard-news register \u2014 and append it to the voice-notes section of context/people-context.md. Also refresh config/voice.md.",
+      "fullPrompt": "Calibrate my HR voice. Use the voice-calibration skill. Pull 10-20 of my recent HR-adjacent outbound messages from my connected Gmail (or Outlook), extract a tone fingerprint — greeting habits, closing habits, sentence length, formality, forbidden phrases, hard-news register — and append it to the voice-notes section of context/people-context.md. Also refresh config/voice.md.",
       "description": "Pulls 10-20 HR outbound samples from Gmail or Outlook, extracts a tone fingerprint, appends it to your context doc. Every offer, PIP, and onboarding note drafts against it.",
       "outcome": "Voice notes updated in context/people-context.md + config/voice.md. Downstream drafts sound like you.",
       "skill": "voice-calibration",
-      "tool": "Gmail"
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ]
+      }
     },
     {
       "category": "Culture",
       "title": "Synthesize our employer brand from Glassdoor + feedback",
-      "blurb": "Top 3 strengths \u00b7 top 3 concerns \u00b7 emerging patterns.",
+      "blurb": "Top 3 strengths · top 3 concerns · emerging patterns.",
       "prompt": "What's our employer brand right now?",
-      "fullPrompt": "Synthesize our employer brand. Use the analyze skill with subject=employer-brand. Pull reviews from my connected Glassdoor or anonymous-feedback platform via Firecrawl / connected review sources, cluster themes, derive top 3 strengths + top 3 concerns + emerging patterns, flag contradictions vs our stated values, and recommend 3 moves. Write to analyses/employer-brand-{YYYY-MM-DD}.md. Leadership readout only \u2014 do not publish.",
+      "fullPrompt": "Synthesize our employer brand. Use the analyze skill with subject=employer-brand. Pull reviews from my connected Glassdoor or anonymous-feedback platform via Firecrawl / connected review sources, cluster themes, derive top 3 strengths + top 3 concerns + emerging patterns, flag contradictions vs our stated values, and recommend 3 moves. Write to analyses/employer-brand-{YYYY-MM-DD}.md. Leadership readout only — do not publish.",
       "description": "Clusters reviews + survey + anonymous-feedback items via Firecrawl or connected review sources. Top 3 strengths, top 3 concerns, emerging patterns, contradictions vs your stated values.",
       "outcome": "Leadership readout at analyses/employer-brand-{date}.md. Route concerns to founder / agent / lawyer.",
       "skill": "analyze",
-      "tool": "Firecrawl"
+      "tools": {
+        "messaging": [
+          "slack"
+        ],
+        "crm": [
+          "hubspot"
+        ],
+        "analytics": [
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Hiring",
@@ -320,19 +581,36 @@
       "blurb": "Level target + must-haves + nice-to-haves.",
       "prompt": "Update the rubric for the {role} req.",
       "fullPrompt": "Update the rubric for the {role} req. Use the source-candidates skill (it seeds reqs/{role-slug}.md as part of its first step). Ask me: target level, top 3 must-haves, top 3 nice-to-haves, 2-3 red flags. Write to reqs/{role-slug}.md. Every hiring skill reads this file next.",
-      "description": "Seeds or updates the role rubric at reqs/{slug}.md \u2014 level target, must-haves, nice-to-haves, red flags. All other hiring skills read this file first.",
+      "description": "Seeds or updates the role rubric at reqs/{slug}.md — level target, must-haves, nice-to-haves, red flags. All other hiring skills read this file first.",
       "outcome": "Rubric at reqs/{role}.md. Source, screen, score, interview, and offer all pull from it.",
-      "skill": "source-candidates"
+      "skill": "source-candidates",
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "dev": [
+          "github"
+        ],
+        "social": [
+          "linkedin"
+        ]
+      }
     },
     {
       "category": "Performance",
       "title": "Check who's been quiet for 3+ weeks",
-      "blurb": "Cross-reference check-in history \u2192 surface silences.",
+      "blurb": "Cross-reference check-in history → surface silences.",
       "prompt": "Who's been quiet in check-ins for 3+ weeks?",
       "fullPrompt": "Find team members who've been quiet in check-ins for 3+ weeks. Use the collect-checkins skill to read the last 4 weekly reports in checkins/, cross-reference with the roster, and surface everyone who has missed 3+ responses in a row. Append a `## Quiet Patterns` section to checkins/{YYYY-MM-DD}.md with names, last-response date, and recommended next move (stay conversation, 1:1 check-in, or nothing if context explains the silence).",
       "description": "Cross-references the last 4 checkins/{date}.md reports, surfaces team members quiet for 3+ weeks, recommends next moves (stay conversation or 1:1).",
-      "outcome": "Quiet-patterns section appended to the week's checkins/{date}.md \u2014 open flags into stay conversations.",
-      "skill": "collect-checkins"
+      "outcome": "Quiet-patterns section appended to the week's checkins/{date}.md — open flags into stay conversations.",
+      "skill": "collect-checkins",
+      "tools": {
+        "messaging": [
+          "slack",
+          "discord"
+        ]
+      }
     }
   ]
 };
@@ -538,20 +816,16 @@
         { className: "hv-send-chip", "aria-hidden": "true" },
         Icon(isSent ? "check" : "send", 14),
       ),
-      // Eyebrow: category (· tool)
-      h(
-        "div",
-        { className: "hv-eyebrow" },
-        h("span", null, uc.category || "Mission"),
-        uc.tool
-          ? h(
-              React.Fragment || "span",
-              null,
-              h("span", { className: "hv-eyebrow-sep" }, "·"),
-              h("span", null, uc.tool),
-            )
-          : null,
-      ),
+      // Eyebrow: category (· tool · tool …)
+      (function () {
+        var names = flattenTools(uc.tools);
+        var parts = [h("span", { key: "cat" }, uc.category || "Mission")];
+        for (var i = 0; i < names.length; i++) {
+          parts.push(h("span", { key: "s" + i, className: "hv-eyebrow-sep" }, "·"));
+          parts.push(h("span", { key: "t" + i }, names[i]));
+        }
+        return h("div", { className: "hv-eyebrow" }, parts);
+      })(),
       h("h3", { className: "hv-title" }, uc.title || ""),
       uc.blurb
         ? h("p", { className: "hv-blurb" }, uc.blurb)

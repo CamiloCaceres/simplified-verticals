@@ -1,7 +1,9 @@
 ---
 name: review
 description: "Use when you say 'Monday review' / 'weekly readout' / 'help-center digest' / 'prep QBR for {account}' — I produce the `scope` you pick: `weekly` (rollup across domains + next moves) · `help-center-digest` (volume, themes, unresolved high-priority) · `qbr` (4-section review: wins / asks-shipped / friction / next). Writes to `reviews/` · `digests/` · `qbrs/`."
-integrations: [googledocs, notion, slack]
+integrations:
+  docs: [googledocs, notion]
+  messaging: [slack]
 ---
 
 # Review

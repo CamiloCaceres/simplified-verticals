@@ -1,7 +1,8 @@
 ---
 name: triage-tech-debt
 description: "Use when you say 'rank the tech debt' / 'what's rotting' / 'refresh the debt list' / 'tech debt review' — I maintain a single running `tech-debt.md` at the agent root with area, problem, impact (1-5), effort (S/M/L/XL), and suggested next step per entry, sorted by impact / effort (highest value first). Read-merge-write — never wholesale-overwrite."
-integrations: [github, gitlab]
+integrations:
+  dev: [github, gitlab]
 ---
 
 # Triage Tech Debt

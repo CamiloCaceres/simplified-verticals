@@ -1,7 +1,8 @@
 ---
 name: write-case-study
 description: "Use when you say 'draft a case study for {customer}' / 'write up the {customer} story' — I pull the interview, email thread, or testimonial (from Airtable / your notes app via Composio, or paste) and structure it as challenge → approach → results with real numbers — not marketer-speak. Writes to `case-studies/{customer-slug}.md` ready for sales and your site."
-integrations: [airtable, notion]
+integrations:
+  docs: [airtable, notion]
 ---
 
 # Write Case Study

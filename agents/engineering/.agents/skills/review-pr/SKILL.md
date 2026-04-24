@@ -1,7 +1,8 @@
 ---
 name: review-pr
 description: "Use when you say 'review PR {url}' / 'look at this PR' / 'what's wrong with this diff' — I pull the diff, tests, description, and any linked issue from GitHub, GitLab, or Bitbucket, read the engineering context + sensitive areas, and write a risk-ordered review (security > correctness > perf > style) with inline file:line suggestions and a merge verdict. Writes to `pr-reviews/{pr-slug}.md`. Never comments on the PR, never merges."
-integrations: [github, gitlab, linear, jira]
+integrations:
+  dev: [github, gitlab, linear, jira]
 ---
 
 # Review PR

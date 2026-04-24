@@ -1,7 +1,8 @@
 ---
 name: plan-sprint
 description: "Use when you say 'plan this week's sprint' / 'plan the next cycle' / 'what's in the sprint' — I pull your open tickets from Linear, Jira, or GitHub Issues, rank against the priorities in the engineering context, and produce a time-boxed plan with top-N in (with rationale), top-M cut (with rationale), a velocity check vs prior sprints, key dependencies, and risks. Writes to `sprints/{YYYY-WNN}.md`."
-integrations: [linear, jira, github]
+integrations:
+  dev: [linear, jira, github]
 ---
 
 # Plan Sprint

@@ -1,7 +1,10 @@
 ---
 name: review-contract
 description: "Use when you say 'review this MSA' / 'traffic-light this NDA' / 'extract the clauses' — I review the contract with `mode`: `full` clauses map + green/yellow/red + accept/redline/walk verdict · `nda-traffic-light` quick 7-dimension rubric with redlines on Red items · `clauses-only` structured extract with no verdict. Reads via Google Drive, Firecrawl, or paste. Writes to `contract-reviews/` · `ndas/` · `clause-extracts/` and updates `counterparty-tracker.json`."
-integrations: [googledrive, googledocs, firecrawl]
+integrations:
+  files: [googledrive]
+  docs: [googledocs]
+  scrape: [firecrawl]
 ---
 
 # Review Contract

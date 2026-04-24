@@ -1,7 +1,8 @@
 ---
 name: define-engineering-context
 description: "Use when you say 'write the engineering context' / 'draft our context doc' — I interview you briefly (or read your connected GitHub) and write the full engineering context doc (product, stack, architecture, quality bar, team, priorities, conventions) to `context/engineering-context.md`. Every other skill reads it first — until it exists, they stop and ask for it."
-integrations: [github, gitlab, linear, jira]
+integrations:
+  dev: [github, gitlab, linear, jira]
 ---
 
 # Define Engineering Context

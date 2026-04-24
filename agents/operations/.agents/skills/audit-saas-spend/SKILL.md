@@ -1,7 +1,9 @@
 ---
 name: audit-saas-spend
 description: "Use when you say 'audit my SaaS spend' / 'what am I paying for' / 'find the subscriptions I forgot about' — I aggregate subscriptions from your contract library, Stripe, and connected inbox receipts, flag duplicates, unused tools, and top cancel candidates. Writes to `saas-audits/{YYYY-MM-DD}.md`."
-integrations: [stripe, gmail, outlook]
+integrations:
+  billing: [stripe]
+  inbox: [gmail, outlook]
 ---
 
 # Audit SaaS Spend

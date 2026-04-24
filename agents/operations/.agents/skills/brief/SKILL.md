@@ -1,7 +1,12 @@
 ---
 name: brief
 description: "Use when you say 'morning brief' / 'what needs me today' / 'prep me for my 2pm' / 'post-meeting notes' — I produce the brief you asked for: `daily` rolls up inbox + calendar + chat + drive into today's plan · `meeting-pre` gives you a deep attendee pre-read with agenda + what they'll likely want · `meeting-post` turns a transcript into decisions + owners + follow-ups. Writes to `briefs/` or `meetings/`."
-integrations: [gmail, googlecalendar, slack, googledrive, fireflies, gong]
+integrations:
+  inbox: [gmail]
+  calendar: [googlecalendar]
+  messaging: [slack]
+  files: [googledrive]
+  meetings: [fireflies, gong]
 ---
 
 # Brief

@@ -1,7 +1,9 @@
 ---
 name: collect-updates
 description: "Use when you say 'collect this week's updates from the team' / 'are we on track for OKRs' / 'run the weekly update loop' — I send reminders via Slack or Gmail, collect responses, analyze alignment against active priorities, and surface what's drifting. Dormant with a friendly message if your operating context has no team section."
-integrations: [slack, gmail]
+integrations:
+  messaging: [slack]
+  inbox: [gmail]
 ---
 
 # Collect Updates

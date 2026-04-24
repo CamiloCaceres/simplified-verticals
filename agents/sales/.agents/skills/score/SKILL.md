@@ -1,7 +1,10 @@
 ---
 name: score
 description: "Use when you say 'score this lead' / 'is this a fit' / 'bulk-score my leads' / 'which deals are slipping' / 'who's red in my book' — I apply the `subject` you pick: `lead` (bulk-score every un-scored lead against the playbook) · `icp-fit` (single-lead fit + angle) · `deal-health` (time-in-stage + qualification + touch recency — GREEN / YELLOW / RED) · `customer-health` (usage + NPS + support + billing via connected PostHog and Stripe). Top 2 drivers named per row — no black-box numbers. Writes to `scores/{subject}-{YYYY-MM-DD}.md`."
-integrations: [hubspot, salesforce, attio, stripe, posthog]
+integrations:
+  crm: [hubspot, salesforce, attio]
+  billing: [stripe]
+  analytics: [posthog]
 ---
 
 # Score

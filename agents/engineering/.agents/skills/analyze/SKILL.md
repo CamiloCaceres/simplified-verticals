@@ -1,7 +1,10 @@
 ---
 name: analyze
 description: "Use when you say 'Monday engineering review' / 'weekly PR health' / 'what shipped this week' / 'technical competitor pulse' / 'what did {competitor} ship' — I run the `subject` you pick: `engineering-health` rolls up everything this agent produced in the last 7 days (Shipped / In Progress / Blocked / Decisions Needed) · `pr-velocity` pulls the last 7 days of PRs from GitHub or GitLab and computes five DORA-lite metrics · `competitors` fetches engineering blogs, GitHub org activity, changelogs, and API diffs via Exa, Perplexity, or Firecrawl. Writes to `reviews/`, `pr-velocity/`, or `competitor-watch/`."
-integrations: [github, gitlab, exa, perplexityai, firecrawl]
+integrations:
+  dev: [github, gitlab]
+  search: [exa, perplexityai]
+  scrape: [firecrawl]
 ---
 
 # Analyze

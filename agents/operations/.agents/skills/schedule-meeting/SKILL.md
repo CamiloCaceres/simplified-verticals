@@ -1,7 +1,9 @@
 ---
 name: schedule-meeting
 description: "Use when you say 'book a meeting with {X}' / 'find 30 min with {team}' / 'let's schedule {Y}' — I propose 3 times that respect your focus blocks and max-meetings-per-day, draft the counterparty message in your voice, iterate, and create the event in Google Calendar only after your explicit approval."
-integrations: [googlecalendar, gmail, outlook]
+integrations:
+  calendar: [googlecalendar]
+  inbox: [gmail, outlook]
 ---
 
 # Schedule Meeting

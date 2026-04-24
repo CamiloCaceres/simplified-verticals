@@ -1,7 +1,9 @@
 ---
 name: draft-escalation-playbook
 description: "Use when you say 'draft the P1 playbook' / 'runbook for {incident type}' — I write a step-by-step incident response doc to `playbooks/{incident-type}.md` (detection, comms draft, rollback, RCA, post-mortem). Named humans, named channels, no vague handoffs."
-integrations: [slack, microsoftteams, linear, github]
+integrations:
+  messaging: [slack, microsoftteams]
+  dev: [linear, github]
 ---
 
 # Draft Escalation Playbook

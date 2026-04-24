@@ -1,7 +1,10 @@
 ---
 name: write-article
 description: "Use when you say 'turn this ticket into a KB article' / 'draft a known-issue page' / 'broadcast what we shipped' / 'refresh stale articles' — I produce the `type` you pick: `from-ticket` (KB article from a resolved thread) · `known-issue` (public status entry) · `broadcast-shipped` (per-customer 'you asked, we shipped' notes) · `refresh-stale` (flags + rewrites articles gone stale). Writes to `articles/` · `known-issues/` · `broadcasts/`."
-integrations: [notion, googledocs, intercom, help_scout, github, linear]
+integrations:
+  docs: [notion, googledocs]
+  helpdesk: [intercom, help_scout]
+  dev: [github, linear]
 ---
 
 # Write Article

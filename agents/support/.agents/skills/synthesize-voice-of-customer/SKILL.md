@@ -1,7 +1,9 @@
 ---
 name: synthesize-voice-of-customer
 description: "Use when you say 'mine the tickets' / 'what are customers saying' — I cluster the last 30 days of `conversations.json` and `requests.json` into verbatim pains, asks, friction quotes, and positioning wedges. Writes to `voc/{YYYY-MM-DD}.md` — the single best source for roadmap and landing-page updates."
-integrations: [gmail, intercom, help_scout, zendesk]
+integrations:
+  inbox: [gmail]
+  helpdesk: [intercom, help_scout, zendesk]
 ---
 
 # Synthesize Voice of Customer

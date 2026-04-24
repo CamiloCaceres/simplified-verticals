@@ -1,7 +1,8 @@
 ---
 name: score-ticket-priority
 description: "Use when you say 'score this ticket' / 'RICE this' / 'MoSCoW these tickets' / 'is this worth doing' — I apply RICE (Reach × Impact × Confidence / Effort) or MoSCoW (Must / Should / Could / Won't) on a single ticket or a list, with one-line reasoning per axis, and a final ranking. Writes to `priority-scores/{slug}.md`."
-integrations: [linear, jira, github]
+integrations:
+  dev: [linear, jira, github]
 ---
 
 # Score Ticket Priority

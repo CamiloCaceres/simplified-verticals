@@ -1,7 +1,9 @@
 ---
 name: thread-summary
 description: "Use when you reopen a long or old conversation cold ('what's going on here', 'remind me', 'summarize this thread') or before drafting a reply on any thread with >5 messages — I produce a 3-bullet summary (where we are, what we promised, what the customer expects next) so you're not re-reading the whole thread."
-integrations: [gmail, outlook, intercom, help_scout, zendesk]
+integrations:
+  inbox: [gmail, outlook]
+  helpdesk: [intercom, help_scout, zendesk]
 ---
 
 # Thread Summary

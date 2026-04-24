@@ -1,7 +1,9 @@
 ---
 name: run-trademark-search
 description: "Use when you say 'knockout search on {mark}' / 'is {name} available' / 'trademark clearance' — I search USPTO Trademark Center (Jan 2025 platform) for exact hits, phonetic variants, and visual variants in the relevant Nice classes, return a risk assessment (Low / Medium / High) and recommended next step to `tm-searches/{mark-slug}-{YYYY-MM-DD}.md`. Honest about knockout-vs-clearance limits — a real clearance is attorney work."
-integrations: [firecrawl, exa]
+integrations:
+  scrape: [firecrawl]
+  search: [exa]
 ---
 
 # Run Trademark Knockout

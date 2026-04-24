@@ -1,7 +1,8 @@
 ---
 name: track-renewals
 description: "Use when you say 'build my renewal calendar' / 'what's renewing this quarter' / 'update the renewal calendar' — I scan `contracts/` and any connected Google Drive, extract renewal dates + notice windows + auto-renew language, and maintain the living `renewals/calendar.md` plus a quarterly digest."
-integrations: [googledrive]
+integrations:
+  files: [googledrive]
 ---
 
 # Track Renewals

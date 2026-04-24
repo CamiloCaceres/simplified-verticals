@@ -1,7 +1,8 @@
 ---
 name: generate-ad-copy
 description: "Use when you say 'draft ad copy' / 'write ad variants' / 'give me 10 ad headlines' — I pull phrases from your call insights (or G2 / Capterra / Trustpilot reviews via scrape) and write headlines + descriptions that sound like your customers talking — not a marketer pitching. Writes to `ad-copy/{campaign}.md` with the source quote alongside each headline."
-integrations: [firecrawl]
+integrations:
+  scrape: [firecrawl]
 ---
 
 # Generate Ad Copy

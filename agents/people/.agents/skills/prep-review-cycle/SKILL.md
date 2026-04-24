@@ -1,7 +1,8 @@
 ---
 name: prep-review-cycle
 description: "Use when you say 'prep the review cycle' / 'Q{N} reviews are starting' / 'build the review templates' — produces the self-review template, manager-review template, calibration doc, and full timeline, all scoped to the leveling framework in `context/people-context.md`. Writes to `review-cycles/{cycle-slug}.md` as `status: \"draft\"` until you approve the structure."
-integrations: [notion, googledocs]
+integrations:
+  docs: [notion, googledocs]
 ---
 
 # Prep Review Cycle

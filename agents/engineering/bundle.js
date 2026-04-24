@@ -24,6 +24,54 @@
   var useCallback = React.useCallback;
   var useMemo = React.useMemo;
 
+  // ─── Slug → display-name dictionary ─────────────────────────
+  // Maps Composio app slugs to human display names for the tile
+  // eyebrow. Falls back to title-casing the slug if absent.
+  var SLUG_DISPLAY_NAMES = {
+    gmail: "Gmail", outlook: "Outlook", googlecalendar: "Google Calendar",
+    hubspot: "HubSpot", salesforce: "Salesforce", attio: "Attio", pipedrive: "Pipedrive", close: "Close", apollo: "Apollo.io",
+    gong: "Gong", fireflies: "Fireflies",
+    exa: "Exa", perplexityai: "Perplexity",
+    firecrawl: "Firecrawl",
+    semrush: "Semrush", ahrefs: "Ahrefs",
+    googledocs: "Google Docs", notion: "Notion", airtable: "Airtable",
+    googledrive: "Google Drive", googlesheets: "Google Sheets",
+    mailchimp: "Mailchimp", customerio: "Customer.io", loops: "Loops", kit: "Kit", klaviyo: "Klaviyo",
+    googleads: "Google Ads", metaads: "Meta Ads", facebook: "Facebook",
+    posthog: "PostHog", mixpanel: "Mixpanel",
+    stripe: "Stripe",
+    linkedin: "LinkedIn", twitter: "X", reddit: "Reddit", instagram: "Instagram", tiktok: "TikTok",
+    youtube: "YouTube",
+    listennotes: "Listen Notes",
+    github: "GitHub", gitlab: "GitLab", linear: "Linear", jira: "Jira",
+    slack: "Slack", discord: "Discord", microsoftteams: "Microsoft Teams",
+    docusign: "DocuSign", pandadoc: "PandaDoc", dropbox_sign: "Dropbox Sign",
+    intercom: "Intercom", zendesk: "Zendesk", help_scout: "Help Scout",
+    greenhouse: "Greenhouse", lever: "Lever", ashbyhq: "Ashby",
+    workday: "Workday", bamboohr: "BambooHR", gusto: "Gusto", deel: "Deel", rippling: "Rippling",
+    carta: "Carta", pulley: "Pulley",
+  };
+  function displayName(slug) {
+    return SLUG_DISPLAY_NAMES[slug] || (slug.charAt(0).toUpperCase() + slug.slice(1));
+  }
+  // Flattens a grouped tools map { category: [slug, ...] } to a list
+  // of up to 4 display names, appending "… +N" if truncated.
+  function flattenTools(tools) {
+    if (!tools || typeof tools !== "object") return [];
+    var slugs = [];
+    var keys = Object.keys(tools);
+    for (var i = 0; i < keys.length; i++) {
+      var arr = tools[keys[i]];
+      if (!arr || !arr.length) continue;
+      for (var j = 0; j < arr.length; j++) slugs.push(arr[j]);
+    }
+    var cap = 4;
+    if (slugs.length <= cap) return slugs.map(displayName);
+    var shown = slugs.slice(0, cap).map(displayName);
+    shown.push("… +" + (slugs.length - cap));
+    return shown;
+  }
+
   // ═════════ PER-AGENT CONFIG (injected by generator) ═════════
   var AGENT = {
   "name": "Engineering",
@@ -45,7 +93,14 @@
       "description": "I walk you through a short interview (or read your connected GitHub) and draft the full engineering context doc \u2014 product, stack, architecture, quality bar, team, priorities, conventions. Every other skill in this agent reads it first.",
       "outcome": "A locked engineering context at context/engineering-context.md. Every skill that plans, reviews, audits, or documents reads it.",
       "skill": "define-engineering-context",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Planning",
@@ -55,7 +110,14 @@
       "fullPrompt": "Draft the Q{n} engineering roadmap. Use the plan-roadmap skill. Read context/engineering-context.md for current priorities and cross-check outputs.json for in-flight work you shouldn't re-plan. Pick the top 3 priorities for the quarter, size each S/M/L, state rationale, list dependencies. Markdown, not a Gantt. Save to roadmaps/q{n}-{year}.md. Close with one paragraph on what I should say no to this quarter to protect the top 3.",
       "description": "I read the engineering context + every artifact in this agent's outputs.json, then write the quarterly roadmap with top 3 priorities, sizing, rationale, and dependencies.",
       "outcome": "A roadmap at roadmaps/q{n}-{year}.md I can paste to the team or share with investors.",
-      "skill": "plan-roadmap"
+      "skill": "plan-roadmap",
+      "tools": {
+        "dev": [
+          "github",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Planning",
@@ -66,7 +128,15 @@
       "description": "I scrape competitor activity via Firecrawl and web search, assess alignment to observable demand, and produce a verdict + evidence \u2014 so feature bets stop being shower thoughts.",
       "outcome": "A verdict at feature-fit/{slug}.md with evidence. Forward to plan-roadmap if it's a go.",
       "skill": "validate-feature-fit",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Planning",
@@ -77,7 +147,13 @@
       "description": "I pull open tickets from Linear / Jira / GitHub Issues, rank against priorities in the engineering context, and write a time-boxed plan with in/cut rationale, velocity check, dependencies, and risks.",
       "outcome": "A sprint plan at sprints/{YYYY-WNN}.md \u2014 paste into your tracker's sprint.",
       "skill": "plan-sprint",
-      "tool": "Linear"
+      "tools": {
+        "dev": [
+          "linear",
+          "jira",
+          "github"
+        ]
+      }
     },
     {
       "category": "Planning",
@@ -97,7 +173,20 @@
       "fullPrompt": "Give me the Monday engineering review. Use the analyze skill with subject=engineering-health. Aggregate everything in outputs.json from the last 7 days, grouped by domain (planning / triage / development / reliability / docs). For each domain, name what shipped, what's stale, what's blocked. Close with a prioritized list of decisions I need to make this week, each with a paste-ready follow-up prompt. Save to reviews/{YYYY-MM-DD}.md.",
       "description": "I aggregate everything this agent produced this week across all 5 domains from outputs.json, flag gaps, recommend next moves, and list the decisions you need to make this week. A 2-minute scan.",
       "outcome": "Review at reviews/{YYYY-MM-DD}.md with recommended next moves per domain.",
-      "skill": "analyze"
+      "skill": "analyze",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Planning",
@@ -108,7 +197,19 @@
       "description": "I scan each competitor's engineering blog, GitHub org activity, public changelog, and API diffs via Firecrawl and web search. Single-competitor teardown or N-competitor weekly digest, filtered for real threats vs noise.",
       "outcome": "A digest at competitor-watch/weekly-{YYYY-MM-DD}.md \u2014 moves to respond to + ignore list.",
       "skill": "analyze",
-      "tool": "Firecrawl"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Triage",
@@ -119,7 +220,16 @@
       "description": "I take a raw bug report (Sentry alert, user email, Slack message, error text) and produce repro steps, severity from your rules, route, and a paste-ready description for Linear / Jira / GitHub Issues. Never files.",
       "outcome": "A structured ticket draft at bug-triage/{slug}.md \u2014 paste into your tracker.",
       "skill": "triage-bug-report",
-      "tool": "Sentry"
+      "tools": {
+        "analytics": [
+          "sentry"
+        ],
+        "dev": [
+          "linear",
+          "jira",
+          "github"
+        ]
+      }
     },
     {
       "category": "Triage",
@@ -140,7 +250,13 @@
       "description": "I pull open tickets from Linear / Jira / GitHub Issues and return three review lists \u2014 keep, merge, close \u2014 each with one-line rationales. Never touches the tracker.",
       "outcome": "Lists at backlog-grooming/{YYYY-MM-DD}.md. Review and act in your tracker.",
       "skill": "groom-backlog",
-      "tool": "Linear"
+      "tools": {
+        "dev": [
+          "linear",
+          "jira",
+          "github"
+        ]
+      }
     },
     {
       "category": "Triage",
@@ -150,7 +266,14 @@
       "fullPrompt": "Score {ticket or list}. Use the score-ticket-priority skill. Apply RICE (Reach \u00d7 Impact \u00d7 Confidence / Effort) or MoSCoW (Must / Should / Could / Won't) with one-line reasoning per axis and a final ranking. Save to priority-scores/{slug}.md.",
       "description": "I apply RICE or MoSCoW to a single ticket or a list, with per-axis reasoning grounded in priorities from the engineering context, and a final ranking.",
       "outcome": "A scoring table at priority-scores/{slug}.md ready to justify the call.",
-      "skill": "score-ticket-priority"
+      "skill": "score-ticket-priority",
+      "tools": {
+        "dev": [
+          "linear",
+          "jira",
+          "github"
+        ]
+      }
     },
     {
       "category": "Triage",
@@ -160,7 +283,13 @@
       "fullPrompt": "Refresh the tech-debt inventory. Use the triage-tech-debt skill. Read context/engineering-context.md so impact scoring respects the actual stack and priorities. Read existing tech-debt.md at the agent root if it exists \u2014 merge new findings in, never wholesale-overwrite. Each entry: area, problem, impact (1-5), effort (S/M/L/XL), suggested next step. Sort by impact / effort. End with the top 3 to attack next week.",
       "description": "I maintain a single running tech-debt.md at the agent root: area, problem, impact (1-5), effort (S/M/L/XL), suggested next step per entry. Read-merge-write, never overwrite.",
       "outcome": "A sorted tech-debt.md with the top 3 debts to attack next week called out in chat.",
-      "skill": "triage-tech-debt"
+      "skill": "triage-tech-debt",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ]
+      }
     },
     {
       "category": "Triage",
@@ -171,7 +300,17 @@
       "description": "I pull your recent commits + PRs from GitHub / GitLab and closed tickets from Linear / Jira, then draft a three-bullet Yesterday / Today / Blockers. Never posts to Slack.",
       "outcome": "A draft at standups/{YYYY-MM-DD}.md. Copy-paste into Slack when ready.",
       "skill": "run-standup",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab",
+          "linear",
+          "jira"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     },
     {
       "category": "Development",
@@ -182,7 +321,14 @@
       "description": "I pull the diff + tests + description from GitHub / GitLab / Bitbucket, ground against the engineering context + sensitive areas, and write risks ranked security > correctness > perf > style with inline file:line suggestions and a merge verdict.",
       "outcome": "A review at pr-reviews/{pr-slug}.md I can skim in 60 seconds and paste if I want.",
       "skill": "review-pr",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Development",
@@ -192,7 +338,16 @@
       "fullPrompt": "Draft a design doc for {feature}. Use the draft-design-doc skill. Read context/engineering-context.md so the design fits the stack + priorities. Sections: Context, Goals, Non-goals, Proposed design, Alternatives considered, Risks, Open questions. Name at least two real alternatives \u2014 not strawmen. Flag anything overlapping sensitiveAreas in the ledger. Save to design-docs/{feature-slug}.md. Where you had to assume, mark the assumption and ask me.",
       "description": "A full design doc from a one-line feature brief \u2014 Context, Goals, Non-goals, Proposed design, Alternatives considered, Risks, Open questions. At least two real alternatives, not strawmen.",
       "outcome": "A design doc at design-docs/{feature-slug}.md ready to circulate for async review.",
-      "skill": "draft-design-doc"
+      "skill": "draft-design-doc",
+      "tools": {
+        "dev": [
+          "github"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Development",
@@ -212,7 +367,20 @@
       "fullPrompt": "Audit the architecture of {system}. Use the audit skill with surface=architecture. Read context/engineering-context.md for stack, invariants, and priorities. Walk modules / services / boundaries and produce a risk-sorted list (high / medium / low). For each concern: current state, proposed fix, effort (S/M/L/XL). Flag anything overlapping sensitiveAreas as high by default. Save to audits/architecture-{system-slug}-{YYYY-MM-DD}.md. Favor incremental fixes over rewrites.",
       "description": "I walk a system / module / service end-to-end and produce a risk-sorted list (high/medium/low) with current state, proposed fix, effort (S/M/L/XL) per item. Favors incremental fixes over rewrites.",
       "outcome": "An audit at audits/architecture-{system}-{date}.md \u2014 a ranked backlog of fixes, not a rewrite proposal.",
-      "skill": "audit"
+      "skill": "audit",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Development",
@@ -223,7 +391,19 @@
       "description": "I read workflow config + recent run history via GitHub or GitLab. Flakies ranked by rate \u00d7 frequency, slowest jobs by minutes-per-week, missing gates vs your quality bar, security gaps. Prioritized fix list, not a warnings dump.",
       "outcome": "An audit at audits/ci-cd-{repo}-{date}.md with a ranked fix list.",
       "skill": "audit",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Development",
@@ -234,7 +414,19 @@
       "description": "I read your README, CONTRIBUTING, Makefile, package.json scripts, docker-compose, .env.example and CI config. Estimate setup time, build time from CI history, and surface the top 5 paper cuts with suggested fixes.",
       "outcome": "An audit at audits/devx-{repo}-{date}.md \u2014 the 5 things to fix this week to stop annoying new engineers.",
       "skill": "audit",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Development",
@@ -245,7 +437,19 @@
       "description": "Five metrics from the last 7 days: PRs merged, median cycle time, largest PR size, reviewer concentration, open-to-merge age. One-line diagnosis per anomaly.",
       "outcome": "A one-pager at pr-velocity/{YYYY-Www}.md with the five metrics + one-line diagnoses.",
       "skill": "analyze",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Reliability",
@@ -256,7 +460,15 @@
       "description": "LIVE COACH + SCRIBE. I walk you through stabilize \u2192 communicate \u2192 mitigate \u2192 verify \u2192 document, capturing the timeline to incidents/{id}.md. Never auto-rollbacks, never runs prod commands.",
       "outcome": "A live incident doc at incidents/{id}.md that becomes the postmortem seed.",
       "skill": "run-incident-response",
-      "tool": "Sentry"
+      "tools": {
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     },
     {
       "category": "Reliability",
@@ -267,7 +479,16 @@
       "description": "I read the incident timeline + linked logs from Sentry, PostHog, or Datadog and draft a blameless postmortem with Summary, Impact, Timeline, Root cause, Contributing factors, What went well, What went poorly, and Action items.",
       "outcome": "A postmortem at postmortems/{id}.md ready to share with the team.",
       "skill": "write-postmortem",
-      "tool": "Sentry"
+      "tools": {
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "dev": [
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Reliability",
@@ -277,7 +498,16 @@
       "fullPrompt": "Is {release} ready to deploy? Use the review-deploy-readiness skill. Run the pre-deploy gate checklist: tests green, migrations backwards-compat, feature flags documented, rollback plan, on-call aware, runbook updated. Green / yellow / red per gate. Final verdict: GO / NO-GO / SOFT-GO with the condition. Save to deploy-readiness/{release-slug}.md. I never deploy \u2014 you click the button.",
       "description": "Pre-deploy gate checklist (tests, migrations, flags, rollback, on-call, runbook). Green / yellow / red per gate and a final GO / NO-GO / SOFT-GO verdict with the condition spelled out.",
       "outcome": "A verdict at deploy-readiness/{release}.md \u2014 decide whether to click deploy.",
-      "skill": "review-deploy-readiness"
+      "skill": "review-deploy-readiness",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry"
+        ]
+      }
     },
     {
       "category": "Reliability",
@@ -288,7 +518,19 @@
       "description": "I review your connected Sentry / PostHog / Datadog / New Relic / Honeycomb and produce a 3-column matrix (signal \u00d7 coverage \u00d7 gap) across errors / traces / logs / alerts / SLOs, plus a top-5 fix list ranked by blast-radius reduction.",
       "outcome": "An audit at audits/observability-{date}.md with the blind spots called out.",
       "skill": "audit",
-      "tool": "Sentry"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Reliability",
@@ -298,7 +540,16 @@
       "fullPrompt": "Draft a runbook for {system}. Use the draft-runbook skill. Command-first ops doc with bash snippets + placeholders, dashboard URLs (from my connected Sentry / Datadog), rollback commands, and if-this-fails decision branches. No prose walls \u2014 every section is a command block or decision branch. Save to runbooks/{slug}.md.",
       "description": "I produce a command-first ops doc with bash snippets + placeholders, dashboard URLs, rollback commands, and if-this-fails decision branches. No prose walls.",
       "outcome": "A runbook at runbooks/{slug}.md \u2014 pasteable during an incident.",
-      "skill": "draft-runbook"
+      "skill": "draft-runbook",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry"
+        ]
+      }
     },
     {
       "category": "Reliability",
@@ -308,7 +559,20 @@
       "fullPrompt": "Give me the weekly engineering review, focused on reliability. Use the analyze skill with subject=engineering-health. Aggregate incidents, postmortems, runbooks, deploy-readiness verdicts, and observability audits from the last 7 days. Call out any incident without a postmortem, any runbook that's stale vs the current architecture, any deploy-readiness SOFT-GO that needs follow-up. Save to reviews/{YYYY-MM-DD}.md.",
       "description": "I aggregate incidents, postmortems, runbooks, deploy-readiness verdicts, and observability audits from outputs.json and flag what needs follow-up this week.",
       "outcome": "Review at reviews/{YYYY-MM-DD}.md with the reliability gaps called out.",
-      "skill": "analyze"
+      "skill": "analyze",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Docs",
@@ -319,7 +583,19 @@
       "description": "I fetch your repo's README, score against a standard checklist, write inline diff suggestions + a rewritten lede, and produce a prioritized fix list. Never auto-commits.",
       "outcome": "An audit at audits/readme-{repo}-{date}.md with a rewritten lede and inline diffs.",
       "skill": "audit",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "analytics": [
+          "sentry",
+          "posthog"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Docs",
@@ -330,7 +606,16 @@
       "description": "I read your OpenAPI spec from GitHub or GitLab (or accept a paste) and write Stripe-grade per-endpoint docs: purpose, params table, request body, response body, error codes, curl example, SDK snippet. Never invents behavior.",
       "outcome": "A per-endpoint doc at api-docs/{endpoint-slug}.md ready for your docs site.",
       "skill": "write-docs",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Docs",
@@ -341,7 +626,16 @@
       "description": "I maintain a single running onboarding-guide.md at the agent root with First day / First week / First month, verified setup steps, conventions, sensitive areas, FAQ. Read-merge-update, never wholesale-overwrite.",
       "outcome": "A living onboarding-guide.md at the agent root. Send to the next hire's day one.",
       "skill": "write-docs",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Docs",
@@ -351,7 +645,17 @@
       "fullPrompt": "Write a tutorial for {feature}. Use the write-docs skill with type=tutorial. Di\u00e1taxis-aligned (learning-oriented, concrete end-to-end flow the reader runs). Sections: Overview, Prerequisites, Numbered steps with working code blocks, Verify, Troubleshooting (2-4 common errors), Next steps. Every code block must run. Save to tutorials/{slug}.md. Draft only \u2014 I never publish.",
       "description": "A Di\u00e1taxis-aligned tutorial (learning-oriented) with Overview, Prerequisites, numbered steps with working code, Verify commands, Troubleshooting, and Next steps. Every code block runs.",
       "outcome": "A tutorial at tutorials/{slug}.md ready for your docs site.",
-      "skill": "write-docs"
+      "skill": "write-docs",
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab"
+        ],
+        "search": [
+          "exa",
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Docs",
@@ -362,7 +666,14 @@
       "description": "I pull merged PRs + linked issues from GitHub / GitLab + Linear / Jira since your prior tag, filter for user-visible changes, and draft a public-facing narrative release post with headline, highlights, breaking changes (with migration snippets), and upgrade notes.",
       "outcome": "A release post at release-notes/{version}.md ready to publish.",
       "skill": "write-release-notes",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Docs",
@@ -373,7 +684,14 @@
       "description": "I pull merged PRs from GitHub or GitLab since the version you name, filter for user-visible changes, and produce a Keep-A-Changelog snippet (Added / Changed / Deprecated / Removed / Fixed / Security). Never writes the canonical CHANGELOG.md \u2014 you paste the snippet.",
       "outcome": "A changelog snippet at changelog/{version}.md. Copy into your canonical CHANGELOG.md.",
       "skill": "write-release-notes",
-      "tool": "GitHub"
+      "tools": {
+        "dev": [
+          "github",
+          "gitlab",
+          "linear",
+          "jira"
+        ]
+      }
     }
   ]
 };
@@ -579,20 +897,16 @@
         { className: "hv-send-chip", "aria-hidden": "true" },
         Icon(isSent ? "check" : "send", 14),
       ),
-      // Eyebrow: category (· tool)
-      h(
-        "div",
-        { className: "hv-eyebrow" },
-        h("span", null, uc.category || "Mission"),
-        uc.tool
-          ? h(
-              React.Fragment || "span",
-              null,
-              h("span", { className: "hv-eyebrow-sep" }, "·"),
-              h("span", null, uc.tool),
-            )
-          : null,
-      ),
+      // Eyebrow: category (· tool · tool · …)
+      (function () {
+        var names = flattenTools(uc.tools);
+        var parts = [h("span", { key: "cat" }, uc.category || "Mission")];
+        for (var i = 0; i < names.length; i++) {
+          parts.push(h("span", { key: "s" + i, className: "hv-eyebrow-sep" }, "·"));
+          parts.push(h("span", { key: "n" + i }, names[i]));
+        }
+        return h("div", { className: "hv-eyebrow" }, parts);
+      })(),
       h("h3", { className: "hv-title" }, uc.title || ""),
       uc.blurb
         ? h("p", { className: "hv-blurb" }, uc.blurb)

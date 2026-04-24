@@ -1,7 +1,8 @@
 ---
 name: answer-policy-question
 description: "Use when you say 'does {employee} qualify for {benefit}' / 'can {employee} expense {item}' / 'what's our policy on {leave / remote / equipment}' — reads the policy canon AND escalation rules from `context/people-context.md`, classifies the question as direct / ambiguous / escalation, and drafts the reply (or escalation note) accordingly. Never answers legal-sensitive escalation categories on its own."
-integrations: [notion, googledocs]
+integrations:
+  docs: [notion, googledocs]
 ---
 
 # Answer Policy Question

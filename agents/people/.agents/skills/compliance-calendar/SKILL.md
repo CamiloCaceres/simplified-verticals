@@ -1,7 +1,9 @@
 ---
 name: compliance-calendar
 description: "Use when you say 'build the compliance calendar' / 'what's coming up in HR compliance' / 'what I-9 / W-4 / visa renewals are due' — scans your connected HRIS plus the review-cycle rhythm and visa statuses, produces a living calendar at `compliance-calendar.md`, and logs each substantive update to `outputs.json`."
-integrations: [notion, googlesheets]
+integrations:
+  docs: [notion]
+  files: [googlesheets]
 ---
 
 # Compliance Calendar

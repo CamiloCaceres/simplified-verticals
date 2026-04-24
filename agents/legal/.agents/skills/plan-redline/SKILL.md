@@ -1,7 +1,8 @@
 ---
 name: plan-redline
 description: "Use when you say 'draft the counter' / 'what do I push back on' — I read the existing `contract-reviews/` entry + your risk posture + counterparty leverage, then produce a prioritized redline plan with must-have / nice-to-have / punt tiers and the exact redline language for every must-have. Writes to `redline-plans/{counterparty}-{YYYY-MM-DD}.md` — you paste into Word / Google Docs / the redline editor of your choice."
-integrations: [googledocs]
+integrations:
+  docs: [googledocs]
 ---
 
 # Draft Redline Strategy

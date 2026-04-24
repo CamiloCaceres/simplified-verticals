@@ -1,7 +1,10 @@
 ---
 name: draft-lifecycle-message
 description: "Use when you say 'welcome series for new signups' / 'draft 30/60/90 renewal outreach' / 'expansion nudge for {account}' / 'save {account}' — I draft the `type` you pick: `welcome-series` day 0/1/3/7/14 · `renewal` day-90/60/30 sequence · `expansion-nudge` one outreach grounded in a ceiling signal · `churn-save` one save grounded in the risk signal. Writes to `onboarding/` · `renewals/` · `expansions/` · `saves/`. No guilt, no fake scarcity."
-integrations: [customerio, loops, mailchimp, kit, hubspot, attio, stripe]
+integrations:
+  esp: [customerio, loops, mailchimp, kit]
+  crm: [hubspot, attio]
+  billing: [stripe]
 ---
 
 # Draft Lifecycle Message

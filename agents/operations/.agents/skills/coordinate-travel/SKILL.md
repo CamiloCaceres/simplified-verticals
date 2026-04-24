@@ -1,7 +1,9 @@
 ---
 name: coordinate-travel
 description: "Use when you mention a trip / flights to book / a conference / 'I'm going to {city}' — I read your travel prefs (ask once if missing), assemble a trip summary, draft an itinerary with flight + hotel search criteria, and a destination-adapted packing checklist. Writes drafts; never books without approval."
-integrations: [gmail, googlecalendar]
+integrations:
+  inbox: [gmail]
+  calendar: [googlecalendar]
 ---
 
 # Coordinate Travel

@@ -1,7 +1,10 @@
 ---
 name: track-legal-state
 description: "Use when you say 'where are my signatures' / 'log this executed agreement' / 'what's due soon' / 'Monday legal review' — I track the `scope` you pick: `signatures` watches your signing platform (DocuSign / PandaDoc / HelloSign) for outstanding docs and drafts reminders · `counterparties` logs executed agreements to `counterparty-tracker.json` · `deadlines` refreshes the canonical calendar (Delaware March 1, 83(b) 30-day, 409A 12-month, DSR 30/45-day) · `weekly-review` rolls up what shipped this week."
-integrations: [docusign, pandadoc, dropbox_sign, googledrive, gmail]
+integrations:
+  signing: [docusign, pandadoc, dropbox_sign]
+  files: [googledrive]
+  inbox: [gmail]
 ---
 
 # Track Legal State

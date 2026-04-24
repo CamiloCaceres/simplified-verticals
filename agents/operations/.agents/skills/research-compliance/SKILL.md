@@ -1,7 +1,9 @@
 ---
 name: research-compliance
 description: "Use when you say 'compliance check on {company}' / 'is {vendor} clean' / 'run compliance due-diligence' — public-source compliance research: frameworks held, named officers, recent incidents. Every claim cited. Writes to `compliance-reports/{company-slug}.md`."
-integrations: [exa, perplexityai, firecrawl]
+integrations:
+  search: [exa, perplexityai]
+  scrape: [firecrawl]
 ---
 
 # Research Compliance

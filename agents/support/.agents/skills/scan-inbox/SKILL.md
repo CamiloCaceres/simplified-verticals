@@ -1,7 +1,9 @@
 ---
 name: scan-inbox
 description: "Use when you say 'morning brief' / 'what's on my plate' / 'what's breaching SLA' / 'what's stale?' — I produce the `scope` you pick: `morning-brief` (ranked 'start here' digest) · `sla-breach` (threads within 2h of breach or already past) · `stale-threads` (quiet >48h with you as last responder). Writes to `briefings/` · `sla-reports/` · `stale-rescues/`. A 2-minute scan, not a dashboard dump."
-integrations: [gmail, outlook, intercom, help_scout, zendesk]
+integrations:
+  inbox: [gmail, outlook]
+  helpdesk: [intercom, help_scout, zendesk]
 ---
 
 # Scan Inbox

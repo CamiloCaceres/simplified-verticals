@@ -1,7 +1,8 @@
 ---
 name: define-legal-context
 description: "Use when you say 'set up my legal context' / 'update the legal doc' / 'our cap table changed' — I interview you briefly and write the shared legal doc (entity snapshot, cap table, standing agreements, template stack, open risks, founder risk posture) to `context/legal-context.md`. Every other skill in this agent reads it first. Mirrors to Google Docs if connected."
-integrations: [googledocs, notion]
+integrations:
+  docs: [googledocs, notion]
 ---
 
 # Maintain Legal Context

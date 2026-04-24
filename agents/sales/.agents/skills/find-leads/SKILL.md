@@ -1,7 +1,11 @@
 ---
 name: find-leads
 description: "Use when you say 'find me leads in {segment}' / 'give me 20 in {segment}' / 'surface leads I can reach out to this week' — I surface net-new leads from your connected sources or public intent signals (CRM lookalikes, LinkedIn threads, recent-funding feeds, Google Maps for local biz, Reddit / community posts), quick-score against the playbook's disqualifiers, and save GREEN / YELLOW leads with the trigger signal cited. Writes to `leads/batches/{segment-slug}-{YYYY-MM-DD}.md` and `leads.json`."
-integrations: [hubspot, salesforce, attio, linkedin, exa, firecrawl]
+integrations:
+  crm: [hubspot, salesforce, attio]
+  social: [linkedin]
+  search: [exa]
+  scrape: [firecrawl]
 ---
 
 # Find Leads

@@ -1,7 +1,8 @@
 ---
 name: digest-linkedin-activity
 description: "Use when you say 'LinkedIn digest' / 'how did my posts do' / 'weekly LinkedIn roundup' — I pull stats on your own posts (reach, engagement, new followers) plus notable posts in your network worth commenting on. A 5-minute read. Writes to `linkedin-digests/{date}.md` for Monday morning."
-integrations: [linkedin]
+integrations:
+  social: [linkedin]
 ---
 
 # Digest LinkedIn Activity

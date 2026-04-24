@@ -1,7 +1,11 @@
 ---
 name: plan-campaign
 description: "Use when you say 'plan a paid campaign' / 'plan the {feature} launch' / 'welcome series' / 'design a drip' / 'churn-save email' / 'product announcement' — I plan the full campaign for the `type` you pick (paid / launch / lifecycle-drip / welcome / churn-save / announcement), grounded in your positioning and voice. Writes to `campaigns/{type}-{slug}.md` with audience, timing, and copy drafts. Specs only — I never send or launch."
-integrations: [googleads, metaads, customerio, mailchimp, stripe, hubspot]
+integrations:
+  ads: [googleads, metaads]
+  esp: [customerio, mailchimp]
+  billing: [stripe]
+  crm: [hubspot]
 ---
 
 # Plan Campaign

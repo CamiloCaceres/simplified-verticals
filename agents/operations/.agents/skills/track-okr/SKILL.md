@@ -1,7 +1,9 @@
 ---
 name: track-okr
 description: "Use when you ask about OKR status ('how are we doing on OKRs' / 'refresh the OKRs' / 'which KRs are off-track') — I refresh each KR's current value via any Composio-connected OKR tool (Notion, Airtable, Google Sheets), append snapshots to `okr-history.json`, classify on-track / at-risk / off-track, and surface root causes from linked decisions and priorities."
-integrations: [notion, airtable, googlesheets]
+integrations:
+  docs: [notion, airtable]
+  files: [googlesheets]
 ---
 
 # Track OKR

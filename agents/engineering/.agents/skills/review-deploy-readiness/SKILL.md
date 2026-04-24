@@ -1,7 +1,9 @@
 ---
 name: review-deploy-readiness
 description: "Use when you say 'is {release} ready to deploy' / 'run the deploy gate checklist' / 'GO or NO-GO on {release}' — pre-deploy gate checklist (tests green, migrations backwards-compat, feature flags, rollback plan, on-call aware, runbook updated) with green / yellow / red per gate and a final GO / NO-GO / SOFT-GO verdict. Writes to `deploy-readiness/{release-slug}.md`. Never runs deploy — I produce the verdict, you click the button."
-integrations: [github, gitlab, sentry]
+integrations:
+  dev: [github, gitlab]
+  analytics: [sentry]
 ---
 
 # Review Deploy Readiness

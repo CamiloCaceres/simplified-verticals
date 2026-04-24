@@ -1,7 +1,8 @@
 ---
 name: voice-calibration
 description: "Use when you say 'calibrate my HR voice' / 'sample my past offers' / 'learn how I write for HR comms' — pulls recent HR outbound (offers, onboarding notes, feedback) from your connected inbox (Gmail or Outlook), extracts a tone fingerprint (greeting habits, closing habits, sentence length, formality), and appends it to the voice-notes section of `context/people-context.md`."
-integrations: [gmail, outlook]
+integrations:
+  inbox: [gmail, outlook]
 ---
 
 # Voice Calibration

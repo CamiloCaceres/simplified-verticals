@@ -1,7 +1,9 @@
 ---
 name: validate-feature-fit
 description: "Use when you say 'validate {feature} before I build it' / 'go/no-go on {feature}' — I scrape the competitor landscape via Firecrawl and web search, assess alignment to observable demand, and produce a verdict (build / defer / skip) with the evidence behind it. Writes to `feature-fit/{slug}.md` and flags assumptions I couldn't test from the desk so you know what to probe with real users."
-integrations: [firecrawl, exa, perplexityai]
+integrations:
+  scrape: [firecrawl]
+  search: [exa, perplexityai]
 ---
 
 # Validate Feature Fit

@@ -1,7 +1,8 @@
 ---
 name: write-release-notes
 description: "Use when you say 'release notes since {tag}' / 'changelog for {version}' / 'draft the {version} release notes' / 'update the CHANGELOG from PRs since {version}' — I pull merged PRs + linked issues via GitHub or GitLab since the given tag, filter for user-visible changes, and draft the `format` you pick: `release-notes` is a public-facing narrative with headline, highlights, breaking changes, upgrade notes · `changelog` is a Keep-A-Changelog snippet (Added / Changed / Deprecated / Removed / Fixed / Security). Writes to `release-notes/{version}.md` or `changelog/{version}.md`. Draft only — I never auto-commit the canonical CHANGELOG or publish notes."
-integrations: [github, gitlab, linear, jira]
+integrations:
+  dev: [github, gitlab, linear, jira]
 ---
 
 # Write Release Notes

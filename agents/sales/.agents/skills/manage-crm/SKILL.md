@@ -1,7 +1,10 @@
 ---
 name: manage-crm
 description: "Use when you say 'sweep CRM hygiene' / 'what's my pipeline by stage' / 'route new inbounds' / 'queue a task for {deal}' — I run the `action` you pick on your connected CRM (HubSpot / Salesforce / Attio / Pipedrive / Close): `clean` (detect dupes + missing fields + stage mismatches · diff list awaits per-row approval) · `query` (natural-language → read-only answer + the query I ran) · `route` (GREEN → assign, YELLOW → nurture, RED → drop) · `queue-followup` (push a task into Linear / Notion / Asana-style). Writes to `crm-reports/{action}-{date}.md`."
-integrations: [hubspot, salesforce, attio, pipedrive, close, linear, notion]
+integrations:
+  crm: [hubspot, salesforce, attio, pipedrive, close]
+  dev: [linear]
+  docs: [notion]
 ---
 
 # Manage CRM

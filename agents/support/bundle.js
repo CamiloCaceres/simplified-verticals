@@ -24,6 +24,52 @@
   var useCallback = React.useCallback;
   var useMemo = React.useMemo;
 
+  // ═════════ SLUG → DISPLAY-NAME DICTIONARY ═════════
+  var SLUG_DISPLAY_NAMES = {
+    gmail: "Gmail", outlook: "Outlook", googlecalendar: "Google Calendar",
+    hubspot: "HubSpot", salesforce: "Salesforce", attio: "Attio", pipedrive: "Pipedrive", close: "Close", apollo: "Apollo.io",
+    gong: "Gong", fireflies: "Fireflies",
+    exa: "Exa", perplexityai: "Perplexity",
+    firecrawl: "Firecrawl",
+    semrush: "Semrush", ahrefs: "Ahrefs",
+    googledocs: "Google Docs", notion: "Notion", airtable: "Airtable",
+    googledrive: "Google Drive", googlesheets: "Google Sheets",
+    mailchimp: "Mailchimp", customerio: "Customer.io", loops: "Loops", kit: "Kit", klaviyo: "Klaviyo",
+    googleads: "Google Ads", metaads: "Meta Ads", facebook: "Facebook",
+    posthog: "PostHog", mixpanel: "Mixpanel",
+    stripe: "Stripe",
+    linkedin: "LinkedIn", twitter: "X", reddit: "Reddit", instagram: "Instagram", tiktok: "TikTok",
+    youtube: "YouTube",
+    listennotes: "Listen Notes",
+    github: "GitHub", gitlab: "GitLab", linear: "Linear", jira: "Jira",
+    slack: "Slack", discord: "Discord", microsoftteams: "Microsoft Teams",
+    docusign: "DocuSign", pandadoc: "PandaDoc", dropbox_sign: "Dropbox Sign",
+    intercom: "Intercom", zendesk: "Zendesk", help_scout: "Help Scout",
+    greenhouse: "Greenhouse", lever: "Lever", ashbyhq: "Ashby",
+    workday: "Workday", bamboohr: "BambooHR", gusto: "Gusto", deel: "Deel", rippling: "Rippling",
+    carta: "Carta", pulley: "Pulley"
+  };
+  function displayName(slug) {
+    return SLUG_DISPLAY_NAMES[slug] || (slug.charAt(0).toUpperCase() + slug.slice(1));
+  }
+  // Flatten a grouped tools map ({category: [slug,...], ...}) into an ordered
+  // list of display names, capped at 4 with "… +N" suffix if truncated.
+  function flattenToolNames(tools) {
+    if (!tools || typeof tools !== "object") return { names: [], extra: 0 };
+    var flat = [];
+    Object.keys(tools).forEach(function (cat) {
+      var slugs = tools[cat];
+      if (Array.isArray(slugs)) {
+        slugs.forEach(function (s) { flat.push(s); });
+      }
+    });
+    var cap = 4;
+    if (flat.length <= cap) {
+      return { names: flat.map(displayName), extra: 0 };
+    }
+    return { names: flat.slice(0, cap).map(displayName), extra: flat.length - cap };
+  }
+
   // ═════════ PER-AGENT CONFIG (injected by generator) ═════════
   var AGENT = {
   "name": "Support",
@@ -44,7 +90,20 @@
       "description": "I pull the thread via your connected inbox (Gmail / Outlook / Intercom / Help Scout / Zendesk), classify against your routing rules, assign priority from tier + content signals, and VIP-flag. Writes to `conversations.json` + `conversations/{id}/thread.json`.",
       "outcome": "Triaged entry at `conversations.json` \u2014 ready for `draft-reply` or `detect-signal`.",
       "skill": "triage-incoming",
-      "tool": "Gmail"
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -55,7 +114,17 @@
       "description": "I rank open conversations by VIP \u00d7 SLA-at-risk \u00d7 unblocking-engineering, cap at 10 items, add a one-line next action per item, and include followups due today. A 2-minute scan \u2014 not a dashboard dump.",
       "outcome": "Brief at `briefings/{date}.md` with 2-3 things that actually need you today.",
       "skill": "scan-inbox",
-      "tool": "Gmail"
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -65,7 +134,18 @@
       "fullPrompt": "Scan for SLA breaches. Use the scan-inbox skill with scope=sla-breach. Filter conversations.json to open items within 2h of breach or already past, read SLA tiers from context/support-context.md, and for each list customer + tier + time left + next action. Write to sla-reports/{YYYY-MM-DD}.md.",
       "description": "I filter `conversations.json` to open items within 2h of breach or already past, read SLA tiers from your support context, and list customer + tier + time left + next action.",
       "outcome": "Report at `sla-reports/{date}.md` \u2014 hit the red ones first.",
-      "skill": "scan-inbox"
+      "skill": "scan-inbox",
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -75,7 +155,18 @@
       "fullPrompt": "Find stale threads waiting on me. Use the scan-inbox skill with scope=stale-threads. Filter conversations.json to conversations quiet > 48h with me as last responder, group by 'their turn' vs 'my turn', surface only the my-turn group as actionable, and for each suggest a nudge draft or a clean close. Write to stale-rescues/{YYYY-MM-DD}.md.",
       "description": "I surface the threads quiet >48h where the ball is in your court, split from the threads where the customer already replied and you missed it. For each, I suggest nudge or clean-close.",
       "outcome": "Rescue list at `stale-rescues/{date}.md` \u2014 clear the backlog in 10 min.",
-      "skill": "scan-inbox"
+      "skill": "scan-inbox",
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -85,7 +176,18 @@
       "fullPrompt": "Summarize the thread at conversations/{id}/thread.json. Use the thread-summary skill. Produce exactly 3 bullets: where we are (last message + current state), what we promised (pulled from followups.json), what the customer expects next. Append the summary to conversations/{id}/notes.md.",
       "description": "I produce exactly 3 bullets \u2014 where we are, what we promised (pulled from `followups.json`), what the customer expects next \u2014 so you're not re-reading 20 messages cold.",
       "outcome": "Summary appended to `conversations/{id}/notes.md`.",
-      "skill": "thread-summary"
+      "skill": "thread-summary",
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -96,7 +198,17 @@
       "description": "I pull the customer dossier, read your voice samples, mirror your tone, and address the specific ask (bug / how-to / billing). I never promise a date you haven't approved.",
       "outcome": "Draft at `conversations/{id}/draft.md` \u2014 approve in chat.",
       "skill": "draft-reply",
-      "tool": "Gmail"
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -107,7 +219,25 @@
       "description": "Plan + MRR from your connected Stripe, profile from HubSpot / Attio / Salesforce, plus open bugs, open followups, churn flags, and last 3 conversations \u2014 all in one doc.",
       "outcome": "Dossier at `dossiers/{slug}.md` \u2014 the context `draft-reply` reads too.",
       "skill": "customer-view",
-      "tool": "Stripe"
+      "tools": {
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot",
+          "attio",
+          "salesforce"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom"
+        ],
+        "analytics": [
+          "posthog"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -118,7 +248,25 @@
       "description": "Every interaction (tickets, calls, purchases, plan changes, NPS) from `conversations.json` + Stripe + your CRM, sorted chronologically.",
       "outcome": "Timeline at `timelines/{slug}.md` \u2014 the foundation for QBRs and renewals.",
       "skill": "customer-view",
-      "tool": "Stripe"
+      "tools": {
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot",
+          "attio",
+          "salesforce"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom"
+        ],
+        "analytics": [
+          "posthog"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -129,7 +277,25 @@
       "description": "3 signals (ticket volume, product-usage trend via PostHog, sentiment) against your churn thresholds. GREEN / YELLOW / RED + reasoning + ONE action \u2014 never a wall of metrics.",
       "outcome": "Score in `health-scores.json` \u2014 grounds your next `draft-lifecycle-message`.",
       "skill": "customer-view",
-      "tool": "PostHog"
+      "tools": {
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot",
+          "attio",
+          "salesforce"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom"
+        ],
+        "analytics": [
+          "posthog"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -139,7 +305,26 @@
       "fullPrompt": "Run a churn risk scan on {account}. Use the customer-view skill with view=churn-risk. Scan the last 60 days of conversations for cancellation language, 2+ frustration signals, or a usage cliff. If found, write a new entry to churn-flags.json with signal + severity + recommended next move.",
       "description": "I scan the last 60 days of conversations for cancellation language, frustration signals, or a usage cliff \u2014 then write a flag with severity + a recommended next move.",
       "outcome": "Flag in `churn-flags.json` \u2014 feed it to `draft-lifecycle-message type=churn-save`.",
-      "skill": "customer-view"
+      "skill": "customer-view",
+      "tools": {
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot",
+          "attio",
+          "salesforce"
+        ],
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom"
+        ],
+        "analytics": [
+          "posthog"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -150,7 +335,21 @@
       "description": "I extract repro steps, affected version, error / stack trace, apply severity, and append to `bug-candidates.json`. Offers to chain to your tracker (GitHub / Linear / Jira) \u2014 never files without your approval.",
       "outcome": "Entry in `bug-candidates.json` \u2014 one click away from a real issue.",
       "skill": "detect-signal",
-      "tool": "Linear"
+      "tools": {
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ],
+        "dev": [
+          "github",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -160,7 +359,22 @@
       "fullPrompt": "Capture this feature request. Use the detect-signal skill with signal=feature-request. Extract the ask in one sentence, attribute to the requesting customer's slug, dedupe against requests.json, and flag if a VIP is in the cluster. Append to requests.json.",
       "description": "I extract the ask in one sentence, attribute to the requesting customer's slug, and dedupe into `requests.json`. VIP requesters get flagged.",
       "outcome": "Entry in `requests.json` \u2014 surfaces in weekly reviews + 'broadcast shipped.'",
-      "skill": "detect-signal"
+      "skill": "detect-signal",
+      "tools": {
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ],
+        "dev": [
+          "github",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Inbox",
@@ -181,7 +395,20 @@
       "description": "I extract the question + answer from the resolved thread and draft in your help-center tone. Saves to `articles/{slug}.md` and mirrors to your connected KB (Notion / Intercom / Help Scout / Google Docs) if linked.",
       "outcome": "Draft at `articles/{slug}.md`. Publish when you're happy.",
       "skill": "write-article",
-      "tool": "Notion"
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout"
+        ],
+        "dev": [
+          "github",
+          "linear"
+        ]
+      }
     },
     {
       "category": "Help Center",
@@ -191,7 +418,21 @@
       "fullPrompt": "Draft a public known-issue status entry for {bug id}. Use the write-article skill with type=known-issue. Read bug-candidates.json for details. Draft: what's broken, who's affected, workaround, current status, ETA (only if I pre-approved one). Save to known-issues/{slug}.md and append to known-issues.json.",
       "description": "I draft: what's broken, who's affected, workaround, current status, ETA (only if you pre-approved one). No marketer-speak. Saves to `known-issues/{slug}.md` + updates `known-issues.json`.",
       "outcome": "Public draft at `known-issues/{slug}.md`. Push when you're ready.",
-      "skill": "write-article"
+      "skill": "write-article",
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout"
+        ],
+        "dev": [
+          "github",
+          "linear"
+        ]
+      }
     },
     {
       "category": "Help Center",
@@ -202,7 +443,20 @@
       "description": "I read `requests.json`, filter to customers who asked for exactly this, and draft a short personal note per customer referencing their specific ask. One file per customer \u2014 never a bulk blast.",
       "outcome": "Per-customer drafts at `broadcasts/{date}-{slug}.md` \u2014 send from your own inbox.",
       "skill": "write-article",
-      "tool": "Gmail"
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout"
+        ],
+        "dev": [
+          "github",
+          "linear"
+        ]
+      }
     },
     {
       "category": "Help Center",
@@ -212,7 +466,21 @@
       "fullPrompt": "Refresh help-center articles affected by {change}. Use the write-article skill with type=refresh-stale. Scan every articles/{slug}.md for references to the changed element and write the proposed rewrite diff without overwriting. Mark the articles needsReview=true in outputs.json.",
       "description": "I scan every article for references to what changed (pricing / UI / feature name), write the proposed rewrite diff, and mark articles `needsReview: true` in `outputs.json`.",
       "outcome": "Proposed rewrites across `articles/` \u2014 review diffs one at a time.",
-      "skill": "write-article"
+      "skill": "write-article",
+      "tools": {
+        "docs": [
+          "notion",
+          "googledocs"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout"
+        ],
+        "dev": [
+          "github",
+          "linear"
+        ]
+      }
     },
     {
       "category": "Help Center",
@@ -222,7 +490,22 @@
       "fullPrompt": "Find repeat-question clusters that deserve an article. Use the detect-signal skill with signal=repeat-question. Scan the last 30-60 days of conversations.json, cluster semantically similar incoming questions, and for each cluster of \u22653 with no matching article in articles/, append to patterns.json. Offer to chain write-article type=from-ticket for my top pick.",
       "description": "I scan the last 30-60 days, cluster semantically similar asks, and for each cluster \u22653 without a matching article, append to `patterns.json`. Offers to chain into `write-article` for the top pick.",
       "outcome": "Clusters in `patterns.json` \u2014 the docs you should write first.",
-      "skill": "detect-signal"
+      "skill": "detect-signal",
+      "tools": {
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ],
+        "dev": [
+          "github",
+          "linear",
+          "jira"
+        ]
+      }
     },
     {
       "category": "Help Center",
@@ -242,7 +525,16 @@
       "fullPrompt": "Give me the weekly help-center digest. Use the review skill with scope=help-center-digest. Read conversations.json counts for the week, patterns.json top 3 themes, requests.json velocity, known-issues.json state changes. Surface the single most useful docs gap to write next. Save to digests/{YYYY-MM-DD}.md.",
       "description": "Weekly rollup of ticket volume, top 3 themes from `patterns.json`, feature-request velocity, known-issue state changes, and the single most useful docs gap to write next.",
       "outcome": "Digest at `digests/{date}.md` for Monday morning.",
-      "skill": "review"
+      "skill": "review",
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     },
     {
       "category": "Success",
@@ -253,7 +545,21 @@
       "description": "Day 0 / 1 / 3 / 7 / 14 sequence keyed to your activation milestones. Each touch: subject, preview, body, CTA, success metric. Formatted for your connected ESP (Customer.io / Loops / Mailchimp / Kit).",
       "outcome": "Full sequence at `onboarding/{segment}.md` \u2014 drop into your ESP.",
       "skill": "draft-lifecycle-message",
-      "tool": "Customer.io"
+      "tools": {
+        "esp": [
+          "customerio",
+          "loops",
+          "mailchimp",
+          "kit"
+        ],
+        "crm": [
+          "hubspot",
+          "attio"
+        ],
+        "billing": [
+          "stripe"
+        ]
+      }
     },
     {
       "category": "Success",
@@ -264,7 +570,21 @@
       "description": "3-touch sequence (Day-90 value recap, Day-60 expansion or mechanics, Day-30 direct ask + agenda). Every reference grounded in `timelines/{slug}.md` \u2014 no marketer-speak.",
       "outcome": "Sequence at `renewals/{account}-{date}.md`. Send when you're ready.",
       "skill": "draft-lifecycle-message",
-      "tool": "Gmail"
+      "tools": {
+        "esp": [
+          "customerio",
+          "loops",
+          "mailchimp",
+          "kit"
+        ],
+        "crm": [
+          "hubspot",
+          "attio"
+        ],
+        "billing": [
+          "stripe"
+        ]
+      }
     },
     {
       "category": "Success",
@@ -274,7 +594,22 @@
       "fullPrompt": "Draft an expansion nudge for {account}. Use the draft-lifecycle-message skill with type=expansion-nudge. Chain customer-view view=health first to find the ceiling signal (feature-adoption threshold, team-size change, repeated ask). Draft a short, specific outreach naming the signal and proposing an option. If no real signal exists, stop and tell me. Save to expansions/{account}.md.",
       "description": "I check `health-scores.json` for a real ceiling signal first. If found, I draft a short, specific outreach naming the signal. If not, I stop \u2014 no upsell pressure.",
       "outcome": "Draft at `expansions/{account}.md` \u2014 or a clear 'no signal, don't push.'",
-      "skill": "draft-lifecycle-message"
+      "skill": "draft-lifecycle-message",
+      "tools": {
+        "esp": [
+          "customerio",
+          "loops",
+          "mailchimp",
+          "kit"
+        ],
+        "crm": [
+          "hubspot",
+          "attio"
+        ],
+        "billing": [
+          "stripe"
+        ]
+      }
     },
     {
       "category": "Success",
@@ -285,7 +620,21 @@
       "description": "I pull the exact risk signal, acknowledge the pain honestly, and offer pause / downgrade / concierge / refund \u2014 whichever is policy in your support context. No guilt, no fake scarcity.",
       "outcome": "Save at `saves/{account}.md`. Send from your own inbox.",
       "skill": "draft-lifecycle-message",
-      "tool": "Stripe"
+      "tools": {
+        "esp": [
+          "customerio",
+          "loops",
+          "mailchimp",
+          "kit"
+        ],
+        "crm": [
+          "hubspot",
+          "attio"
+        ],
+        "billing": [
+          "stripe"
+        ]
+      }
     },
     {
       "category": "Success",
@@ -296,7 +645,15 @@
       "description": "4-section outline \u2014 wins (achieved), asks-shipped (their requests shipped), friction (open pains), next moves (renewal / expansion). Grounded in the timeline + request IDs.",
       "outcome": "QBR at `qbrs/{account}-{date}.md` \u2014 walk in ready.",
       "skill": "review",
-      "tool": "Google Docs"
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     },
     {
       "category": "Quality",
@@ -307,7 +664,12 @@
       "description": "I interview you briefly and write `context/support-context.md` \u2014 product overview, segments + VIPs, tone, SLA tiers, routing rules, known gotchas. Every other skill reads it first.",
       "outcome": "Locked doc at `context/support-context.md` \u2014 the source of truth.",
       "skill": "define-support-context",
-      "tool": "Google Docs"
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ]
+      }
     },
     {
       "category": "Quality",
@@ -318,7 +680,16 @@
       "description": "I pull 10-20 outbound replies from your connected inbox (Gmail / Outlook / Intercom / Help Scout), extract tone cues, and write `config/voice.md`. Every reply draft and KB article this agent writes reads this.",
       "outcome": "Voice profile at `config/voice.md` \u2014 drafts stop sounding like AI.",
       "skill": "voice-calibration",
-      "tool": "Gmail"
+      "tools": {
+        "inbox": [
+          "gmail",
+          "outlook"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout"
+        ]
+      }
     },
     {
       "category": "Quality",
@@ -328,7 +699,13 @@
       "fullPrompt": "Update our routing rules. Use the tune-routing-rules skill. Read context/support-context.md, restate current rules in 3-4 lines, capture what's changing (new tracker / classification / escalation contact / refund approver), and rewrite the routing section cleanly. Every triage-incoming and detect-signal run after this picks up the new rules automatically.",
       "description": "I read current rules, ask what's changing, rewrite the routing section of `context/support-context.md`. Every `triage-incoming` and `detect-signal` run after picks up the new rules \u2014 no manual re-sync.",
       "outcome": "Updated `context/support-context.md` \u2014 propagates instantly.",
-      "skill": "tune-routing-rules"
+      "skill": "tune-routing-rules",
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ]
+      }
     },
     {
       "category": "Quality",
@@ -339,7 +716,16 @@
       "description": "I ask 2 targeted questions, then write a step-by-step runbook: detection, comms draft, rollback, RCA, post-mortem. Named humans, named Slack channels \u2014 no vague handoffs.",
       "outcome": "Playbook at `playbooks/{slug}.md` \u2014 edit once, every incident uses it.",
       "skill": "draft-escalation-playbook",
-      "tool": "Slack"
+      "tools": {
+        "messaging": [
+          "slack",
+          "microsoftteams"
+        ],
+        "dev": [
+          "linear",
+          "github"
+        ]
+      }
     },
     {
       "category": "Quality",
@@ -349,7 +735,17 @@
       "fullPrompt": "Mine the last 30 days of tickets for voice-of-customer signal. Use the synthesize-voice-of-customer skill. Cluster conversations.json + requests.json + patterns.json for the window into top 5 pains (verbatim quotes), top 5 feature asks (distinct requesters), friction quotes that contradict positioning, and positioning-worthy quotes. Save to voc/{YYYY-MM-DD}.md.",
       "description": "I cluster the last 30 days of conversations + feature requests into top 5 pains, top 5 asks, friction phrases that contradict your positioning, and landing-page-ready quotes with attribution.",
       "outcome": "Synthesis at `voc/{date}.md` \u2014 the single best source for roadmap + landing-page updates.",
-      "skill": "synthesize-voice-of-customer"
+      "skill": "synthesize-voice-of-customer",
+      "tools": {
+        "inbox": [
+          "gmail"
+        ],
+        "helpdesk": [
+          "intercom",
+          "help_scout",
+          "zendesk"
+        ]
+      }
     },
     {
       "category": "Quality",
@@ -359,7 +755,16 @@
       "fullPrompt": "Give me the Monday support review. Use the review skill with scope=weekly. Read outputs.json filtered to the last 7 days, group by domain (Inbox / Help Center / Success / Quality), count + 1-line headline + 1 unresolved per domain. Read followups.json for this week and churn-flags.json opened this week. End with '2-3 things I recommend you do this week.' Save to reviews/{YYYY-MM-DD}.md.",
       "description": "I read `outputs.json` filtered to the last 7 days, group by domain, count + 1-line headline + 1 unresolved per domain. Ends with 2-3 things I recommend you do this week \u2014 grounded in real output IDs.",
       "outcome": "Review at `reviews/{date}.md`. 2-minute scan.",
-      "skill": "review"
+      "skill": "review",
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ],
+        "messaging": [
+          "slack"
+        ]
+      }
     }
   ]
 };
@@ -565,20 +970,20 @@
         { className: "hv-send-chip", "aria-hidden": "true" },
         Icon(isSent ? "check" : "send", 14),
       ),
-      // Eyebrow: category (· tool)
-      h(
-        "div",
-        { className: "hv-eyebrow" },
-        h("span", null, uc.category || "Mission"),
-        uc.tool
-          ? h(
-              React.Fragment || "span",
-              null,
-              h("span", { className: "hv-eyebrow-sep" }, "·"),
-              h("span", null, uc.tool),
-            )
-          : null,
-      ),
+      // Eyebrow: category (· tool1 · tool2 · ...)
+      (function () {
+        var flat = flattenToolNames(uc.tools);
+        var parts = [h("span", { key: "cat" }, uc.category || "Mission")];
+        flat.names.forEach(function (n, i) {
+          parts.push(h("span", { key: "sep-" + i, className: "hv-eyebrow-sep" }, "·"));
+          parts.push(h("span", { key: "tool-" + i }, n));
+        });
+        if (flat.extra > 0) {
+          parts.push(h("span", { key: "sep-extra", className: "hv-eyebrow-sep" }, "·"));
+          parts.push(h("span", { key: "extra" }, "… +" + flat.extra));
+        }
+        return h("div", { className: "hv-eyebrow" }, parts);
+      })(),
       h("h3", { className: "hv-title" }, uc.title || ""),
       uc.blurb
         ? h("p", { className: "hv-blurb" }, uc.blurb)

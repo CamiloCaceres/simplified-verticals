@@ -1,7 +1,11 @@
 ---
 name: prep-meeting
 description: "Use when you say 'prep me for my {discovery / demo} with {Acme}' / 'prep the QBR for {customer}' — I prep the `type` you pick: `call` (pre-call one-pager: goal · attendees · question bank prioritized on the weakest qualification pillar · objections · exit criteria · landmines) · `qbr` (QBR pack: outcomes shipped with numbers · usage trend via PostHog · open asks · risks · next-quarter goal · renewal runway). Writes to `deals/{slug}/call-prep-{date}.md` or `customers/{slug}/qbr-{YYYY-QN}.md`."
-integrations: [hubspot, salesforce, attio, googlecalendar, gong, fireflies, posthog]
+integrations:
+  crm: [hubspot, salesforce, attio]
+  calendar: [googlecalendar]
+  meetings: [gong, fireflies]
+  analytics: [posthog]
 ---
 
 # Prep Meeting

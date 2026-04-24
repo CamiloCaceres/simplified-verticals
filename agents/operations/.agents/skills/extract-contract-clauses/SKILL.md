@@ -1,7 +1,8 @@
 ---
 name: extract-contract-clauses
 description: "Use when you say 'pull the {clauses} from this contract' / 'what's the auto-renew language in every contract in this folder' — I parse one or many contracts, extract standard clauses with verbatim quotes + plain-language summaries + flags on unfavorable terms. Also updates the renewal calendar."
-integrations: [googledrive]
+integrations:
+  files: [googledrive]
 ---
 
 # Extract Contract Clauses

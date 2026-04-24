@@ -1,7 +1,9 @@
 ---
 name: define-people-context
 description: "Use when you say 'draft our people-context doc' / 'set up our people context' / 'build the leveling ladder' / 'what's an L3 vs L4' — I draft or update the full shared doc at `context/people-context.md`: company values, team shape, leveling (IC + manager, L1-L5), comp bands, review-cycle rhythm, policy canon, escalation rules, voice, hard nos. Every other skill reads it first."
-integrations: [notion, googledocs, googlesheets]
+integrations:
+  docs: [notion, googledocs]
+  files: [googlesheets]
 ---
 
 # Define People Context

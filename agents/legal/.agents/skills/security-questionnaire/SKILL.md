@@ -1,7 +1,9 @@
 ---
 name: security-questionnaire
 description: "Use when you forward or paste an enterprise security questionnaire (SIG-lite, CAIQ, custom sheet from a prospect > 100 people) — I extract the question set, pre-fill every question answerable from `config/security-answers.md`, group the rest by topic so one founder sit-down resolves many, draft the response doc to `security-questionnaires/{prospect-slug}-{YYYY-MM-DD}.md`, and append any new answers to the library. Drafts only — you review before anything goes back."
-integrations: [googledocs, googledrive]
+integrations:
+  docs: [googledocs]
+  files: [googledrive]
 ---
 
 # Security Questionnaire Intake

@@ -1,7 +1,9 @@
 ---
 name: coordinate-interviews
 description: "Use when you say 'schedule {candidate}'s loop' / 'coordinate the panel for {candidate}' / 'set up interviews' — proposes a schedule via your connected calendar (Google Calendar or Outlook), runs the prep-interviewer skill per panelist, and appends schedule plus briefs to `interview-loops/{candidate-slug}.md`. You approve and send."
-integrations: [googlecalendar, outlook]
+integrations:
+  calendar: [googlecalendar]
+  inbox: [outlook]
 ---
 
 # Coordinate Interviews

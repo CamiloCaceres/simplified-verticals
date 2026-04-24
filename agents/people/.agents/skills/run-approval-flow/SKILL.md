@@ -1,7 +1,9 @@
 ---
 name: run-approval-flow
 description: "Use when you say 'review this {PTO / comp / promotion / expense} request' / 'approve this ask' / 'should we {X}' — reads the approval rubric from `context/people-context.md`, evaluates the request, classifies it as approved / escalate / denied with reasoning, and produces an escalation note for out-of-rubric asks. Writes to `approvals/{request-slug}.md`."
-integrations: [slack, notion]
+integrations:
+  messaging: [slack]
+  docs: [notion]
 ---
 
 # Run Approval Flow

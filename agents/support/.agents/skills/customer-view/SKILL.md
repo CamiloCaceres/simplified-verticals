@@ -1,7 +1,12 @@
 ---
 name: customer-view
 description: "Use when you say 'who is {customer}' / 'show me the full timeline for {account}' / 'score health for {account}' / 'churn risk on {account}' — I produce the `view` you pick: `dossier` (plan + history + open items) · `timeline` (chronological story) · `health` (GREEN / YELLOW / RED with 3 signals) · `churn-risk` (signal + severity + recommendation). Writes to `dossiers/` · `timelines/` · `health-scores.json` · `churn-flags.json`."
-integrations: [stripe, hubspot, attio, salesforce, gmail, intercom, posthog]
+integrations:
+  billing: [stripe]
+  crm: [hubspot, attio, salesforce]
+  inbox: [gmail]
+  helpdesk: [intercom]
+  analytics: [posthog]
 ---
 
 # Customer View

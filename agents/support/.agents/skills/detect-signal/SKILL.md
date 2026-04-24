@@ -1,7 +1,10 @@
 ---
 name: detect-signal
 description: "Use when a message looks like a bug / feature ask / repeat question — I extract the `signal` you name: `bug` (repro + severity, writes `bug-candidates.json`) · `feature-request` (ask + requesting-customer slug, writes `requests.json`) · `repeat-question` (cluster ≥3 similar asks without a matching KB article, writes `patterns.json`). Chains to `write-article type=from-ticket` for repeat-question hits."
-integrations: [gmail, intercom, help_scout, zendesk, github, linear, jira]
+integrations:
+  inbox: [gmail]
+  helpdesk: [intercom, help_scout, zendesk]
+  dev: [github, linear, jira]
 ---
 
 # Detect Signal

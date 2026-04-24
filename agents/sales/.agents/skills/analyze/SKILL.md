@@ -1,7 +1,9 @@
 ---
 name: analyze
 description: "Use when you say 'Monday sales review' / 'mine my last calls' / 'run win-loss' / 'how's the pipeline' / 'how did that demo go' — I analyze the `subject` you pick: `sales-health` (weekly roll-up across all domains) · `call-insights` (cross-call synthesis with playbook-edit suggestions via Gong / Fireflies) · `win-loss` (cluster closed deals, propose edits) · `discovery-call` (talk-ratio + qual gaps + drafted followup) · `pipeline` (by-stage snapshot + leakiest transition). Writes to `analyses/{subject}-{YYYY-MM-DD}.md`."
-integrations: [hubspot, salesforce, attio, gong, fireflies]
+integrations:
+  crm: [hubspot, salesforce, attio]
+  meetings: [gong, fireflies]
 ---
 
 # Analyze

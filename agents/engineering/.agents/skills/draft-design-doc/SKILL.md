@@ -1,7 +1,9 @@
 ---
 name: draft-design-doc
 description: "Use when you say 'draft a design doc for {feature}' / 'write an RFC for {feature}' / 'design this before I build it' — I produce a full design doc with Context, Goals, Non-goals, Proposed design, Alternatives considered, Risks, and Open questions, grounded in the engineering context. Names at least two real alternatives, not strawmen. Writes to `design-docs/{feature-slug}.md`."
-integrations: [github, exa, perplexityai]
+integrations:
+  dev: [github]
+  search: [exa, perplexityai]
 ---
 
 # Draft Design Doc

@@ -1,7 +1,10 @@
 ---
 name: source-candidates
 description: "Use when you say 'find candidates for {role}' / 'source engineers from GitHub' / 'build a sourcing list for {role}' — given a role and signal source (GitHub, LinkedIn, community posts, conference lists, OSS repos), pulls candidates matching the role's rubric via Firecrawl or a connected scrape tool, scores each against the must-haves, and writes a ranked sourcing list to `sourcing-lists/{role-slug}-{YYYY-MM-DD}.md`."
-integrations: [firecrawl, github, linkedin]
+integrations:
+  scrape: [firecrawl]
+  dev: [github]
+  social: [linkedin]
 ---
 
 # Source Candidates

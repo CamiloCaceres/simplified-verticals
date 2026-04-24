@@ -1,7 +1,8 @@
 ---
 name: file-delaware-report
 description: "Use when you say 'prep my Delaware annual report' / 'Delaware franchise tax' / approaching March 1 — I recalculate franchise tax under both the Authorized-Shares method and the Assumed-Par-Value-Capital method (often 10-100x cheaper for early-stage startups), collect directors / officers / issued shares, and produce the submission package to `annual-filings/{YYYY}-delaware.md`. Prep only — you file at delaware.gov."
-integrations: [googledocs]
+integrations:
+  docs: [googledocs]
 ---
 
 # File Delaware Annual Report

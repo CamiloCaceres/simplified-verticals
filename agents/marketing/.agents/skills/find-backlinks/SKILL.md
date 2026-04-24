@@ -1,7 +1,9 @@
 ---
 name: find-backlinks
 description: "Use when you say 'find backlinks' / 'who should we pitch for links' / 'link-building plan' — I identify target sites via SERP + your connected Ahrefs / backlink tool that match your niche, then draft per-target pitch emails grounded in what you actually offer them. Writes to `backlink-plans/{date}.md` with outreach drafts per target."
-integrations: [ahrefs, semrush, firecrawl]
+integrations:
+  seo: [ahrefs, semrush]
+  scrape: [firecrawl]
 ---
 
 # Find Backlinks

@@ -1,7 +1,8 @@
 ---
 name: analyze
 description: "Use when you say 'analyze test X' / 'anything weird in the data' / 'why is this number off' / 'check data quality on {table}' — I produce the rigorous readout you asked for. Pick `subject`: `experiment` computes lift + significance + CI + guardrails with an explicit ship / kill / iterate / inconclusive call · `anomaly` flags metrics deviating past rolling baseline with 1-3 hypothesized causes · `data-qa` runs read-only null / dup / freshness / referential-integrity checks."
-integrations: [posthog, mixpanel]
+integrations:
+  analytics: [posthog, mixpanel]
 ---
 
 # Analyze

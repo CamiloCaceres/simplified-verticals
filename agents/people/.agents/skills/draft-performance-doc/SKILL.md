@@ -1,7 +1,9 @@
 ---
 name: draft-performance-doc
 description: "Use when you say 'draft a PIP for {employee}' / 'someone flagged RED — what do I say' / '{employee} might be leaving' — I draft the `type` you pick: `pip` runs a MANDATORY escalation check (protected class + pretextual timing) BEFORE drafting a Context → Expectations → 30/60/90 Milestones → Support → Consequences plan · `stay-conversation` drafts a verbal 1:1 SCRIPT (Open → Listen → Surface → Ask → Propose) filtered against your hard nos. Writes to `performance-docs/{type}-{employee-slug}.md`. Never delivered without your sign-off."
-integrations: [slack, gmail]
+integrations:
+  messaging: [slack]
+  inbox: [gmail]
 ---
 
 # Draft Performance Doc

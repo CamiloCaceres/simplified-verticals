@@ -1,7 +1,9 @@
 ---
 name: run-incident-response
 description: "Use when you say 'an incident just fired' / 'we're down' / 'something's broken in prod' / 'run the playbook with me' — LIVE COACH + SCRIBE mode. I walk the stabilize → communicate → mitigate → verify → document checklist while writing the incident timeline. Writes to `incidents/{id}.md`. Never auto-rollbacks, never runs commands against prod — I produce the next action, you execute it."
-integrations: [sentry, posthog, slack]
+integrations:
+  analytics: [sentry, posthog]
+  messaging: [slack]
 ---
 
 # Run Incident Response

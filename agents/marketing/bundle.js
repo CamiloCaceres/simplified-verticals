@@ -24,6 +24,50 @@
   var useCallback = React.useCallback;
   var useMemo = React.useMemo;
 
+  // ── Slug → display-name dictionary (for the tile eyebrow) ──
+  var SLUG_DISPLAY_NAMES = {
+    gmail: "Gmail", outlook: "Outlook", googlecalendar: "Google Calendar",
+    hubspot: "HubSpot", salesforce: "Salesforce", attio: "Attio", pipedrive: "Pipedrive", close: "Close", apollo: "Apollo.io",
+    gong: "Gong", fireflies: "Fireflies",
+    exa: "Exa", perplexityai: "Perplexity",
+    firecrawl: "Firecrawl",
+    semrush: "Semrush", ahrefs: "Ahrefs",
+    googledocs: "Google Docs", notion: "Notion", airtable: "Airtable",
+    googledrive: "Google Drive", googlesheets: "Google Sheets",
+    mailchimp: "Mailchimp", customerio: "Customer.io", loops: "Loops", kit: "Kit", klaviyo: "Klaviyo",
+    googleads: "Google Ads", metaads: "Meta Ads", facebook: "Facebook",
+    posthog: "PostHog", mixpanel: "Mixpanel",
+    stripe: "Stripe",
+    linkedin: "LinkedIn", twitter: "X", reddit: "Reddit", instagram: "Instagram", tiktok: "TikTok",
+    youtube: "YouTube",
+    listennotes: "Listen Notes",
+    github: "GitHub", gitlab: "GitLab", linear: "Linear", jira: "Jira",
+    slack: "Slack", discord: "Discord", microsoftteams: "Microsoft Teams",
+    docusign: "DocuSign", pandadoc: "PandaDoc", dropbox_sign: "Dropbox Sign",
+    intercom: "Intercom", zendesk: "Zendesk", help_scout: "Help Scout",
+    greenhouse: "Greenhouse", lever: "Lever", ashbyhq: "Ashby",
+    workday: "Workday", bamboohr: "BambooHR", gusto: "Gusto", deel: "Deel", rippling: "Rippling",
+    carta: "Carta", pulley: "Pulley"
+  };
+  function displayName(slug) {
+    return SLUG_DISPLAY_NAMES[slug] || (slug.charAt(0).toUpperCase() + slug.slice(1));
+  }
+  // Flatten grouped tools map to a capped list of display names.
+  // Returns { names: string[], extra: number } where extra > 0 means truncated.
+  var EYEBROW_TOOL_CAP = 4;
+  function flattenToolsForEyebrow(tools) {
+    if (!tools || typeof tools !== "object") return { names: [], extra: 0 };
+    var flat = [];
+    for (var cat in tools) {
+      if (!Object.prototype.hasOwnProperty.call(tools, cat)) continue;
+      var list = tools[cat];
+      if (!list || !list.length) continue;
+      for (var i = 0; i < list.length; i++) flat.push(displayName(list[i]));
+    }
+    if (flat.length <= EYEBROW_TOOL_CAP) return { names: flat, extra: 0 };
+    return { names: flat.slice(0, EYEBROW_TOOL_CAP), extra: flat.length - EYEBROW_TOOL_CAP };
+  }
+
   // ═════════ PER-AGENT CONFIG (injected by generator) ═════════
   var AGENT = {
   "name": "Marketing",
@@ -46,7 +90,12 @@
       "description": "I interview you briefly and write the full positioning doc (ICP, category, differentiators, brand voice, pricing stance, primary CTA) to context/marketing-context.md. Every other skill reads it first.",
       "outcome": "A locked positioning doc at context/marketing-context.md. Every skill that writes copy, content, or campaigns reads it.",
       "skill": "define-positioning",
-      "tool": "Google Docs"
+      "tools": {
+        "docs": [
+          "googledocs",
+          "notion"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -57,7 +106,13 @@
       "description": "Pull top closed-won accounts from your connected CRM (HubSpot / Attio / Salesforce) and synthesize a persona with JTBD, pains ranked by frequency, triggers, objection patterns, and anchor accounts.",
       "outcome": "Persona at personas/{slug}.md — the foundation ad copy and landing pages pull from.",
       "skill": "profile-icp",
-      "tool": "HubSpot"
+      "tools": {
+        "crm": [
+          "hubspot",
+          "salesforce",
+          "attio"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -68,7 +123,20 @@
       "description": "I scan each competitor's blog, product updates, and pricing via Firecrawl. Single-competitor teardown or N-competitor weekly digest, filtered for real threats vs noise.",
       "outcome": "Weekly digest at competitor-briefs/product-weekly-{YYYY-MM-DD}.md — moves to respond to + ignore list.",
       "skill": "monitor-competitors",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "ads": [
+          "metaads"
+        ],
+        "social": [
+          "linkedin",
+          "twitter",
+          "reddit",
+          "instagram"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -79,7 +147,20 @@
       "description": "One competitor, all dimensions via web scrape: positioning, pricing, content strategy, messaging patterns, unguarded flanks to attack.",
       "outcome": "Teardown at competitor-briefs/product-{competitor}.md. Send it to the paid campaign skill for ad angles.",
       "skill": "monitor-competitors",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "ads": [
+          "metaads"
+        ],
+        "social": [
+          "linkedin",
+          "twitter",
+          "reddit",
+          "instagram"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -90,7 +171,15 @@
       "description": "Deep research via Exa (or Perplexity / Firecrawl fallback). Structured brief with cited sources and 3–5 angles worth writing about.",
       "outcome": "Brief at research/{slug}.md. Hand to the write-content or write-page-copy skills for drafting.",
       "skill": "synthesize-research",
-      "tool": "Exa"
+      "tools": {
+        "search": [
+          "exa",
+          "perplexityai"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -101,7 +190,12 @@
       "description": "Pull transcripts from your connected call-recording app (Gong / Fireflies), extract verbatim customer phrases, rank pains by frequency, flag positioning wedges.",
       "outcome": "Insights at call-insights/{date}.md — the single best source for ad copy and landing-page headlines.",
       "skill": "mine-sales-calls",
-      "tool": "Gong"
+      "tools": {
+        "meetings": [
+          "gong",
+          "fireflies"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -111,7 +205,23 @@
       "fullPrompt": "Plan the {feature} launch over the next 2 weeks. Use the plan-campaign skill with type=launch. Break it into pre-launch (7d out), launch day, post-launch. Each task tagged with the right follow-up skill in this agent (write-content for launch post, plan-campaign type=paid for ad creative, plan-campaign type=announcement for email + in-app, write-page-copy for landing updates). Save to campaigns/launch-{slug}.md.",
       "description": "I break the launch into pre-launch (7d out), launch day, post-launch. Each task tagged to the follow-up skill inside this same agent — no cross-agent handoffs.",
       "outcome": "Sequenced plan at campaigns/launch-{slug}.md with owner + timing per task.",
-      "skill": "plan-campaign"
+      "skill": "plan-campaign",
+      "tools": {
+        "ads": [
+          "googleads",
+          "metaads"
+        ],
+        "esp": [
+          "customerio",
+          "mailchimp"
+        ],
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot"
+        ]
+      }
     },
     {
       "category": "Positioning",
@@ -121,7 +231,19 @@
       "fullPrompt": "Give me the Monday marketing health review. Use the analyze skill with subject=marketing-health. Aggregate everything I produced this week across all domains (blog posts, campaigns, emails, social, page copy) from outputs.json, flag gaps (e.g. 'no email shipped in 3 weeks'), and recommend next moves grouped by domain. Save to analyses/marketing-health-{YYYY-MM-DD}.md.",
       "description": "I aggregate everything this agent produced this week across all 6 domains from outputs.json, flag gaps, recommend next moves. A 2-minute scan.",
       "outcome": "Review at analyses/marketing-health-{YYYY-MM-DD}.md with recommended next moves per domain.",
-      "skill": "analyze"
+      "skill": "analyze",
+      "tools": {
+        "analytics": [
+          "posthog",
+          "mixpanel"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "seo": [
+          "semrush"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -132,7 +254,18 @@
       "description": "On-page + technical audit via Semrush (or Ahrefs / Firecrawl fallback). Ranks issues by impact × ease, not severity — a fix list, not a wall of warnings.",
       "outcome": "Scored audit at audits/site-seo-{domain}-{date}.md — 10 prioritized fixes you can ship this week.",
       "skill": "audit",
-      "tool": "Semrush"
+      "tools": {
+        "seo": [
+          "semrush",
+          "ahrefs"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "search": [
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -143,7 +276,18 @@
       "description": "I probe AI search engines for your brand and category terms, then recommend GEO (Generative Engine Optimization) changes: schema, mentions, source authority, content tweaks.",
       "outcome": "AI-search audit at audits/ai-search-{date}.md with concrete content + schema changes.",
       "skill": "audit",
-      "tool": "Perplexity"
+      "tools": {
+        "seo": [
+          "semrush",
+          "ahrefs"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "search": [
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -154,7 +298,12 @@
       "description": "I cluster keywords by intent and difficulty via Semrush (or Ahrefs). Flag the 3 pillars worth owning. Draft cluster briefs. No vanity keyword dumps.",
       "outcome": "Living keyword-map.md + per-cluster briefs at keyword-clusters/{slug}.md.",
       "skill": "research-keywords",
-      "tool": "Semrush"
+      "tools": {
+        "seo": [
+          "semrush",
+          "ahrefs"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -165,7 +314,18 @@
       "description": "I crawl their content via Firecrawl, compare to ours, and rank gaps by search volume × how easily we could take the topic.",
       "outcome": "Ranked gap list at analyses/content-gap-{competitor}-{date}.md with a first-draft brief per gap.",
       "skill": "analyze",
-      "tool": "Firecrawl"
+      "tools": {
+        "analytics": [
+          "posthog",
+          "mixpanel"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "seo": [
+          "semrush"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -176,7 +336,21 @@
       "description": "2,000–3,000-word draft with H1/H2/H3, meta description, URL slug, internal-link suggestions, and one clear CTA. Saved to a Google Doc if connected. Reads like you wrote it.",
       "outcome": "Draft at blog-posts/{slug}.md (+ Google Doc if connected). Paste into your CMS.",
       "skill": "write-content",
-      "tool": "Google Docs"
+      "tools": {
+        "docs": [
+          "googledocs"
+        ],
+        "social": [
+          "linkedin",
+          "twitter"
+        ],
+        "esp": [
+          "mailchimp"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -187,7 +361,12 @@
       "description": "I pull the interview / email thread / testimonial (from Airtable / notes app / paste) and structure as challenge → approach → results with real numbers — not marketer-speak.",
       "outcome": "Case study at case-studies/{customer}.md ready for sales + your website.",
       "skill": "write-case-study",
-      "tool": "Airtable"
+      "tools": {
+        "docs": [
+          "airtable",
+          "notion"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -198,7 +377,14 @@
       "description": "I extract the core ideas via Firecrawl and reshape each into a LinkedIn-native post (hook, whitespace, one clear takeaway).",
       "outcome": "5 drafts at repurposed/{source}-to-linkedin.md.",
       "skill": "repurpose-content",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "video": [
+          "youtube"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -209,7 +395,14 @@
       "description": "I fetch the transcript via YouTube and rewrite as a long-form blog draft with SEO structure. Great for conference talks, founder interviews, live sessions.",
       "outcome": "Draft at repurposed/{video}-to-blog.md.",
       "skill": "repurpose-content",
-      "tool": "YouTube"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "video": [
+          "youtube"
+        ]
+      }
     },
     {
       "category": "SEO",
@@ -220,7 +413,15 @@
       "description": "I identify target sites via SERP + Ahrefs (backlink tool) that match your niche, then draft per-target pitch emails grounded in what you actually offer them.",
       "outcome": "Backlink plan at backlink-plans/{date}.md with outreach drafts per target.",
       "skill": "find-backlinks",
-      "tool": "Ahrefs"
+      "tools": {
+        "seo": [
+          "ahrefs",
+          "semrush"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Email",
@@ -231,7 +432,22 @@
       "description": "Day 0 / 1 / 3 / 7 / 14 sequence (override any cadence). Each email: subject, preview, body, CTA, success metric. Formatted for your connected ESP.",
       "outcome": "Full sequence at campaigns/welcome-{variant}.md. Drop into your platform.",
       "skill": "plan-campaign",
-      "tool": "Customer.io"
+      "tools": {
+        "ads": [
+          "googleads",
+          "metaads"
+        ],
+        "esp": [
+          "customerio",
+          "mailchimp"
+        ],
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot"
+        ]
+      }
     },
     {
       "category": "Email",
@@ -242,7 +458,22 @@
       "description": "Event-triggered drip: trigger event, frequency rules, branching by user action, drafted copy per email. Honest about when to stop emailing.",
       "outcome": "Drip plan at campaigns/lifecycle-drip-{slug}.md with every branch labeled.",
       "skill": "plan-campaign",
-      "tool": "Customer.io"
+      "tools": {
+        "ads": [
+          "googleads",
+          "metaads"
+        ],
+        "esp": [
+          "customerio",
+          "mailchimp"
+        ],
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot"
+        ]
+      }
     },
     {
       "category": "Email",
@@ -253,7 +484,21 @@
       "description": "Subject + preview + body with one clear through-line. Pulls source material from this week's blog / case-study / launch outputs if relevant.",
       "outcome": "Newsletter at newsletters/{date}.md ready for your ESP.",
       "skill": "write-content",
-      "tool": "Mailchimp"
+      "tools": {
+        "docs": [
+          "googledocs"
+        ],
+        "social": [
+          "linkedin",
+          "twitter"
+        ],
+        "esp": [
+          "mailchimp"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Email",
@@ -264,7 +509,22 @@
       "description": "No guilt tactics, no fake scarcity. Offer a genuine option (pause / downgrade further / concierge help / refund). Tone matches your voice.",
       "outcome": "Save email at campaigns/churn-save-{persona}.md.",
       "skill": "plan-campaign",
-      "tool": "Stripe"
+      "tools": {
+        "ads": [
+          "googleads",
+          "metaads"
+        ],
+        "esp": [
+          "customerio",
+          "mailchimp"
+        ],
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot"
+        ]
+      }
     },
     {
       "category": "Email",
@@ -274,7 +534,23 @@
       "fullPrompt": "Plan the email + in-app announcement for {feature}. Use the plan-campaign skill with type=announcement. Draft the announcement email AND matching in-app copy (banner / modal / empty-state nudge), keyed to the launch plan at campaigns/launch-{feature}.md if one exists. Save to campaigns/announcement-{feature-slug}.md.",
       "description": "Announcement email AND matching in-app copy (banner / modal / empty-state nudge), keyed to the launch plan if one exists.",
       "outcome": "Full set at campaigns/announcement-{feature}.md — email body + in-app strings.",
-      "skill": "plan-campaign"
+      "skill": "plan-campaign",
+      "tools": {
+        "ads": [
+          "googleads",
+          "metaads"
+        ],
+        "esp": [
+          "customerio",
+          "mailchimp"
+        ],
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot"
+        ]
+      }
     },
     {
       "category": "Social",
@@ -285,7 +561,21 @@
       "description": "Hook in the first line, whitespace, one clear takeaway, CTA or question. Uses your saved voice samples so it doesn't sound like AI.",
       "outcome": "Draft at posts/linkedin-{slug}.md — paste into LinkedIn when ready.",
       "skill": "write-content",
-      "tool": "LinkedIn"
+      "tools": {
+        "docs": [
+          "googledocs"
+        ],
+        "social": [
+          "linkedin",
+          "twitter"
+        ],
+        "esp": [
+          "mailchimp"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Social",
@@ -296,7 +586,21 @@
       "description": "Hook tweet, numbered progression, CTA tweet at the end. Each tweet fits the 280-char budget with room for edits.",
       "outcome": "Thread at threads/x-{slug}.md — copy tweet-by-tweet into your scheduler.",
       "skill": "write-content",
-      "tool": "X"
+      "tools": {
+        "docs": [
+          "googledocs"
+        ],
+        "social": [
+          "linkedin",
+          "twitter"
+        ],
+        "esp": [
+          "mailchimp"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Social",
@@ -307,7 +611,21 @@
       "description": "I pull the source thread (via Reddit / Firecrawl) and draft a value-first reply. Helpful first, link only if it truly belongs.",
       "outcome": "Reply at community-replies/{source}.md.",
       "skill": "write-content",
-      "tool": "Reddit"
+      "tools": {
+        "docs": [
+          "googledocs"
+        ],
+        "social": [
+          "linkedin",
+          "twitter"
+        ],
+        "esp": [
+          "mailchimp"
+        ],
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Social",
@@ -328,7 +646,20 @@
       "description": "I filter your feed for relevance to your topics and engagement opportunities, then suggest concrete replies — no more doom-scrolling for something to comment on.",
       "outcome": "Digest at competitor-briefs/social-feed-x-{date}.md with reply drafts.",
       "skill": "monitor-competitors",
-      "tool": "X"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "ads": [
+          "metaads"
+        ],
+        "social": [
+          "linkedin",
+          "twitter",
+          "reddit",
+          "instagram"
+        ]
+      }
     },
     {
       "category": "Social",
@@ -339,7 +670,11 @@
       "description": "Stats on your own posts (reach, engagement, new followers) plus notable posts in your network worth commenting on. 5-minute read.",
       "outcome": "Digest at linkedin-digests/{date}.md for Monday morning.",
       "skill": "digest-linkedin-activity",
-      "tool": "LinkedIn"
+      "tools": {
+        "social": [
+          "linkedin"
+        ]
+      }
     },
     {
       "category": "Social",
@@ -350,7 +685,11 @@
       "description": "I identify target shows by audience fit (via Listen Notes) and draft per-show pitches: hook based on your positioning, angle, proof, clear ask. No template spam.",
       "outcome": "Pitches at podcast-pitches/{date}.md — one per show, send from your own email.",
       "skill": "pitch-podcast",
-      "tool": "Listen Notes"
+      "tools": {
+        "podcasts": [
+          "listennotes"
+        ]
+      }
     },
     {
       "category": "Paid",
@@ -361,7 +700,22 @@
       "description": "Full campaign brief: audience, keyword/placement strategy, ad-group structure, suggested budget, landing-page requirements, KPI targets.",
       "outcome": "Campaign brief at campaigns/paid-{channel}-{slug}.md — spec before you spend a dollar.",
       "skill": "plan-campaign",
-      "tool": "Google Ads"
+      "tools": {
+        "ads": [
+          "googleads",
+          "metaads"
+        ],
+        "esp": [
+          "customerio",
+          "mailchimp"
+        ],
+        "billing": [
+          "stripe"
+        ],
+        "crm": [
+          "hubspot"
+        ]
+      }
     },
     {
       "category": "Paid",
@@ -372,7 +726,20 @@
       "description": "I pull live creative from Meta Ad Library, LinkedIn Ad Library, and Google Ads Transparency (via Composio scrape), then extract the angles, hooks, and offers they're testing.",
       "outcome": "Ad teardown at competitor-briefs/ads-{competitor}-{date}.md — research for your own ad copy.",
       "skill": "monitor-competitors",
-      "tool": "Meta Ad Library"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ],
+        "ads": [
+          "metaads"
+        ],
+        "social": [
+          "linkedin",
+          "twitter",
+          "reddit",
+          "instagram"
+        ]
+      }
     },
     {
       "category": "Paid",
@@ -383,7 +750,11 @@
       "description": "I pull phrases from your call insights (or G2 / Capterra / Trustpilot reviews via scrape) and write headlines + descriptions that sound like your customers talking — not a marketer pitching.",
       "outcome": "Variants at ad-copy/{campaign}.md with the source quote alongside each headline.",
       "skill": "generate-ad-copy",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Paid",
@@ -394,7 +765,18 @@
       "description": "I fetch the page via Firecrawl and score 6 dimensions 0–3 (headline, value prop, social proof, CTA, objection handling, visual hierarchy). Prioritized fix list, not a generic lecture.",
       "outcome": "Teardown at audits/landing-page-{url}-{date}.md. Copy the fixes into your tracker.",
       "skill": "audit",
-      "tool": "Firecrawl"
+      "tools": {
+        "seo": [
+          "semrush",
+          "ahrefs"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "search": [
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Paid",
@@ -415,7 +797,12 @@
       "description": "Event names, triggers, properties, and owner per step. Plus a UTM matrix so paid / social / email are comparable in GA4 / your analytics.",
       "outcome": "Plan at tracking-plans/{slug}.md — hand to engineering.",
       "skill": "setup-tracking",
-      "tool": "GA4"
+      "tools": {
+        "analytics": [
+          "posthog",
+          "mixpanel"
+        ]
+      }
     },
     {
       "category": "Paid",
@@ -426,7 +813,18 @@
       "description": "Compute conversion at each step (from your connected PostHog / Mixpanel / GA4, or paste), flag the biggest drop, recommend 2–3 experiments by lift × effort.",
       "outcome": "Review at analyses/funnel-{date}.md — clear next actions, not a dashboard dump.",
       "skill": "analyze",
-      "tool": "PostHog"
+      "tools": {
+        "analytics": [
+          "posthog",
+          "mixpanel"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "seo": [
+          "semrush"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -437,7 +835,11 @@
       "description": "Full page copy grounded in your positioning and real customer language. Sections, headlines, bodies, CTAs, social-proof placement.",
       "outcome": "Draft at page-copy/{surface}-{slug}.md.",
       "skill": "write-page-copy",
-      "tool": "Firecrawl"
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -457,7 +859,12 @@
       "fullPrompt": "Give me 10 headlines for {page}. Use the write-headline-variants skill. Each headline + subhead pair grounded in a verbatim customer quote, review line, or positioning-doc claim. No marketer-speak. Top 3 ranked to test first. Save to headline-variants/{page-slug}.md.",
       "description": "10 headline + subhead pairs, each grounded in a verbatim customer quote, review line, or positioning-doc claim. No marketer-speak. Top 3 ranked to test first.",
       "outcome": "Variants at headline-variants/{page}.md.",
-      "skill": "write-headline-variants"
+      "skill": "write-headline-variants",
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -477,7 +884,19 @@
       "fullPrompt": "Audit my {form type} form. Use the audit skill with surface=form. Flag unnecessary fields, rewrite labels + helper text, and sequence fields by friction. Save to audits/form-{form-slug}-{YYYY-MM-DD}.md. For signup flows specifically, use surface=signup-flow with the write-page-copy skill instead.",
       "description": "I review a form (demo / contact / lead), flag unnecessary fields, rewrite labels + helper text, and sequence fields by friction.",
       "outcome": "Audit at audits/form-{form}.md.",
-      "skill": "audit"
+      "skill": "audit",
+      "tools": {
+        "seo": [
+          "semrush",
+          "ahrefs"
+        ],
+        "scrape": [
+          "firecrawl"
+        ],
+        "search": [
+          "perplexityai"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -487,7 +906,12 @@
       "fullPrompt": "Audit my signup flow end-to-end. Use the write-page-copy skill with surface=signup-flow. Cover pre-signup page, email field, password requirements, verification, first-screen post-signup. Copy + field-level recommendations. Save to page-copy/signup-flow-{slug}.md.",
       "description": "End-to-end signup audit: pre-signup page, email field, password requirements, verification, first-screen post-signup. Copy + field-level recs.",
       "outcome": "Review at page-copy/signup-flow-{slug}.md.",
-      "skill": "write-page-copy"
+      "skill": "write-page-copy",
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -497,7 +921,12 @@
       "fullPrompt": "Rewrite my in-app onboarding copy. Use the write-page-copy skill with surface=onboarding. Empty states, tooltips, nudges, welcome modals. Every string ties to an activation event I care about. Save to page-copy/onboarding-{slug}.md.",
       "description": "Empty states, tooltips, nudges, welcome modals inside the product. Every string ties to an activation event you care about.",
       "outcome": "Copy set at page-copy/onboarding-{slug}.md.",
-      "skill": "write-page-copy"
+      "skill": "write-page-copy",
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -507,7 +936,12 @@
       "fullPrompt": "Rewrite my upgrade paywall. Use the write-page-copy skill with surface=paywall. Headline, value stack, price anchoring, CTA, social proof — grounded in why users actually upgrade (from my call-insights/). Save to page-copy/paywall-{slug}.md.",
       "description": "Rewrites the upgrade moment — headline, value stack, price anchoring, CTA, social proof. Grounded in why users actually upgrade (from your call insights).",
       "outcome": "Paywall spec at page-copy/paywall-{slug}.md.",
-      "skill": "write-page-copy"
+      "skill": "write-page-copy",
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     },
     {
       "category": "Copy",
@@ -517,7 +951,12 @@
       "fullPrompt": "Write popup copy. Use the write-page-copy skill with surface=popup. Hook, offer, dismiss/accept CTAs — tied to a trigger (scroll, exit, time-on-page) with targeting recommendations. Save to page-copy/popup-{slug}.md.",
       "description": "Popup copy (hook, offer, dismiss/accept CTAs) tied to a trigger (scroll, exit, time-on-page) with targeting recommendations.",
       "outcome": "Spec at page-copy/popup-{slug}.md.",
-      "skill": "write-page-copy"
+      "skill": "write-page-copy",
+      "tools": {
+        "scrape": [
+          "firecrawl"
+        ]
+      }
     }
   ]
 };
@@ -723,20 +1162,20 @@
         { className: "hv-send-chip", "aria-hidden": "true" },
         Icon(isSent ? "check" : "send", 14),
       ),
-      // Eyebrow: category (· tool)
-      h(
-        "div",
-        { className: "hv-eyebrow" },
-        h("span", null, uc.category || "Mission"),
-        uc.tool
-          ? h(
-              React.Fragment || "span",
-              null,
-              h("span", { className: "hv-eyebrow-sep" }, "·"),
-              h("span", null, uc.tool),
-            )
-          : null,
-      ),
+      // Eyebrow: category (· tool · tool · …)
+      (function () {
+        var flat = flattenToolsForEyebrow(uc.tools);
+        var parts = [h("span", { key: "cat" }, uc.category || "Mission")];
+        for (var i = 0; i < flat.names.length; i++) {
+          parts.push(h("span", { key: "sep-" + i, className: "hv-eyebrow-sep" }, "·"));
+          parts.push(h("span", { key: "name-" + i }, flat.names[i]));
+        }
+        if (flat.extra > 0) {
+          parts.push(h("span", { key: "sep-more", className: "hv-eyebrow-sep" }, "·"));
+          parts.push(h("span", { key: "more" }, "… +" + flat.extra));
+        }
+        return h("div", { className: "hv-eyebrow" }, parts);
+      })(),
       h("h3", { className: "hv-title" }, uc.title || ""),
       uc.blurb
         ? h("p", { className: "hv-blurb" }, uc.blurb)

@@ -1,7 +1,8 @@
 ---
 name: profile-icp
 description: "Use when you say 'profile our ICP' / 'build a persona for {segment}' — I pull top closed-won accounts from a connected CRM (HubSpot / Attio) or infer from paste, then synthesize a persona with jobs-to-be-done, pains ranked by frequency, triggers, objection patterns, and 1–2 anchor accounts. Writes to `personas/{slug}.md` — ad copy and landing-page headlines pull from here."
-integrations: [hubspot, salesforce, attio]
+integrations:
+  crm: [hubspot, salesforce, attio]
 ---
 
 # Profile ICP

@@ -1,7 +1,8 @@
 ---
 name: plan-roadmap
 description: "Use when you say 'draft the Q{n} roadmap' / 'what's our top 3 this quarter' — I read the engineering context + every artifact in this agent's `outputs.json`, pick the top 3 priorities, size each S/M/L, state the rationale, and list dependencies. Markdown, not a Gantt. Writes to `roadmaps/q{n}-{year}.md` ready to paste to the team or share with investors."
-integrations: [github, linear, jira]
+integrations:
+  dev: [github, linear, jira]
 ---
 
 # Plan Roadmap

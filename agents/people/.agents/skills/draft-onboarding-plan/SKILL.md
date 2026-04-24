@@ -1,7 +1,10 @@
 ---
 name: draft-onboarding-plan
 description: "Use when you say 'draft the onboarding plan for {new hire}' / 'first 90 days for {new hire}' / '{new hire} starts Monday — get them ready' — reads leveling and voice from `context/people-context.md`, then produces a Day 0 / Week 1 / 30-60-90 plan plus welcome Slack and welcome email drafts at `onboarding-plans/{employee-slug}.md`."
-integrations: [slack, gmail, notion]
+integrations:
+  messaging: [slack]
+  inbox: [gmail]
+  docs: [notion]
 ---
 
 # Onboard New Hire

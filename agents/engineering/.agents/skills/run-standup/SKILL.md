@@ -1,7 +1,9 @@
 ---
 name: run-standup
 description: "Use when you say 'draft my standup' / 'what's my standup today' / 'Monday standup' — I pull recent commits and PR activity from GitHub or GitLab, recently closed tickets from Linear, Jira, or GitHub Issues, mix in your notes, and produce a three-bullet Yesterday / Today / Blockers draft. Writes to `standups/{YYYY-MM-DD}.md`. Never posts to Slack on your behalf — you copy-paste."
-integrations: [github, gitlab, linear, jira, slack]
+integrations:
+  dev: [github, gitlab, linear, jira]
+  messaging: [slack]
 ---
 
 # Run Standup

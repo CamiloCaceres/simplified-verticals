@@ -1,7 +1,8 @@
 ---
 name: define-support-context
 description: "Use when you say 'set up our support context' / 'update the support doc' — I interview you and write `context/support-context.md` (product surface, voice, SLA tiers, VIP list, routing rules, known gotchas). Every other skill reads this doc first — it's the source of truth for tone, escalation, and routing."
-integrations: [googledocs, notion]
+integrations:
+  docs: [googledocs, notion]
 ---
 
 # Define Support Context

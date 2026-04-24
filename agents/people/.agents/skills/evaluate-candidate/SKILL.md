@@ -1,7 +1,9 @@
 ---
 name: evaluate-candidate
 description: "Use when you say 'screen this resume' / 'screen the stack for {role}' / 'score {LinkedIn URL}' / 'is this candidate a fit' — I evaluate against the role rubric based on the `source` you pick: `resume` parses PDF(s) via Google Drive or Dropbox and produces pass / borderline / fail bands plus a ranked stack · `linkedin` scrapes a public profile via Firecrawl and scores 0-100 across 4-6 sub-criteria. Writes per-candidate records to `candidates/{candidate-slug}.md`."
-integrations: [firecrawl, googledrive, googlesheets]
+integrations:
+  scrape: [firecrawl]
+  files: [googledrive, googlesheets]
 ---
 
 # Evaluate Candidate

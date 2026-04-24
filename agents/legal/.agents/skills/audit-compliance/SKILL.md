@@ -1,7 +1,10 @@
 ---
 name: audit-compliance
 description: "Use when you say 'audit my privacy' / 'update my subprocessor list' / 'what's stale in my templates' — I audit the `scope` you pick: `privacy-posture` scrapes landing + product via Firecrawl and cross-checks your deployed Privacy Policy for drift · `subprocessors` walks your integrations + landing-page for new vendors and refreshes the inventory · `template-library` flags templates > 12 months old against current law (AI-training, SCC versions, 2026 DPA standards). Surfaces diffs only — never auto-fixes."
-integrations: [firecrawl, googledrive, googledocs]
+integrations:
+  scrape: [firecrawl]
+  files: [googledrive]
+  docs: [googledocs]
 ---
 
 # Audit Compliance

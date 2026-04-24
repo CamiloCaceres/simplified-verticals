@@ -1,7 +1,10 @@
 ---
 name: triage-incoming
 description: "Use when a new inbound message arrives via your connected inbox (Gmail / Outlook / Intercom / Help Scout / Zendesk / Slack) and has not yet been triaged — I categorize it against the routing rules in `context/support-context.md`, assign priority from customer tier + content signals, VIP-flag, and write to `conversations.json` + `conversations/{id}/thread.json` so `draft-reply` can take over."
-integrations: [gmail, outlook, intercom, help_scout, zendesk, slack]
+integrations:
+  inbox: [gmail, outlook]
+  helpdesk: [intercom, help_scout, zendesk]
+  messaging: [slack]
 ---
 
 # Triage Incoming

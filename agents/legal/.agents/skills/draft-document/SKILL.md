@@ -1,7 +1,10 @@
 ---
 name: draft-document
 description: "Use when you say 'draft an NDA' / 'draft our privacy policy' / 'respond to this DSR' / 'package an escalation brief' — I draft the `type` you pick: `nda`, `consulting`, `offer-letter`, `msa`, `order-form`, `board-consent`, `privacy-policy`, `tos`, `dsr-response`, or `escalation-brief`. Reads your template library via Google Drive. Writes to `drafts/{type}/`. Drafts only — I never send or sign."
-integrations: [googledocs, notion, googledrive, firecrawl]
+integrations:
+  docs: [googledocs, notion]
+  files: [googledrive]
+  scrape: [firecrawl]
 ---
 
 # Draft Document

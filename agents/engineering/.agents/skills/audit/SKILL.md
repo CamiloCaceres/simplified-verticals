@@ -1,7 +1,10 @@
 ---
 name: audit
 description: "Use when you say 'audit the architecture of {system}' / 'audit my CI/CD' / 'audit observability' / 'DX audit' / 'audit my README' — I audit the `surface` you pick: `architecture` walks a service end-to-end · `ci-cd` reads workflow config + run history via GitHub or GitLab · `observability` reviews Sentry / Datadog / PostHog coverage · `devx` estimates setup time + paper cuts · `readme` scores against a checklist with inline diff suggestions. Every finding ranked by impact × effort. Writes to `audits/{surface}-{slug}-{date}.md` — a prioritized fix list, not a warnings dump."
-integrations: [github, gitlab, sentry, posthog, firecrawl]
+integrations:
+  dev: [github, gitlab]
+  analytics: [sentry, posthog]
+  scrape: [firecrawl]
 ---
 
 # Audit

@@ -1,7 +1,8 @@
 ---
 name: tune-routing-rules
 description: "Use when you say 'update our routing' / 'what counts as a bug' / 'change where feature requests go' — I rewrite the routing section of `context/support-context.md` with concrete bug / feature / how-to / billing / churn examples so `triage-incoming` and `detect-signal` route correctly."
-integrations: [googledocs, notion]
+integrations:
+  docs: [googledocs, notion]
 ---
 
 # Tune Routing Rules

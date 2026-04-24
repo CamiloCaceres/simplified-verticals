@@ -1,7 +1,11 @@
 ---
 name: draft-outreach
 description: "Use when you say 'draft a cold email to {Acme}' / 'cold-call script' / 'follow up on today's call' / 'reply to this inbound' / 'renewal note' / 'save email for downgrade' — I draft the `stage` you pick: `cold-email`, `cold-script`, `followup`, `inbound-reply`, `renewal`, or `churn-save`. Voice-matched to your samples. Writes to `outreach/{stage}-{slug}-{date}.md`."
-integrations: [gmail, outlook, hubspot, salesforce, attio, gong, fireflies, stripe]
+integrations:
+  inbox: [gmail, outlook]
+  crm: [hubspot, salesforce, attio]
+  meetings: [gong, fireflies]
+  billing: [stripe]
 ---
 
 # Draft Outreach

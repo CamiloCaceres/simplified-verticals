@@ -1,7 +1,10 @@
 ---
 name: analyze
 description: "Use when you say 'weekly funnel readout' / 'content gap vs {competitor}' / 'Monday marketing health review' — I analyze the `subject` you pick: `funnel` reads your PostHog / GA4 / Mixpanel and flags the biggest leak with 2–3 ranked experiments · `content-gap` crawls a competitor via Firecrawl and ranks takeable gaps · `marketing-health` rolls up every artifact I shipped this week by domain. Writes to `analyses/{subject}-{date}.md`."
-integrations: [posthog, mixpanel, firecrawl, semrush]
+integrations:
+  analytics: [posthog, mixpanel]
+  scrape: [firecrawl]
+  seo: [semrush]
 ---
 
 # Analyze

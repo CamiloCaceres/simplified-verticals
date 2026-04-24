@@ -1,7 +1,9 @@
 ---
 name: triage
 description: "Use when you say 'triage my inbox' / 'scan my calendar' / 'find conflicts' / 'what's in my email' — I classify and rank what needs you. Pick `surface`: `inbox` sorts last-24h email into needs-me-today / can-wait / ignore with a specific action per thread · `calendar` scans the next 7 days for overbooks, missing buffers, unprotected VIP slots, and meetings without prep. Writes to `triage/` or `calendar-scans/`."
-integrations: [gmail, outlook, googlecalendar]
+integrations:
+  inbox: [gmail, outlook]
+  calendar: [googlecalendar]
 ---
 
 # Triage

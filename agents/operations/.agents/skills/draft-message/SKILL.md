@@ -1,7 +1,8 @@
 ---
 name: draft-message
 description: "Use when you say 'draft responses' / 'reply to {name}' / 'track this follow-up' / 'draft the renewal email for {vendor}' — I write in your voice and save as a draft in your connected inbox (never sends). Pick `type`: `reply` answers an inbound thread · `followup` either logs a new commitment to your follow-up ledger or drafts the fulfillment for one that's due · `vendor` writes renewal / cancel / trial / reference-check outreach grounded in contract terms."
-integrations: [gmail, outlook]
+integrations:
+  inbox: [gmail, outlook]
 ---
 
 # Draft Message

@@ -1,7 +1,8 @@
 ---
 name: collect-checkins
 description: "Use when you say 'collect this week's check-ins' / '1:1 status across the team' / 'who's been quiet' — pulls the roster from your connected HRIS, sends the check-in prompt to each member via your connected Slack channel, collects responses, and writes a dated report at `checkins/{YYYY-MM-DD}.md` with themes plus who's quiet plus flagged responses."
-integrations: [slack, discord]
+integrations:
+  messaging: [slack, discord]
 ---
 
 # Collect Check-ins

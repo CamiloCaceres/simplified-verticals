@@ -1,7 +1,9 @@
 ---
 name: triage-bug-report
 description: "Use when you paste a raw bug report (Sentry alert, user email, Slack message, error text, screenshot) and want it turned into a structured ticket — I produce reproduction steps (where inferable), severity tied to your severity rules, route (hotfix / current sprint / backlog / close-as-not-a-bug / needs-more-info), and an issue description ready to paste into Linear, Jira, or GitHub Issues. Writes to `bug-triage/{slug}.md`. Never files or closes tickets."
-integrations: [sentry, linear, jira, github]
+integrations:
+  analytics: [sentry]
+  dev: [linear, jira, github]
 ---
 
 # Triage Bug Report

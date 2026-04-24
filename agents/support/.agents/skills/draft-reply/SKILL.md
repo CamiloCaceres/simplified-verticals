@@ -1,7 +1,9 @@
 ---
 name: draft-reply
 description: "Use when you say 'draft a reply for {id}' / 'draft my response' / 'answer this ticket' — I pull the customer dossier, match your voice from past sent messages, and write `conversations/{id}/draft.md` without sending. Addresses the specific ask (bug / how-to / billing) and never promises a date you haven't approved."
-integrations: [gmail, outlook, intercom, help_scout, zendesk]
+integrations:
+  inbox: [gmail, outlook]
+  helpdesk: [intercom, help_scout, zendesk]
 ---
 
 # Draft Reply

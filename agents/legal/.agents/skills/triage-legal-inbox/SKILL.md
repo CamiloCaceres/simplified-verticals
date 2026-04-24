@@ -1,7 +1,8 @@
 ---
 name: triage-legal-inbox
 description: "Use when you say 'triage my legal inbox' / 'sweep inbound for contracts' — I sweep your connected inbox (Gmail / Outlook) over the last N days, classify each legal-flavored item (NDA green/yellow/red, MSA, DPA, DSR, subpoena, TM office action, contractor, other), recommend a route, and write a dated summary to `intake-summaries/{YYYY-MM-DD}.md`. Read-only on inbox — I never reply."
-integrations: [gmail, outlook]
+integrations:
+  inbox: [gmail, outlook]
 ---
 
 # Triage Inbound Legal Email

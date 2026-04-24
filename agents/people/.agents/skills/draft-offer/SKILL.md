@@ -1,7 +1,8 @@
 ---
 name: draft-offer
 description: "Use when you say 'draft an offer for {candidate}' / 'write the offer letter' / 'offer letter for {candidate} at {level}' — reads comp bands, equity stance, and leveling from `context/people-context.md` plus voice notes from the ledger, drafts the offer letter at `offers/{candidate-slug}.md` as `status: \"draft\"`. Never sent."
-integrations: [googledocs, notion]
+integrations:
+  docs: [googledocs, notion]
 ---
 
 # Draft Offer
