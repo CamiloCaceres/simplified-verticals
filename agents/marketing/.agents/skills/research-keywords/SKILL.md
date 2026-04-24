@@ -9,56 +9,28 @@ integrations:
 
 ## When to use
 
-- Explicit: "find keywords for {topic}", "build a keyword map",
-  "what should we rank for", "keyword research on {topic}",
-  "give me a cluster for {seed term}".
-- Implicit: called by `write-blog-post` when a target keyword is
-  missing, or by `analyze-content-gap` to size gap opportunities.
-- Can run many times — one cluster per invocation. The living
-  `keyword-map.md` appends each new cluster.
+- Explicit: "find keywords for {topic}", "build a keyword map", "what should we rank for", "keyword research on {topic}", "give me a cluster for {seed term}".
+- Implicit: called by `write-blog-post` when target keyword missing, or by `analyze-content-gap` to size gap opportunities.
+- Run many times — one cluster per invocation. Living `keyword-map.md` appends each new cluster.
 
 ## Steps
 
-1. **Read positioning doc**:
-   `context/marketing-context.md`. If missing,
-   stop and tell the user to run `define-positioning` first. ICP and
-   category framing decide which keywords are actually worth ranking
-   for.
-2. **Read config**: `config/site.json`, `config/tooling.json`. If no
-   SEO keyword tool is connected, ask ONE question: "Connect a
-   keyword tool in the Integrations tab (Semrush / Ahrefs / etc) or
-   paste a seed list of terms you think matter — which?"
-3. **Discover tool**: `composio search keyword` (fall back to
-   `composio search seo`). Pick the first matching connected slug.
-4. **Build the cluster** for the requested topic:
-   - Expand the seed into 15-40 related terms (head + long-tail).
-   - Pull per-term: search volume, keyword difficulty, SERP intent
-     (informational / commercial / navigational / transactional).
+1. **Read positioning doc**: `context/marketing-context.md`. If missing, stop, tell user run `define-positioning` first. ICP + category framing decide which keywords worth ranking for.
+2. **Read config**: `config/site.json`, `config/tooling.json`. No SEO keyword tool connected → ask ONE question: "Connect a keyword tool in the Integrations tab (Semrush / Ahrefs / etc) or paste a seed list of terms you think matter — which?"
+3. **Discover tool**: `composio search keyword` (fall back `composio search seo`). Pick first matching connected slug.
+4. **Build cluster** for requested topic:
+   - Expand seed into 15-40 related terms (head + long-tail).
+   - Pull per-term: search volume, keyword difficulty, SERP intent (informational / commercial / navigational / transactional).
    - Group into sub-clusters by intent or sub-topic.
-   - Score each term priority: `(volume / difficulty) × intent-fit × ICP-fit`.
-     ICP-fit references the positioning doc.
-5. **Write per-cluster detail** to
-   `keyword-clusters/{cluster-slug}.md` atomically. Structure:
-   cluster summary, ICP / positioning rationale, sub-clusters table
-   (term / volume / difficulty / intent / priority), recommended
-   first 3 posts to draft.
-6. **Append to `keyword-map.md`** (living doc at agent root).
-   If the file doesn't exist, create it with a short preamble.
-   Append a new section for this cluster with a link to the
-   per-cluster detail file and the top 5 priority terms.
-   Atomic write: read → append in memory → write `*.tmp` → rename.
-7. **Append to `outputs.json`** — `{ id, type: "keyword-map", title,
-   summary, path: "keyword-clusters/{slug}.md", status: "draft",
-   createdAt, updatedAt }`.
-8. **Summarize to user** — name the top 3 priority terms, flag the
-   best first post to draft, link both the cluster detail and the
-   updated `keyword-map.md`.
+   - Score each term priority: `(volume / difficulty) × intent-fit × ICP-fit`. ICP-fit references positioning doc.
+5. **Write per-cluster detail** to `keyword-clusters/{cluster-slug}.md` atomically. Structure: cluster summary, ICP / positioning rationale, sub-clusters table (term / volume / difficulty / intent / priority), recommended first 3 posts to draft.
+6. **Append to `keyword-map.md`** (living doc at agent root). File missing → create with short preamble. Append new section for this cluster with link to per-cluster detail file + top 5 priority terms. Atomic write: read → append in memory → write `*.tmp` → rename.
+7. **Append to `outputs.json`** — `{ id, type: "keyword-map", title, summary, path: "keyword-clusters/{slug}.md", status: "draft", createdAt, updatedAt }`.
+8. **Summarize to user** — name top 3 priority terms, flag best first post to draft, link both cluster detail + updated `keyword-map.md`.
 
 ## Never invent
 
-Never estimate volume/difficulty without a tool result. If the tool
-returned partial data, mark gaps as TBD. Do not fabricate SERP intent
-— read the actual SERP when the tool can fetch it.
+Never estimate volume/difficulty without tool result. Tool returned partial data → mark gaps TBD. No fabricating SERP intent — read actual SERP when tool can fetch.
 
 ## Outputs
 

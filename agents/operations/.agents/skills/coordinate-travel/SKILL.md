@@ -16,39 +16,19 @@ integrations:
 
 ## Steps
 
-1. **Read `context/operations-context.md`.** If
-   missing or empty, stop and ask you to run Head of
-   Operations' `define-operating-context` first. Key-contacts and
-   priorities anchor the "what meetings while there?" section.
+1. **Read `context/operations-context.md`.** If missing/empty, stop. Ask user run Head of Operations' `define-operating-context` first. Key-contacts + priorities anchor "what meetings while there?" section.
 
-2. **Clarify the trip.** Extract from your message:
-   destination(s), dates (or date range), purpose (customer visit /
-   conference / offsite / personal), traveling-with (solo / team).
-   If dates or destination are missing and material, ask ONE
-   question.
+2. **Clarify trip.** Extract from message: destination(s), dates (or range), purpose (customer visit / conference / offsite / personal), traveling-with (solo / team). If dates or destination missing + material, ask ONE question.
 
-3. **Read travel prefs.** Read `config/travel-prefs.json`. If
-   missing or empty, ask you ONE question: "What are your
-   travel defaults — preferred airline, seat (aisle/window), hotel
-   chain, dietary needs, accessibility?" Write the answer to
-   `config/travel-prefs.json` and continue.
+3. **Read travel prefs.** Read `config/travel-prefs.json`. If missing/empty, ask ONE question: "What are your travel defaults — preferred airline, seat (aisle/window), hotel chain, dietary needs, accessibility?" Write answer to `config/travel-prefs.json`, continue.
 
-4. **Read schedule.** Read `config/schedule-preferences.json` for
-   timezone. Check for existing calendar conflicts over the trip
-   window via `composio search calendar` (pull events from depart
-   to return date).
+4. **Read schedule.** Read `config/schedule-preferences.json` for timezone. Check calendar conflicts over trip window via `composio search calendar` (pull events from depart to return date).
 
-5. **Resolve travel connections.** `composio search travel` → check
-   for connected travel providers (flight + hotel search). Note
-   which categories are available. If none are connected, proceed
-   with search criteria only and note that the user will book
-   manually (no hardcoded provider assumption).
+5. **Resolve travel connections.** `composio search travel` → check connected travel providers (flight + hotel search). Note available categories. If none connected, proceed with search criteria only + note user books manually (no hardcoded provider assumption).
 
-6. **Generate trip id** — `{YYYY-MM-DD}-{dest-slug}` (kebab-cased
-   destination, e.g. `2026-05-12-sfo`).
+6. **Generate trip id** — `{YYYY-MM-DD}-{dest-slug}` (kebab-cased destination, e.g. `2026-05-12-sfo`).
 
-7. **Write `travel/{trip-id}/trip.md`** — summary document.
-   Structure:
+7. **Write `travel/{trip-id}/trip.md`** — summary doc. Structure:
 
    ```markdown
    # Trip — {destination}, {dates}
@@ -101,23 +81,13 @@ integrations:
    - [ ] Ground transport
    ```
 
-9. **Write `travel/{trip-id}/packing.md`** — checklist adapted to
-   destination weather (best guess from destination + dates; note
-   the assumption), trip type (formal customer visit vs conference
-   vs offsite — clothing differs), and `config/travel-prefs.json`
-   (dietary, accessibility). Sections: `## Essentials`, `## Work`,
-   `## Clothing`, `## Health & toiletries`, `## Destination-specific`.
+9. **Write `travel/{trip-id}/packing.md`** — checklist adapted to destination weather (best guess from destination + dates; note assumption), trip type (formal customer visit vs conference vs offsite — clothing differs), and `config/travel-prefs.json` (dietary, accessibility). Sections: `## Essentials`, `## Work`, `## Clothing`, `## Health & toiletries`, `## Destination-specific`.
 
 10. **Atomic writes** — `*.tmp` → rename per file.
 
-11. **Append to `outputs.json`** with `type: "travel-pack"`, status
-    "draft" until the user approves the bookings.
+11. **Append to `outputs.json`** with `type: "travel-pack"`, status "draft" until user approves bookings.
 
-12. **Summarize to user.** "Trip pack ready at
-    `travel/{trip-id}/`. Want me to search flight options via
-    {available-provider} once you confirm the dates, or are you
-    booking yourself? Also — should I block your calendar during
-    the trip?"
+12. **Summarize to user.** "Trip pack ready at `travel/{trip-id}/`. Want me to search flight options via {available-provider} once you confirm dates, or are you booking yourself? Also — should I block your calendar during the trip?"
 
 ## Outputs
 
@@ -129,9 +99,7 @@ integrations:
 
 ## What I never do
 
-- **Book** flights, hotels, or ground transport without explicit
-  user approval on the specific option.
+- **Book** flights, hotels, ground transport without explicit user approval on specific option.
 - **Charge** any card.
 - **Commit** to travel dates on your behalf.
-- **Invent** a destination event that isn't on the calendar or
-  named by the user.
+- **Invent** destination event not on calendar or named by user.

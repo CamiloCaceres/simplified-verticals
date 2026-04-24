@@ -8,57 +8,39 @@ integrations:
 
 # Synthesize Voice of Customer
 
-Different from `detect-signal signal=repeat-question`. That skill
-outputs KB-gap candidates (the operational view). This one outputs
-a strategic VoC report (the product/positioning view). Same source
-data, different consumer.
+Different from `detect-signal signal=repeat-question`. That skill outputs KB-gap candidates (operational view). This one outputs strategic VoC report (product/positioning view). Same source data, different consumer.
 
 ## When to use
 
 - "mine the last {N} tickets for themes."
 - "what are customers asking for?"
-- Before you write a roadmap, landing-page update, or
-  investor update.
+- Before writing roadmap, landing-page update, or investor update.
 - Ad hoc strategic-research requests.
 
 ## Steps
 
-1. **Read `context/support-context.md`.** For the current positioning + VIP
-   list. If missing, run `define-support-context` first.
+1. **Read `context/support-context.md`.** For current positioning + VIP list. If missing, run `define-support-context` first.
 
-2. **Set the window.** Default: last 30 days. Ask if
-   they want a different window.
+2. **Set window.** Default: last 30 days. Ask if different window wanted.
 
 3. **Read conversation data.**
    - `conversations.json` — filter to window.
-   - For each conversation, read `conversations/{id}/thread.json`
-     for the actual message content. Prefer the customer's own
-     messages, not your replies.
+   - Each conversation, read `conversations/{id}/thread.json` for actual message content. Prefer customer's own messages, not your replies.
    - Skip bot-looking or obviously-not-signal messages.
 
 4. **Read help-center signal.**
    - `requests.json` — feature requests in window, with attribution.
    - `patterns.json` — already-detected repeat-question themes.
-   - Use these to sanity-check clusters you find and to attribute
-     requests.
+   - Use these to sanity-check clusters and attribute requests.
 
 5. **Extract signal.**
-   - **Pains (top 5):** cluster verbatim complaint phrases. Rank
-     by frequency. For each, keep 2–3 verbatim quotes (redacted
-     identifiers).
-   - **Feature asks (top 5):** cluster requests. Rank by count of
-     distinct customers asking (not total mention count). Note
-     which VIPs are in each cluster.
-   - **Friction phrases:** sentences that contradict current
-     positioning (e.g. positioning claims "easy to set up" but 5
-     customers described setup as "confusing" — flag it).
-   - **Positioning-worthy quotes:** 2–3 verbatim lines that would
-     make good landing-page copy, with customer-type attribution.
-   - **Emerging shapes:** things you may not have noticed
-     — e.g. "3 different SMB customers asked about the API this
-     week."
+   - **Pains (top 5):** cluster verbatim complaint phrases. Rank by frequency. Each, keep 2–3 verbatim quotes (redacted identifiers).
+   - **Feature asks (top 5):** cluster requests. Rank by count of distinct customers asking (not total mention count). Note which VIPs in each cluster.
+   - **Friction phrases:** sentences contradicting current positioning (e.g. positioning claims "easy to set up" but 5 customers described setup as "confusing" — flag it).
+   - **Positioning-worthy quotes:** 2–3 verbatim lines good for landing-page copy, with customer-type attribution.
+   - **Emerging shapes:** things maybe unnoticed — e.g. "3 different SMB customers asked about the API this week."
 
-6. **Draft the report.** Markdown, ~500–700 words. Structure:
+6. **Draft report.** Markdown, ~500–700 words. Structure:
 
    ```markdown
    # Voice of Customer — {window}
@@ -107,14 +89,9 @@ data, different consumer.
 
 7. **Write to `voc/{YYYY-MM-DD}.md`** atomically.
 
-8. **Append to `outputs.json`** with `type: "voc-synthesis", domain: "quality"`, title =
-   "VoC — {window}", summary = top pain + top ask, path, status
-   `ready`.
+8. **Append to `outputs.json`** with `type: "voc-synthesis", domain: "quality"`, title = "VoC — {window}", summary = top pain + top ask, path, status `ready`.
 
-9. **Summarize to me.** Headline: the single biggest pain + the
-   single biggest ask + the 3 positioning-worthy quotes copy-pasted
-   inline. Offer to chain into `review scope=weekly` so the next
-   Monday review pulls the insight forward.
+9. **Summarize to me.** Headline: single biggest pain + single biggest ask + 3 positioning-worthy quotes copy-pasted inline. Offer to chain into `review scope=weekly` so next Monday review pulls insight forward.
 
 ## Outputs
 

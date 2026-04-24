@@ -8,9 +8,7 @@ integrations:
 
 # Draft Runbook
 
-Turns tribal knowledge into a step-by-step, command-first ops doc the
-future-self (or a future SRE) can execute at 3am in a panic. Optimized
-for the panicked reader: commands first, prose minimal.
+Turn tribal knowledge into step-by-step command-first ops doc future-self (or future SRE) execute at 3am in panic. Optimized for panicked reader: commands first, prose minimal.
 
 ## When to use
 
@@ -21,46 +19,28 @@ for the panicked reader: commands first, prose minimal.
 
 ## Principles
 
-- **Command-first.** Every section is either a code block the user
-  can copy-paste, a dashboard URL, or a decision branch.
-- **Placeholders are explicit.** `{env}`, `{region}`, `{service}`,
-  `{pod-name}` — call them out at the top so the user can fill in
-  once.
+- **Command-first.** Every section: code block to copy-paste, dashboard URL, or decision branch.
+- **Placeholders are explicit.** `{env}`, `{region}`, `{service}`, `{pod-name}` — call out at top, user fills once.
 - **Least-destructive first.** Mitigations ranked by blast radius.
-- **If-this-fails branches.** Every step that can fail has an
-  alternative path.
-- **No prose walls.** If a paragraph is longer than 3 lines, it
-  becomes bullets.
+- **If-this-fails branches.** Every fallible step has alternative path.
+- **No prose walls.** Paragraph >3 lines → bullets.
 
 ## Steps
 
-1. **Read engineering context** at
-   `context/engineering-context.md`. If missing, tell
-   the user to run `define-engineering-context`
-   first and stop. I need the stack + infra section — I can't write
-   a runbook without knowing which cloud, which orchestrator, which
-   deploy tool.
+1. **Read engineering context** at `context/engineering-context.md`. If missing, tell user run `define-engineering-context` first and stop. Need stack + infra section — can't write runbook without knowing cloud, orchestrator, deploy tool.
 
-2. **Read config:** `config/ci-cd.json`, `config/observability.json`,
-   `config/on-call.md`. Missing is OK — proceed with placeholders
-   where config isn't set.
+2. **Read config:** `config/ci-cd.json`, `config/observability.json`, `config/on-call.md`. Missing OK — proceed with placeholders where config not set.
 
-3. **Clarify the target.** Ask one question if the user's request is
-   ambiguous: "Is this a runbook for a **system** (e.g. 'the payments
-   service') or a **failure mode** (e.g. 'payments 500s at checkout')
-   or an **operational task** (e.g. 'promote staging DB to prod')?"
-   Each shape is different.
+3. **Clarify target.** Ask one question if ambiguous: "Is this a runbook for a **system** (e.g. 'the payments service') or a **failure mode** (e.g. 'payments 500s at checkout') or an **operational task** (e.g. 'promote staging DB to prod')?" Each shape different.
 
-4. **Gather the specifics.** Ask (in one consolidated question) for
-   the pieces I can't infer:
-   - The system / failure mode / task name.
-   - The detection signal (what alert fires, what dashboard changes,
-     what customer complains).
-   - The mitigations the founder knows about — ranked informally.
-   - The dashboards or log sources the founder checks first.
-   - The rollback or revert command(s), if any.
+4. **Gather specifics.** Ask (one consolidated question) for pieces can't infer:
+   - System / failure mode / task name.
+   - Detection signal (alert fires, dashboard changes, customer complains).
+   - Mitigations founder knows — ranked informally.
+   - Dashboards or log sources founder checks first.
+   - Rollback or revert command(s), if any.
 
-5. **Draft the runbook** in this structure:
+5. **Draft runbook** in this structure:
 
    ```markdown
    # Runbook: {system or failure mode}
@@ -135,23 +115,13 @@ for the panicked reader: commands first, prose minimal.
    - Incident: `incidents/{related-incident-slug}.md` (if any)
    ```
 
-6. **Fill placeholders from known config** where possible. For
-   commands whose exact syntax depends on a cloud / orchestrator I
-   can't see, leave the placeholder and note `{CONFIRM syntax for
-   your {tool}}` — don't invent the command.
+6. **Fill placeholders from known config** where possible. For commands whose exact syntax depends on cloud / orchestrator can't see, leave placeholder and note `{CONFIRM syntax for your {tool}}` — don't invent command.
 
-7. **Write** atomically to `runbooks/{system-slug}.md` (`*.tmp` →
-   rename). Slug from the system or failure-mode name.
+7. **Write** atomically to `runbooks/{system-slug}.md` (`*.tmp` → rename). Slug from system or failure-mode name.
 
-8. **Append to `outputs.json`** — new entry `{ id, type:
-   "runbook", title, summary, path, status: "draft", createdAt,
-   updatedAt }`. Stays `draft` until the user confirms the commands
-   actually work.
+8. **Append to `outputs.json`** — new entry `{ id, type: "runbook", title, summary, path, status: "draft", createdAt, updatedAt }`. Stays `draft` until user confirms commands work.
 
-9. **Summarize to user** — one paragraph naming the runbook, any
-   commands I marked `{CONFIRM …}`, and the path. Suggest: "Next
-   time this fires, open the runbook and walk the steps — report
-   back what worked and what didn't, I'll refine the doc."
+9. **Summarize to user** — one paragraph naming runbook, commands marked `{CONFIRM …}`, and path. Suggest: "Next time this fires, open the runbook and walk the steps — report back what worked and what didn't, I'll refine the doc."
 
 ## Outputs
 

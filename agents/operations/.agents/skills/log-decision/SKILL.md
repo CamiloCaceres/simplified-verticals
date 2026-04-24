@@ -7,43 +7,26 @@ description: "Use when you say 'we decided {X}' / 'log the decision on {Y}' / 'c
 
 ## When to use
 
-- User says "we decided", "log the decision on", "capture that
-  call", "ADR this".
-- Pasted / connected meeting notes contain a clear decision pattern.
-- User asks to review the open decision backlog — this skill also
-  marks `pending` rows as `decided` when the user declares them.
+- User says "we decided", "log the decision on", "capture that call", "ADR this".
+- Pasted/connected meeting notes contain clear decision pattern.
+- User asks review open decision backlog — skill also marks `pending` rows `decided` when user declares them.
 
 ## Steps
 
-1. **Read `context/operations-context.md`.** If
-   missing or empty, stop and ask you to run Head of
-   Operations' `define-operating-context` first. Active priorities
-   anchor whether a decision is load-bearing.
+1. **Read `context/operations-context.md`.** If missing or empty, stop and ask user run Head of Operations' `define-operating-context` first. Active priorities anchor whether decision load-bearing.
 
-2. **Resolve the subject.** From chat, extract the decision topic
-   and propose a kebab-case slug (e.g.
-   `switch-pricing-to-seat-based`). Confirm briefly if ambiguous.
+2. **Resolve subject.** From chat, extract decision topic and propose kebab-case slug (e.g. `switch-pricing-to-seat-based`). Confirm briefly if ambiguous.
 
-3. **Read `config/decision-framework.md`.** If missing or sparse,
-   ask ONE question: *"Who decides pricing / product strategy /
-   hiring / structural bets? Best: drop a RACI doc or
-   decision-rights page from a connected wiki. Otherwise paste a
-   sentence — I'll expand as more decisions land."* Write and
-   continue.
+3. **Read `config/decision-framework.md`.** If missing or sparse, ask ONE question: *"Who decides pricing / product strategy / hiring / structural bets? Best: drop a RACI doc or decision-rights page from a connected wiki. Otherwise paste a sentence — I'll expand as more decisions land."* Write and continue.
 
-4. **Decide `status`.** Based on the framework:
-   - If the CEO is the decider and hasn't decided yet → `pending`.
-   - If the decision is owner-scoped and the owner declared it →
-     `decided` with `decidedBy` and `decidedAt`.
-   - If the user is the CEO and declared it → `decided`.
+4. **Decide `status`.** Based on framework:
+   - CEO decider and not yet decided → `pending`.
+   - Owner-scoped and owner declared → `decided` with `decidedBy` and `decidedAt`.
+   - User is CEO and declared → `decided`.
 
-5. **Check for duplicates.** Scan `decisions.json` for an existing
-   slug or near-duplicate title. If one exists, update in place
-   (append alternatives to `considered`, refine `rationale`, move
-   `pending` → `decided` with `decidedAt`) rather than creating a
-   new row.
+5. **Check duplicates.** Scan `decisions.json` for existing slug or near-duplicate title. If exists, update in place (append alternatives to `considered`, refine `rationale`, move `pending` → `decided` with `decidedAt`) rather than new row.
 
-6. **Write the ADR** at `decisions/{slug}/decision.md` (atomic):
+6. **Write ADR** at `decisions/{slug}/decision.md` (atomic):
 
    ```markdown
    # Decision: {title}
@@ -76,38 +59,24 @@ description: "Use when you say 'we decided {X}' / 'log the decision on {Y}' / 'c
    {anything still TBD}
    ```
 
-7. **Upsert in `decisions.json`** with `{ slug, title, summary,
-   status, decidedBy?, decidedAt?, linkedInitiativeSlugs,
-   considered, rationale? }`. Keep `summary` to one line — it shows
-   in the dashboard.
+7. **Upsert in `decisions.json`** with `{ slug, title, summary, status, decidedBy?, decidedAt?, linkedInitiativeSlugs, considered, rationale? }`. Keep `summary` one line — shows in dashboard.
 
-8. **Sensitive matters.** If the decision touches performance,
-   compensation, exits, or legal, DO NOT land specifics in the
-   indexed `summary`. Generalize ("Exec transition on {domain}"
-   rather than named), keep the full narrative only in the
-   per-decision markdown file, and flag privately to the founder
-   in chat.
+8. **Sensitive matters.** If decision touches performance, compensation, exits, or legal, DO NOT land specifics in indexed `summary`. Generalize ("Exec transition on {domain}" rather than named), keep full narrative only in per-decision markdown file, flag privately to founder in chat.
 
-9. **Append to `outputs.json`** with `type: "decision"`, status
-   "ready" (a decision is an artifact of record).
+9. **Append to `outputs.json`** with `type: "decision"`, status "ready" (decision is artifact of record).
 
-10. **Summarize in chat.** One sentence: what was logged, status,
-    where it lives.
+10. **Summarize in chat.** One sentence: what logged, status, where lives.
 
 ## Outputs
 
 - `decisions/{slug}/decision.md` (new or overwritten)
 - Upserted `decisions.json`
-- Possibly updated `config/decision-framework.md` (progressive
-  capture)
+- Possibly updated `config/decision-framework.md` (progressive capture)
 - Appends to `outputs.json` with `type: "decision"`.
 
 ## What I never do
 
-- **Decide for you** — `log-decision` captures; the CEO decides.
+- **Decide for you** — `log-decision` captures; CEO decides.
 - **Land sensitive specifics** in shared indexed rows.
-- **Overwrite a superseded decision** silently — mark old
-  `status: "superseded"` and link the new one.
-- **Invent alternatives** — if the user only told me the chosen
-  path, I ask one question for the 1-2 realistic alternatives
-  that were on the table.
+- **Overwrite superseded decision** silently — mark old `status: "superseded"` and link new one.
+- **Invent alternatives** — if user only told chosen path, ask one question for 1-2 realistic alternatives on table.

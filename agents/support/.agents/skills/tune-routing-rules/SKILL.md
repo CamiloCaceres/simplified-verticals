@@ -9,12 +9,9 @@ integrations:
 
 ## When to use
 
-- "update our routing" / "fix routing" / "what's a bug vs a feature
-  request."
-- "we moved to {tracker}" / "refunds now go to {person}" / "add a
-  new tier."
-- When `review scope=weekly` surfaces that classifications are
-  drifting.
+- "update our routing" / "fix routing" / "what's bug vs feature request."
+- "we moved to {tracker}" / "refunds now go to {person}" / "add new tier."
+- When `review scope=weekly` surface classification drift.
 
 ## Ledger fields I read
 
@@ -22,51 +19,32 @@ integrations:
 
 ## Steps
 
-1. **Read `context/support-context.md`.** If missing, run
-   `define-support-context` first.
+1. **Read `context/support-context.md`.** If missing, run `define-support-context` first.
 
-2. **Surface the current rules to me.** Read the Routing
-   rules section and restate it in 3–4 lines ("today: bug →
-   Linear, feature request → `requests.json`, outage →
-   `playbooks/p1-outage.md`, billing → Stripe + you approve
-   refunds"). Ask: what's changing?
+2. **Surface current rules to me.** Read Routing rules section, restate in 3–4 lines ("today: bug → Linear, feature request → `requests.json`, outage → `playbooks/p1-outage.md`, billing → Stripe + you approve refunds"). Ask: what changing?
 
-3. **Capture the update.** Ask ONE focused question at a time —
-   don't do a whole interview. Typical updates:
+3. **Capture update.** Ask ONE focused question at time — no whole interview. Typical updates:
    - New tracker target (moved from Linear to GitHub Issues, etc.).
    - New classification (e.g. add "security report").
    - New escalation contact.
    - Changed refund approver.
-   - VIP list additions (also belongs in segments section — update
-     both if needed).
+   - VIP list additions (also belong in segments section — update both if needed).
 
-4. **Rewrite the Routing rules section cleanly.** Preserve the
-   decision-tree shape. For each type, state:
+4. **Rewrite Routing rules section clean.** Preserve decision-tree shape. For each type, state:
    - Trigger phrases / patterns that qualify.
    - Target location (tracker slug, playbook path, dossier, chat).
-   - Which skill acts (`triage-incoming`, `detect-signal`,
-     `draft-escalation-playbook`, etc.).
+   - Which skill acts (`triage-incoming`, `detect-signal`, `draft-escalation-playbook`, etc.).
    - What data to capture.
 
-5. **Also update related sections** if the change implies it —
-   VIP list (segments section), SLA tiers, known-gotchas entries
-   that reference the changed tracker. Be explicit about what else
-   you touched.
+5. **Also update related sections** if change implies — VIP list (segments section), SLA tiers, known-gotchas entries referencing changed tracker. Be explicit what else touched.
 
 6. **Write atomically** (`.tmp` → rename).
 
-7. **Append to `outputs.json`** with `type: "routing-rules"`,
-   `domain: "quality"`, title "Routing rules updated — {short
-   reason}", summary 2 sentences on what changed, path
-   `context/support-context.md`, status `draft`.
+7. **Append to `outputs.json`** with `type: "routing-rules"`, `domain: "quality"`, title "Routing rules updated — {short reason}", summary 2 sentences on what changed, path `context/support-context.md`, status `draft`.
 
-8. **Tell me the effect.** End the summary with: "Every
-   `triage-incoming` and `detect-signal` run after this reads the
-   new rules — no manual re-sync."
+8. **Tell me effect.** End summary with: "Every `triage-incoming` and `detect-signal` run after this reads new rules — no manual re-sync."
 
 ## Outputs
 
-- `context/support-context.md` (routing + possibly related sections
-  updated)
-- Appends to `outputs.json` with `type: "routing-rules"`,
-  `domain: "quality"`.
+- `context/support-context.md` (routing + possibly related sections updated)
+- Appends to `outputs.json` with `type: "routing-rules"`, `domain: "quality"`.

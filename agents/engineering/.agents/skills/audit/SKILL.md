@@ -9,160 +9,73 @@ integrations:
 
 # Audit
 
-One skill for five audit surfaces. The `surface` parameter picks the
-probe; impact × effort prioritization, grounding against the
-engineering context, and "draft only, never auto-fix" discipline are
-shared.
+One skill, five audit surfaces. `surface` param pick probe. Impact × effort priority, ground against engineering context, "draft only, never auto-fix" — all shared.
 
 ## Parameter: `surface`
 
-- `architecture` — walk a system / module / service end-to-end. Risk-
-  sorted concerns (high / medium / low) with current state, proposed
-  fix, effort (S/M/L/XL).
-- `ci-cd` — read CI workflow config + recent run history via the
-  connected code host. Flaky tests, slowest jobs, missing gates,
-  security gaps.
-- `observability` — read the connected observability stack (Sentry /
-  Datadog / PostHog / New Relic / Honeycomb). 3-column matrix
-  (signal × coverage × gap) across errors / traces / logs / alerts /
-  SLOs, plus top-5 fix list.
-- `devx` — read README, CONTRIBUTING, Makefile, package.json scripts,
-  docker-compose, .env.example, CI config. Estimated setup time,
-  build time from CI history, top 5 paper cuts with suggested fixes.
-- `readme` — score the repo's README against a standard checklist
-  (pitch, badges, quickstart, install, usage, configuration,
-  contribution, license). Audit with inline diff suggestions, a
-  rewritten lede, prioritized fix list.
+- `architecture` — walk system/module/service end-to-end. Risk-sorted concerns (high/medium/low) w/ current state, fix, effort (S/M/L/XL).
+- `ci-cd` — read CI workflow config + recent run history via connected code host. Flaky tests, slowest jobs, missing gates, security gaps.
+- `observability` — read connected stack (Sentry/Datadog/PostHog/New Relic/Honeycomb). 3-col matrix (signal × coverage × gap) across errors/traces/logs/alerts/SLOs, plus top-5 fix list.
+- `devx` — read README, CONTRIBUTING, Makefile, package.json scripts, docker-compose, .env.example, CI config. Setup time estimate, build time from CI history, top 5 paper cuts w/ fixes.
+- `readme` — score README vs standard checklist (pitch, badges, quickstart, install, usage, configuration, contribution, license). Inline diff suggestions, rewritten lede, prioritized fix list.
 
-If the user names the surface in plain English ("architecture
-review", "CI audit", "what are we blind to", "DX paper cuts", "audit
-my README"), infer it. If ambiguous, ask ONE question naming the 5
-options.
+User name surface plain English ("architecture review", "CI audit", "what are we blind to", "DX paper cuts", "audit my README") → infer. Ambiguous → ask ONE question naming 5 options.
 
 ## When to use
 
 - Explicit per-surface phrases above.
-- Implicit: inside `coordinate-release` when a system boundary or
-  ops surface is new (architecture / observability), or inside
-  `validate-feature-fit` when the fit verdict hinges on feasibility
-  (architecture).
-- Per-surface cadence: architecture on demand, ci-cd monthly max,
-  observability monthly max, devx quarterly max, readme on demand.
+- Implicit: inside `coordinate-release` when system boundary or ops surface new (architecture/observability), or inside `validate-feature-fit` when fit verdict hinge on feasibility (architecture).
+- Per-surface cadence: architecture on demand, ci-cd monthly max, observability monthly max, devx quarterly max, readme on demand.
 
 ## Ledger fields I read
 
-Reads `config/context-ledger.json` first.
+Read `config/context-ledger.json` first.
 
-- `universal.engineeringContext` — required for all surfaces. If
-  missing: "want me to draft your engineering context first? (one
-  skill, ~5m) I ground every audit against it." Stop until written.
-- `universal.priorities` — used by every surface for impact
-  weighting.
-- `domains.development.stack`, `domains.development.sensitiveAreas`,
-  `domains.development.qualityBar` — required for `architecture`,
-  `ci-cd`, `devx`, `readme`. If thin, ask ONE question (best-modality
-  hint).
-- `domains.reliability.cicd.provider` — required for `ci-cd`. If
-  missing, run `composio search code-hosting` and fall back to
-  conventional workflow paths, or ask.
-- `domains.reliability.observability` — required for `observability`.
-  If none connected, ask which category to link (errors / metrics /
-  logs) and stop for that surface.
+- `universal.engineeringContext` — required all surfaces. Missing → "want me to draft your engineering context first? (one skill, ~5m) I ground every audit against it." Stop until written.
+- `universal.priorities` — every surface use for impact weighting.
+- `domains.development.stack`, `domains.development.sensitiveAreas`, `domains.development.qualityBar` — required for `architecture`, `ci-cd`, `devx`, `readme`. Thin → ask ONE question (best-modality hint).
+- `domains.reliability.cicd.provider` — required `ci-cd`. Missing → run `composio search code-hosting`, fall back to conventional workflow paths, or ask.
+- `domains.reliability.observability` — required `observability`. None connected → ask which category to link (errors/metrics/logs), stop that surface.
 
 ## Steps
 
-1. **Read ledger + engineering context.** Gather missing required
-   fields per surface (ONE question each, best-modality first).
-   Write atomically.
+1. **Read ledger + engineering context.** Gather missing required fields per surface (ONE question each, best-modality first). Write atomically.
 
-2. **Discover tools via Composio.** Run the right search for the
-   surface:
-   - `architecture`, `ci-cd`, `devx`, `readme` → `composio search
-     code-hosting`.
-   - `observability` → `composio search observability` or direct
-     (`composio search sentry` / `datadog` / `posthog`).
-   - `readme` fallback without code host → `composio search
-     web-scrape` to fetch the public README URL.
-   If a required category has no connection, name it and stop.
+2. **Discover tools via Composio.** Run right search for surface:
+   - `architecture`, `ci-cd`, `devx`, `readme` → `composio search code-hosting`.
+   - `observability` → `composio search observability` or direct (`composio search sentry` / `datadog` / `posthog`).
+   - `readme` fallback no code host → `composio search web-scrape` to fetch public README URL.
+   Required category no connection → name it, stop.
 
 3. **Branch on surface.**
 
-   - `architecture`: read the target system / module / service.
-     Walk boundaries, data flow, shared state, failure modes, scaling
-     cliffs, test seams. Flag anything overlapping
-     `sensitiveAreas` as high by default. For each concern: current
-     state, proposed fix, effort estimate (S/M/L/XL). Favor
-     incremental fixes that preserve shipping velocity over rewrites.
+   - `architecture`: read target system/module/service. Walk boundaries, data flow, shared state, failure modes, scaling cliffs, test seams. Anything overlap `sensitiveAreas` → high by default. Each concern: current state, fix, effort (S/M/L/XL). Favor incremental fixes preserving shipping velocity over rewrites.
 
-   - `ci-cd`: fetch workflow files from conventional paths
-     (`.github/workflows/*.yml`, `.gitlab-ci.yml`,
-     `.circleci/config.yml`, `.buildkite/pipeline.yml`,
-     `Jenkinsfile`). Fetch last 100 runs on the default branch.
-     Group failures by test name; same-SHA retry-pass = flake.
-     Compute minutes-per-week per job. Enumerate missing gates
-     (required checks, required reviewers, lint/type-check/dep
-     audit/secret scan/SBOM) vs engineering-context quality bar.
-     Flag security gaps (plaintext secrets, `pull_request_target`
-     leaks, missing `permissions:` block, unpinned actions).
+   - `ci-cd`: fetch workflow files from conventional paths (`.github/workflows/*.yml`, `.gitlab-ci.yml`, `.circleci/config.yml`, `.buildkite/pipeline.yml`, `Jenkinsfile`). Fetch last 100 runs default branch. Group failures by test name; same-SHA retry-pass = flake. Compute minutes-per-week per job. Enumerate missing gates (required checks, required reviewers, lint/type-check/dep audit/secret scan/SBOM) vs engineering-context quality bar. Flag security gaps (plaintext secrets, `pull_request_target` leaks, missing `permissions:` block, unpinned actions).
 
-   - `observability`: read per-signal coverage from the connected
-     tool. Signals: errors, traces, logs, alerts, SLOs. For each
-     signal record: covered? / partially / missing, what's
-     instrumented, what's blind. Produce a 3-column matrix. Top 5
-     fixes ranked by blast-radius reduction.
+   - `observability`: read per-signal coverage from connected tool. Signals: errors, traces, logs, alerts, SLOs. Each signal record: covered? / partial / missing, what instrumented, what blind. Produce 3-col matrix. Top 5 fixes ranked by blast-radius reduction.
 
-   - `devx`: pull README, CONTRIBUTING, Makefile,
-     `package.json.scripts`, `docker-compose.yml`, `.env.example`,
-     CI config. Count discrete setup steps from clone to
-     first-successful-test-run. Estimate setup time from step count +
-     any explicit time markers. Estimate build time from CI history
-     if available. Surface the top 5 paper cuts (missing env var
-     example, flaky setup script, bad error message, outdated
-     command, zombie script). Each with suggested fix + effort.
+   - `devx`: pull README, CONTRIBUTING, Makefile, `package.json.scripts`, `docker-compose.yml`, `.env.example`, CI config. Count discrete setup steps clone → first-successful-test-run. Setup time estimate from step count + explicit time markers. Build time estimate from CI history if available. Surface top 5 paper cuts (missing env var example, flaky setup script, bad error message, stale command, zombie script). Each w/ fix + effort.
 
-   - `readme`: fetch the repo README. Score against: one-sentence
-     pitch above the fold, install / quickstart that copy-pastes,
-     usage with a real working example, configuration table, link to
-     contribution / docs / LICENSE, badges (CI / version / license),
-     obvious next-reader path. For each missing / weak section:
-     suggested inline diff + rewritten lede at the top of the
-     report. Prioritized fix list by founder-impact.
+   - `readme`: fetch repo README. Score vs: one-sentence pitch above fold, install/quickstart copy-pastes, usage w/ real working example, configuration table, link to contribution/docs/LICENSE, badges (CI/version/license), obvious next-reader path. Each missing/weak section: inline diff + rewritten lede at top of report. Prioritized fix list by founder-impact.
 
-4. **Score + prioritize.** Tag every finding
-   `{severity: critical / high / medium / low}` ×
-   `{effort: quick-win / medium / heavy}`. Surface top 5 critical-or-
-   high quick-wins at the top.
+4. **Score + prioritize.** Tag every finding `{severity: critical / high / medium / low}` × `{effort: quick-win / medium / heavy}`. Surface top 5 critical-or-high quick-wins at top.
 
-5. **Write** atomically to
-   `audits/{surface}-{slug}-{YYYY-MM-DD}.md` (`*.tmp` → rename).
-   Slug: for `architecture` use system/service name; `ci-cd` and
-   `observability` use a short repo slug or `main`; `devx` uses the
-   repo slug; `readme` uses the repo slug.
-   Structure: Executive summary → Top 5 quick wins → Findings
-   per category → Prioritized fix list (impact × effort).
+5. **Write** atomically to `audits/{surface}-{slug}-{YYYY-MM-DD}.md` (`*.tmp` → rename). Slug: `architecture` use system/service name; `ci-cd` and `observability` use short repo slug or `main`; `devx` use repo slug; `readme` use repo slug.
+   Structure: Executive summary → Top 5 quick wins → Findings per category → Prioritized fix list (impact × effort).
 
-6. **Append to `outputs.json`** — read-merge-write atomically:
-   `{ id (uuid v4), type: "audit", title, summary, path, status:
-   "ready", createdAt, updatedAt, domain }`. Domain per surface:
-   `architecture` / `ci-cd` / `devx` → `"development"`;
-   `observability` → `"reliability"`; `readme` → `"docs"`.
+6. **Append to `outputs.json`** — read-merge-write atomically: `{ id (uuid v4), type: "audit", title, summary, path, status: "ready", createdAt, updatedAt, domain }`. Domain per surface: `architecture` / `ci-cd` / `devx` → `"development"`; `observability` → `"reliability"`; `readme` → `"docs"`.
 
-7. **Summarize to user.** One paragraph with the top 5 quick wins
-   (or the single biggest fix) and the path. Flag anything marked
-   UNKNOWN so you can fill gaps.
+7. **Summarize to user.** One paragraph w/ top 5 quick wins (or single biggest fix) and path. Flag anything UNKNOWN so gaps fill.
 
 ## What I never do
 
-- Invent findings, flake rates, step counts, or section scores.
-  Every claim ties to a real tool response or file observation.
-  Missing data → marked UNKNOWN or TBD.
-- Promise a latency reduction, test-speed improvement, or coverage
-  lift percentage — audits surface hypotheses, not guarantees.
-- Auto-fix (never open a PR, never edit a workflow, never rewrite
-  the README in place) — drafts only.
-- Hardcode tool names — Composio discovery at runtime only.
+- Invent findings, flake rates, step counts, section scores. Every claim ties to real tool response or file observation. Missing data → UNKNOWN or TBD.
+- Promise latency reduction, test-speed improvement, coverage lift percentage — audits surface hypotheses, not guarantees.
+- Auto-fix (never open PR, never edit workflow, never rewrite README in place) — drafts only.
+- Hardcode tool names — Composio discovery runtime only.
 
 ## Outputs
 
 - `audits/{surface}-{slug}-{YYYY-MM-DD}.md`
-- Appends an entry to `outputs.json` with type `audit`.
+- Append entry to `outputs.json` w/ type `audit`.

@@ -5,9 +5,7 @@ description: "Use when you say 'build a mutual action plan with {Acme}' / 'close
 
 # Draft Close Plan
 
-A mutual action plan (MAP). Shared with the champion. Drives
-accountability both ways. The honest version — if the economic buyer
-is unknown, we write UNKNOWN, not "decision maker".
+Mutual action plan (MAP). Share with champion. Drive accountability both ways. Honest version — if economic buyer unknown, write UNKNOWN, not "decision maker".
 
 ## When to use
 
@@ -17,25 +15,21 @@ is unknown, we write UNKNOWN, not "decision maker".
 
 ## Steps
 
-1. **Read the playbook.** Load `context/sales-context.md`.
-   Need deal stages + qualification to know what's still open.
+1. **Read the playbook.** Load `context/sales-context.md`. Need deal stages + qualification to know what still open.
 
-2. **Read call history for the deal.** All `calls/{id}/analysis.md`
-   where `dealSlug` matches. Extract confirmed facts vs. inferred.
+2. **Read call history for the deal.** All `calls/{id}/analysis.md` where `dealSlug` match. Extract confirmed facts vs. inferred.
 
-3. **Compile the current state:**
+3. **Compile current state:**
 
    - **Champion** — name + title, or UNKNOWN.
    - **Economic buyer** — name + title, or UNKNOWN.
-   - **Blocker** — if any identified, name. Otherwise UNKNOWN.
-   - **Procurement path** — legal review? InfoSec questionnaire?
-     Finance sign-off? If unknown, UNKNOWN.
+   - **Blocker** — if identified, name. Else UNKNOWN.
+   - **Procurement path** — legal review? InfoSec questionnaire? Finance sign-off? If unknown, UNKNOWN.
    - **Budget** — confirmed / in-plan / needs-approval / UNKNOWN.
    - **Technical validation** — done / scheduled / required / N/A.
-   - **Target close date** — from the user if provided, else propose
-     based on the playbook's typical close cycle.
+   - **Target close date** — from user if provided, else propose based on playbook's typical close cycle.
 
-4. **Draft the plan as a shared timeline** — ours and theirs:
+4. **Draft plan as shared timeline** — ours and theirs:
 
    ```
    Week -4 : [us] Send proposal v2 | [them] Champion aligns with EB
@@ -45,20 +39,13 @@ is unknown, we write UNKNOWN, not "decision maker".
    Week  0 : [both] Contract signed, kickoff scheduled
    ```
 
-   Every row has: owner (us / them / both), action, target date,
-   blocker (if any).
+   Every row: owner (us / them / both), action, target date, blocker (if any).
 
-5. **Flag UNKNOWNs prominently.** Each UNKNOWN gets a bullet in a
-   "What we need to learn" section, each assigned to the next call
-   with a specific question.
+5. **Flag UNKNOWNs prominently.** Each UNKNOWN gets bullet in "What we need to learn" section, each assigned to next call with specific question.
 
-6. **Write atomically** to `deals/{slug}/close-plan.md.tmp` → rename.
-   One close plan per deal — overwrite prior versions (but keep a
-   terse changelog at the bottom: "v2 — 2026-04-23: moved close -1w
-   due to legal review").
+6. **Write atomically** to `deals/{slug}/close-plan.md.tmp` → rename. One close plan per deal — overwrite prior versions (but keep terse changelog at bottom: "v2 — 2026-04-23: moved close -1w due to legal review").
 
-7. **Update `deals.json`** — set `closePlanAt`, `risk` (recompute
-   GREEN/YELLOW/RED based on UNKNOWNs + date slippage).
+7. **Update `deals.json`** — set `closePlanAt`, `risk` (recompute GREEN/YELLOW/RED based on UNKNOWNs + date slippage).
 
 8. **Append to `outputs.json`:**
 
@@ -75,8 +62,7 @@ is unknown, we write UNKNOWN, not "decision maker".
    }
    ```
 
-9. **Summarize.** The target close date + the top UNKNOWN the user
-   should resolve next. Suggest `prepare-call` for the next touch.
+9. **Summarize.** Target close date + top UNKNOWN user should resolve next. Suggest `prepare-call` for next touch.
 
 ## Outputs
 

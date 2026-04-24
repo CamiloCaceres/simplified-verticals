@@ -8,106 +8,59 @@ integrations:
 
 # Run Trademark Knockout
 
-Not a clearance opinion — a knockout. A knockout answers "is there
-an obvious blocker?" It does not answer "can I safely register?"
-That second question needs TM counsel.
+Not clearance opinion — knockout. Knockout answer "obvious blocker?" Not "safe to register?" Second question need TM counsel.
 
 ## When to use
 
-- "Run a knockout on {mark}."
-- "Is {name} available as a trademark?"
-- Before spending any money on branding, domain purchase, or
-  logomark design.
-- Before filing a 1(b) intent-to-use application.
+- "Run knockout on {mark}."
+- "Is {name} available as trademark?"
+- Before any spend on branding, domain, logomark.
+- Before filing 1(b) intent-to-use application.
 
 ## Steps
 
-1. **Read shared context.** Read `context/legal-context.md`.
-   If missing or empty, respond:
+1. **Read shared context.** Read `context/legal-context.md`. If missing or empty, respond:
    > "I need the shared legal context first — please run General
    > Counsel's `define-legal-context` skill, then come back."
-   Stop. Do not proceed.
+   Stop. No proceed.
 
-2. **Confirm the mark + classes.** The founder should give you:
-   - The proposed **word mark** (and any design element / logo
-     separately if relevant — design marks need separate search).
-   - The **Nice classes** they care about. For most SaaS founders
-     that's **Class 9** (software / downloadable apps) + **Class
-     42** (SaaS / platform-as-a-service). For a branded consumer
-     hardware play add **Class 35** (retail services) or the
-     product class. If the founder doesn't know, propose 9 + 42
-     and confirm.
+2. **Confirm mark + classes.** Founder give:
+   - Proposed **word mark** (design element / logo separate if relevant — design marks need own search).
+   - **Nice classes** they want. Most SaaS founders = **Class 9** (software / downloadable apps) + **Class 42** (SaaS / platform-as-a-service). Branded consumer hardware add **Class 35** (retail services) or product class. Founder unsure → propose 9 + 42, confirm.
 
-   Write `config/trademark-prefs.json` with
-   `{ classes, lastSearchedAt }` if first-time.
+   Write `config/trademark-prefs.json` with `{ classes, lastSearchedAt }` if first-time.
 
-3. **Run the knockout against USPTO Trademark Center.** Run
-   `composio search uspto` or `composio search trademark` for the
-   right tool slug; USPTO Trademark Center (launched Jan 2025) is
-   the canonical system. If no connected tool exists, run
-   `composio search web-scrape` and query
-   `https://tmsearch.uspto.gov/` directly.
+3. **Run knockout vs USPTO Trademark Center.** Run `composio search uspto` or `composio search trademark` for tool slug; USPTO Trademark Center (launched Jan 2025) = canonical system. No connected tool → run `composio search web-scrape` and query `https://tmsearch.uspto.gov/` direct.
 
-   Search in four passes per class:
+   Four passes per class:
 
-   - **Exact-word pass** — `mark` as a wordmark.
-   - **Phonetic pass** — phonetic equivalents (Kandi vs Candy,
-     Fone vs Phone, Noot vs Newt, etc.).
-   - **Visual pass** — letter-swap / transliteration (Lyft vs
-     Lift, Tumblr vs Tumbler).
-   - **Root-word pass** — search the root if the mark is compound
-     (e.g. for "BrightCloud" search both "Bright" and "Cloud").
+   - **Exact-word pass** — `mark` as wordmark.
+   - **Phonetic pass** — phonetic equivalents (Kandi vs Candy, Fone vs Phone, Noot vs Newt, etc.).
+   - **Visual pass** — letter-swap / transliteration (Lyft vs Lift, Tumblr vs Tumbler).
+   - **Root-word pass** — search root if mark compound (e.g. "BrightCloud" → search "Bright" and "Cloud").
 
-4. **Classify each hit.** For each result capture: serial number,
-   full mark, owner, goods/services description, class, filing
-   date, status (`LIVE` / `PENDING` / `ABANDONED` / `DEAD`). A
-   LIVE or PENDING hit in an overlapping class is a blocker. An
-   ABANDONED or DEAD hit is informational (could still be a
-   common-law mark issue, but not a registration blocker).
+4. **Classify each hit.** Per result capture: serial number, full mark, owner, goods/services description, class, filing date, status (`LIVE` / `PENDING` / `ABANDONED` / `DEAD`). LIVE or PENDING hit in overlapping class = blocker. ABANDONED or DEAD = informational (still possible common-law mark issue, not registration blocker).
 
 5. **Assess risk.**
-   - **High** — exact or phonetic LIVE/PENDING hit in the same
-     class. Or: LIVE/PENDING hit with near-identical goods
-     description.
-   - **Medium** — exact LIVE/PENDING hit in an adjacent class
-     (e.g. you want Class 42 SaaS; there's a Class 9 software hit).
-     Or: phonetic/visual LIVE/PENDING hit in the same class. Or:
-     multiple ABANDONED hits suggesting a crowded field.
-   - **Low** — no LIVE/PENDING hits in target or adjacent classes;
-     a handful of ABANDONED/DEAD hits, or entirely different
-     goods.
+   - **High** — exact or phonetic LIVE/PENDING hit, same class. Or LIVE/PENDING hit with near-identical goods description.
+   - **Medium** — exact LIVE/PENDING hit in adjacent class (e.g. want Class 42 SaaS; Class 9 software hit exists). Or phonetic/visual LIVE/PENDING hit, same class. Or many ABANDONED hits = crowded field.
+   - **Low** — no LIVE/PENDING hits in target or adjacent classes; few ABANDONED/DEAD hits, or wholly different goods.
 
-6. **Recommend the next step.**
-   - Low → file a **1(b) intent-to-use** application once the mark
-     is locked, or continue using and file 1(a) once in commerce.
-     USPTO filing fee ~$350/class on TEAS Plus.
-   - Medium → **retain TM counsel for full clearance** before
-     filing; there may be coexistence strategies.
-   - High → **rebrand**, or retain TM counsel to evaluate
-     coexistence / consent agreements. Do not file.
+6. **Recommend next step.**
+   - Low → file **1(b) intent-to-use** once mark locked, or keep using and file 1(a) once in commerce. USPTO fee ~$350/class on TEAS Plus.
+   - Medium → **retain TM counsel for full clearance** before filing; coexistence strategies possible.
+   - High → **rebrand**, or retain TM counsel for coexistence / consent agreements. No file.
 
-7. **Write atomically** to
-   `tm-searches/{mark-slug}-{YYYY-MM-DD}.md` with:
+7. **Write atomically** to `tm-searches/{mark-slug}-{YYYY-MM-DD}.md` with:
    - Mark + classes searched + search timestamp.
    - Risk assessment + one-line rationale.
-   - Hit table (exact pass, phonetic pass, visual pass, root
-     pass) with serial number, mark, owner, class, status.
+   - Hit table (exact pass, phonetic pass, visual pass, root pass) with serial number, mark, owner, class, status.
    - Recommended next step.
-   - **Limits disclosure** — verbatim: "This is a knockout search,
-     not a full clearance. It covers USPTO federal registrations
-     only. It does not cover state registrations, common-law
-     marks, foreign marks, or domain/social-handle availability.
-     For High-risk results or pre-filing, retain TM counsel."
+   - **Limits disclosure** — verbatim: "This is a knockout search, not a full clearance. It covers USPTO federal registrations only. It does not cover state registrations, common-law marks, foreign marks, or domain/social-handle availability. For High-risk results or pre-filing, retain TM counsel."
 
-8. **Append to `outputs.json`** — `{ id, type: "tm-search",
-   title, summary, path, status: "ready", createdAt, updatedAt,
-   attorneyReviewRequired }`. Flip `attorneyReviewRequired: true`
-   on any **High** risk assessment (always) and any **Medium**
-   risk assessment that the founder intends to proceed with.
+8. **Append to `outputs.json`** — `{ id, type: "tm-search", title, summary, path, status: "ready", createdAt, updatedAt, attorneyReviewRequired }`. Flip `attorneyReviewRequired: true` on any **High** risk (always) and any **Medium** risk founder intend to proceed with.
 
-9. **Summarize to user** — risk rating, the single highest-risk
-   hit (serial + owner + class), recommended next step, path to
-   the full report.
+9. **Summarize to user** — risk rating, single highest-risk hit (serial + owner + class), recommended next step, path to full report.
 
 ## Outputs
 

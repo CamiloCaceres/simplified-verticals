@@ -1,6 +1,6 @@
 ---
 name: track-okr
-description: "Use when you ask about OKR status ('how are we doing on OKRs' / 'refresh the OKRs' / 'which KRs are off-track') — I refresh each KR's current value via any Composio-connected OKR tool (Notion, Airtable, Google Sheets), append snapshots to `okr-history.json`, classify on-track / at-risk / off-track, and surface root causes from linked decisions and priorities."
+description: "Use when ask OKR status ('how doing on OKRs' / 'refresh OKRs' / 'which KRs off-track') — refresh each KR current value via any Composio-connected OKR tool (Notion, Airtable, Google Sheets), append snapshots to `okr-history.json`, classify on-track / at-risk / off-track, surface root causes from linked decisions + priorities."
 integrations:
   docs: [notion, airtable]
   files: [googlesheets]
@@ -10,71 +10,70 @@ integrations:
 
 ## When to use
 
-- User asks about OKR status, wants a refresh, or asks "what's
-  off-track."
-- Weekly / quarterly cadence — if the last snapshot in
-  `okr-history.json` is older than 10 days.
-- Start of a new quarter — rebaseline.
+- User ask OKR status, want refresh, or ask "what off-track."
+- Weekly / quarterly cadence — if last snapshot in
+  `okr-history.json` older than 10 days.
+- Start of new quarter — rebaseline.
 - Pulled implicitly by `prep-board-pack` and `draft-investor-update`
-  when the latest snapshot is stale.
+  when latest snapshot stale.
 
 ## Steps
 
 1. **Read `context/operations-context.md`.** If
-   missing or empty, stop and ask you to run Head of
+   missing or empty, stop and ask you run Head of
    Operations' `define-operating-context` first. Active priorities
-   drive the "likely root cause" attribution for off-track KRs.
+   drive "likely root cause" attribution for off-track KRs.
 
 2. **Read `config/okrs.json`.** If missing or empty, ask ONE
-   targeted question: *"I don't have your OKRs yet — best: if your
-   OKR tool is connected via Composio, point me at it and I'll
-   pull the current state. Otherwise paste or drop the OKR doc.
-   If you don't have OKRs yet, that's fine — say so and I'll help
-   you draft a starter set."* Write and continue.
+   targeted question: *"No OKRs yet — best: if OKR tool
+   connected via Composio, point me at it and pull current state.
+   Otherwise paste or drop OKR doc.
+   If no OKRs yet, fine — say so and help
+   draft starter set."* Write and continue.
 
-3. **For each objective, refresh each KR's current value.** In
+3. **For each objective, refresh each KR current value.** In
    order of preference:
    - **Connected OKR tool via Composio** — `composio search okr`
-     (or the category the user named during onboarding). Pull the
+     (or category user named during onboarding). Pull
      latest `current` per KR.
-   - **a metric-tracking handoff** — if a KR maps to a tracked metric
-     in this agent, cite the query slug and read the
-     latest value from `metrics-daily.json`. This
-     keeps the numbers consistent across agents.
-   - **Ask the owner** — if neither is available, tell you
+   - **metric-tracking handoff** — if KR maps to tracked metric
+     in this agent, cite query slug and read
+     latest value from `metrics-daily.json`. Keeps
+     numbers consistent across agents.
+   - **Ask owner** — if neither available, tell you
      which owners to ping and stop short of inventing numbers.
 
 4. **Snapshot to `okr-history.json`.** Append one record per
-   objective (or per-KR if owner updates were KR-scoped) with
+   objective (or per-KR if owner updates KR-scoped) with
    `{ objectiveId, date, keyResults: [{ id, value, state }], state,
-   createdAt }`. Date is today (YYYY-MM-DD).
+   createdAt }`. Date today (YYYY-MM-DD).
 
-5. **Classify each KR against its target.** Pull the expected
-   attainment curve from the KR record (`linear` default unless
-   the user declared front-/back-loaded during onboarding or a
-   prior refresh). For today's point in the period:
+5. **Classify each KR against target.** Pull expected
+   attainment curve from KR record (`linear` default unless
+   user declared front-/back-loaded during onboarding or
+   prior refresh). For today's point in period:
    - `on-track` — `current / target` ≥ `expected-for-this-point`.
    - `at-risk` — within 20 percentage points of expected but below.
    - `off-track` — more than 20 percentage points below expected.
 
-   The 20-pp threshold is the documented default; user can override
-   it per-KR in `config/okrs.json`.
+   20-pp threshold = documented default; user can override
+   per-KR in `config/okrs.json`.
 
-6. **Roll KR states up to objective state.** If any KR is
-   `off-track`, objective is `off-track`. If any is `at-risk` and
-   none `off-track`, objective is `at-risk`. Otherwise `on-track`.
-   Update `config/okrs.json` with the new state + fresh `current`
+6. **Roll KR states up to objective state.** If any KR
+   `off-track`, objective `off-track`. If any `at-risk` and
+   none `off-track`, objective `at-risk`. Else `on-track`.
+   Update `config/okrs.json` with new state + fresh `current`
    values.
 
 7. **Attach reason codes from linked decisions.** For each at-risk
    / off-track KR:
    - Scan `decisions.json` for decisions where
-     `linkedInitiativeSlugs` includes the same slug the KR references
-     (if any) — a recent pending decision on a linked initiative is
-     a likely cause.
-   - Check operating-context priorities — if the KR is tied to an
+     `linkedInitiativeSlugs` includes same slug KR references
+     (if any) — recent pending decision on linked initiative =
+     likely cause.
+   - Check operating-context priorities — if KR tied to
      inactive priority, surface that.
-   - Record the reason in the KR's `reason` field in
+   - Record reason in KR `reason` field in
      `config/okrs.json`.
 
 8. **Report in chat.**
@@ -95,9 +94,9 @@ integrations:
    ```
 
 9. **Hand-off hint.** If anything flipped to off-track this cycle,
-   offer: "Want me to run `identify-bottleneck` to see if this
-   pattern is cross-OKR? Or hand the off-track KR to Head of
-   Operations to nudge the owner?"
+   offer: "Want me run `identify-bottleneck` to see if pattern
+   cross-OKR? Or hand off-track KR to Head of
+   Operations to nudge owner?"
 
 10. **Append to `outputs.json`** with `type: "okr-snapshot"`,
     status "ready".
@@ -111,9 +110,9 @@ integrations:
 
 ## What I never do
 
-- **Invent a KR value** — if no source is available, I stop and
+- **Invent KR value** — if no source available, stop and
   tell you which owners to ping.
-- **Hardcode the at-risk threshold** — 20-pp is the documented
+- **Hardcode at-risk threshold** — 20-pp = documented
   default; per-KR overrides live in `config/okrs.json`.
-- **Modify OKR definitions silently** — if the user adds a new
-  objective via chat, I confirm the shape before writing.
+- **Modify OKR definitions silently** — if user adds new
+  objective via chat, confirm shape before writing.

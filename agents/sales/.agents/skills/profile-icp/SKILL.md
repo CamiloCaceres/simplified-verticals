@@ -5,57 +5,34 @@ description: "Use when you say 'profile the buying committee for {segment}' / 'w
 
 # Profile ICP (Sales)
 
-This skill is narrower than a marketing persona. The goal is to answer
-"who do we sell to, who signs, who blocks, and what triggers the
-decision" — the 4 things this agent and AE need to tune outreach and
-discovery.
+Skill narrower than marketing persona. Goal: answer "who we sell to, who signs, who blocks, what triggers decision" — 4 things agent + AE need to tune outreach + discovery.
 
 ## When to use
 
 - "profile the buying committee for {segment}".
 - "who signs at {segment}" / "who actually buys us".
 - "build a sales persona for {segment}".
-- Called by `define-sales-playbook` when the buying-committee section
-  is thin.
+- Called by `define-sales-playbook` when buying-committee section thin.
 
 ## Steps
 
-1. **Read the playbook.** Load `context/sales-context.md`. If missing, run
-   `define-sales-playbook` first.
+1. **Read playbook.** Load `context/sales-context.md`. If missing, run `define-sales-playbook` first.
 
-2. **Source accounts.** Ask the user: "Should I pull closed-won
-   accounts in {segment} from your connected CRM, or work from
-   examples you give me?" If CRM route: `composio search crm` → pull
-   top ~20 closed-won in segment. If example route: ask for 2–3 real
-   accounts we've closed (or best-fit target accounts).
+2. **Source accounts.** Ask user: "Should I pull closed-won accounts in {segment} from your connected CRM, or work from examples you give me?" CRM route: `composio search crm` → pull top ~20 closed-won in segment. Example route: ask for 2–3 real accounts closed (or best-fit target accounts).
 
-3. **Extract per-account.** For each account: firmographics (size,
-   region, industry, stage), champion title + motivations, who signed
-   the contract, who pushed back or delayed, what triggered the
-   search, time-to-close, and the primary use case. Cite source
-   (CRM record or founder's description).
+3. **Extract per-account.** For each account: firmographics (size, region, industry, stage), champion title + motivations, who signed contract, who pushed back or delayed, what triggered search, time-to-close, primary use case. Cite source (CRM record or founder description).
 
 4. **Synthesize across accounts.** Write:
-   - **Champion** — title patterns, pains they name, motivations,
-     what's in it for them when the deal closes.
-   - **Economic buyer** — title patterns (often different from
-     champion), what wins them (ROI, risk mitigation, status quo
-     disruption, competitive parity), what they kill deals over.
-   - **Blocker** — the seat that most often kills deals in {segment}
-     (often IT, legal, procurement, or a counter-incumbent champion).
-     How to neutralize.
-   - **Influencers** — other seats we need on the bus.
-   - **Disqualifiers** — 3 hard nos for {segment} specifically (if
-     different from the global playbook).
-   - **Buying triggers** — concrete signals that they're starting the
-     search right now (hiring pattern, funding, stack change, incident,
-     regulatory deadline).
+   - **Champion** — title patterns, pains named, motivations, what's in it for them when deal closes.
+   - **Economic buyer** — title patterns (often different from champion), what wins them (ROI, risk mitigation, status quo disruption, competitive parity), what they kill deals over.
+   - **Blocker** — seat that most often kills deals in {segment} (often IT, legal, procurement, or counter-incumbent champion). How to neutralize.
+   - **Influencers** — other seats needed on bus.
+   - **Disqualifiers** — 3 hard nos for {segment} specifically (if different from global playbook).
+   - **Buying triggers** — concrete signals they starting search now (hiring pattern, funding, stack change, incident, regulatory deadline).
 
-5. **Mark gaps honestly.** `TBD — need 2 more closed-won in segment`
-   rather than guessing.
+5. **Mark gaps honestly.** `TBD — need 2 more closed-won in segment` not guess.
 
-6. **Write atomically.** Write to
-   `personas/{segment-slug}.md.tmp`, then rename. Cite every claim.
+6. **Write atomically.** Write to `personas/{segment-slug}.md.tmp`, then rename. Cite every claim.
 
 7. **Append to `outputs.json`:**
 
@@ -72,10 +49,7 @@ discovery.
    }
    ```
 
-8. **Summarize to user.** One paragraph + the path. Flag which of the
-   playbook sections this persona updates (buying committee,
-   disqualifiers, triggers) and whether you'd recommend running
-   `define-sales-playbook` next to fold it in.
+8. **Summarize to user.** One paragraph + path. Flag which playbook sections persona updates (buying committee, disqualifiers, triggers) + whether recommend running `define-sales-playbook` next to fold in.
 
 ## Outputs
 

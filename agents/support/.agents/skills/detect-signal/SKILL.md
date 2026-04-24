@@ -9,76 +9,38 @@ integrations:
 
 # Detect Signal
 
-One skill for every "this thread contains a signal I should file"
-ask. Branches on `signal`.
+One skill for every "thread contain signal to file" ask. Branch on `signal`.
 
 ## When to use
 
-- **bug** — "is this a bug? log it" / a message contains error
-  messages, stack traces, "it used to work and now doesn't," repro
-  steps, or screenshots of broken UI.
-- **feature-request** — a conversation or direct message contains
-  a feature ask ("can you add X?", "would be great if Y").
-- **repeat-question** — on the weekly cron, or when I scan the
-  last 30–60 days and a cluster of semantically similar incoming
-  questions hits ≥3 with no matching article.
+- **bug** — "is this bug? log it" / message contain error messages, stack traces, "used to work, now doesn't," repro steps, or screenshots of broken UI.
+- **feature-request** — conversation or DM contain feature ask ("can you add X?", "would be great if Y").
+- **repeat-question** — on weekly cron, or when scan last 30–60 days and cluster of semantically similar incoming questions hit ≥3 with no matching article.
 
 ## Ledger fields I read
 
-- `universal.positioning` — for product surface (so I know what's
-  in-scope vs out-of-scope).
-- `domains.inbox.routingCategories` — for the bug / feature-request
-  classification rules.
-- `domains.help-center.platform` — to check for existing KB
-  coverage before flagging a repeat-question cluster.
+- `universal.positioning` — product surface (in-scope vs out-of-scope).
+- `domains.inbox.routingCategories` — bug / feature-request classification rules.
+- `domains.help-center.platform` — check existing KB coverage before flagging repeat-question cluster.
 
-If any required field is missing, ask ONE targeted question, write,
-continue.
+If required field missing, ask ONE targeted question, write, continue.
 
 ## Parameter: `signal`
 
-- `bug` — extract repro steps, affected version, affected customer.
-  Assign severity per `context/support-context.md#severity`. Append
-  to `bug-candidates.json`. Offer to chain to the connected tracker
-  (GitHub / Linear / Jira via Composio).
-- `feature-request` — extract the ask + requesting-customer slug.
-  Append / merge in `requests.json`. If merging, increment
-  requester count; if merging a VIP, flag.
-- `repeat-question` — scan the last 30–60 days of
-  `conversations.json`. Cluster semantically similar incoming
-  questions. For each cluster of ≥3 without a matching article,
-  append to `patterns.json` and surface as a docs gap.
+- `bug` — extract repro steps, affected version, affected customer. Assign severity per `context/support-context.md#severity`. Append to `bug-candidates.json`. Offer chain to connected tracker (GitHub / Linear / Jira via Composio).
+- `feature-request` — extract ask + requesting-customer slug. Append / merge in `requests.json`. If merging, increment requester count; if VIP, flag.
+- `repeat-question` — scan last 30–60 days of `conversations.json`. Cluster semantically similar incoming questions. For each cluster ≥3 without matching article, append to `patterns.json` and surface as docs gap.
 
 ## Steps
 
 1. **Read `context/support-context.md`.** If missing, stop.
-2. **Read the ledger.** Fill gaps.
+2. **Read ledger.** Fill gaps.
 3. **Branch on `signal`:**
-   - `bug`: read the source `conversations/{id}/thread.json`.
-     Extract repro (numbered steps), affected version, error
-     message / stack trace. Assign severity. Write a new entry to
-     `bug-candidates.json` (read-merge-write) with
-     `{id, title, severity, affectedCustomers, reproSteps,
-     sourceConversationId, status: "new"}`. If I say so, chain to
-     the connected tracker by calling its create-issue tool.
-   - `feature-request`: read the source message. Extract the ask
-     in a single sentence. Look for near-duplicates in
-     `requests.json`; if found, append the customer slug and
-     increment. If new, create an entry. Never attribute a request
-     to a customer who didn't make it.
-   - `repeat-question`: read `conversations.json` last 30–60 days.
-     Cluster by topic / first-line similarity. For each cluster
-     ≥3, check `articles/` for an existing answer. If none, append
-     a new pattern to `patterns.json` with `{cluster, exampleIds,
-     count, suggestedTitle}`. Offer to chain `write-article
-     type=from-ticket` for my top pick.
-4. **Append to `outputs.json`** with `type` =
-   `bug-candidate` | `feature-request` | `repeat-question`,
-   `domain: "inbox"` (for bug / feature-request) or
-   `domain: "help-center"` (for repeat-question), title, summary,
-   path.
-5. **Summarize to me**: what I filed + where it is + the chain I'd
-   recommend next.
+   - `bug`: read source `conversations/{id}/thread.json`. Extract repro (numbered steps), affected version, error message / stack trace. Assign severity. Write new entry to `bug-candidates.json` (read-merge-write) with `{id, title, severity, affectedCustomers, reproSteps, sourceConversationId, status: "new"}`. If told, chain to connected tracker by calling its create-issue tool.
+   - `feature-request`: read source message. Extract ask in single sentence. Look for near-duplicates in `requests.json`; if found, append customer slug and increment. If new, create entry. Never attribute request to customer who didn't make it.
+   - `repeat-question`: read `conversations.json` last 30–60 days. Cluster by topic / first-line similarity. For each cluster ≥3, check `articles/` for existing answer. If none, append new pattern to `patterns.json` with `{cluster, exampleIds, count, suggestedTitle}`. Offer chain `write-article type=from-ticket` for top pick.
+4. **Append to `outputs.json`** with `type` = `bug-candidate` | `feature-request` | `repeat-question`, `domain: "inbox"` (bug / feature-request) or `domain: "help-center"` (repeat-question), title, summary, path.
+5. **Summarize to me**: what filed + where + recommended next chain.
 
 ## Outputs
 
@@ -89,8 +51,6 @@ continue.
 
 ## What I never do
 
-- File a bug in the connected tracker without your approval. I
-  draft the issue; you create it.
-- Attribute a feature request to a customer who didn't ask for it.
-- Flag a repeat-question cluster that already has an article — I
-  check `articles/` first.
+- File bug in connected tracker without your approval. Draft issue; you create.
+- Attribute feature request to customer who didn't ask.
+- Flag repeat-question cluster that already has article — check `articles/` first.

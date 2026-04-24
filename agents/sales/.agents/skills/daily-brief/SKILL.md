@@ -5,58 +5,43 @@ description: "Use when you say 'brief me for today' / 'what's on today' / 'morni
 
 # Daily Brief
 
-A one-screen morning brief. The founder reads it with coffee and
-knows exactly where to start.
+One-screen morning brief. Founder read with coffee, know where start.
 
-Derived from Gumloop templates #25 (Personal Assistant) and #29 (Brief
-me for my upcoming day on Google Calendar), generalized to any
-connected calendar.
+Derived from Gumloop templates #25 (Personal Assistant) + #29 (Brief me for upcoming day on Google Calendar), generalized to any connected calendar.
 
 ## When to use
 
 - "brief me for today" / "brief me for the day" / "morning brief".
 - "what's on today".
-- Scheduled: morning routine (user-configured in the Routines tab).
+- Scheduled: morning routine (user-configured in Routines tab).
 
 ## Steps
 
-1. **Read the playbook.** Load `context/sales-context.md`. If missing, warn
-   the user but continue — the brief is still useful without it.
+1. **Read playbook.** Load `context/sales-context.md`. If missing, warn user but continue — brief still useful without.
 
-2. **Pull today's calendar.** `composio search calendar` → list events
-   for today. For each event, capture: time, title, attendees,
-   description. Flag any with "discovery" / "demo" / "QBR" / "renewal"
-   in the title as needing AE or CSM prep. If there's an existing AE
-   `call-prep.md` for that meeting, link to it.
+2. **Pull today's calendar.** `composio search calendar` → list today's events. Per event capture: time, title, attendees, description. Flag any with "discovery" / "demo" / "QBR" / "renewal" in title as needing AE or CSM prep. If existing AE `call-prep.md` for meeting, link it.
 
-3. **Build the approvals queue.** Read each other agent's
-   `outputs.json` and filter `status: "draft"` created in the last
-   48 hours. Group by agent, show title + path.
+3. **Build approvals queue.** Read each other agent's `outputs.json`, filter `status: "draft"` created last 48 hours. Group by agent, show title + path.
 
 4. **Identify top-3 moves.** Read yesterday's activity across agents:
    - Any replies classified `INTERESTED` awaiting SDR draft approval?
-   - Any deals that moved stage yesterday and need an AE follow-up?
-   - Any customer health flipped to YELLOW/RED overnight?
-   - Any leads that hit the stall threshold overnight?
+   - Any deals moved stage yesterday, need AE follow-up?
+   - Any customer health flipped YELLOW/RED overnight?
+   - Any leads hit stall threshold overnight?
 
-   Pick the 3 highest-leverage. Each gets a one-line description and
-   a copyable prompt to the right agent.
+   Pick 3 highest-leverage. Each gets one-line description + copyable prompt to right agent.
 
-5. **Format the brief (one screen, 5 sections max):**
+5. **Format brief (one screen, 5 sections max):**
 
    1. **Today's meetings** — time · title · prep status.
    2. **Approvals queue** — N drafts awaiting sign-off, grouped by agent.
-   3. **Top-3 moves** — each a copyable one-liner.
-   4. **Watch list** — stalled deals, red customers, high-value leads
-      past stall threshold.
-   5. **Yesterday in numbers** — leads added, calls held, deals
-      progressed.
+   3. **Top-3 moves** — each copyable one-liner.
+   4. **Watch list** — stalled deals, red customers, high-value leads past stall threshold.
+   5. **Yesterday in numbers** — leads added, calls held, deals progressed.
 
-6. **Write atomically.** Write to `briefs/{YYYY-MM-DD}.md.tmp`, then
-   rename. Overwrite any prior same-day brief (one brief per day).
+6. **Write atomically.** Write to `briefs/{YYYY-MM-DD}.md.tmp`, then rename. Overwrite any prior same-day brief (one brief per day).
 
-7. **Append to `outputs.json`** (or update the existing same-day
-   entry):
+7. **Append to `outputs.json`** (or update existing same-day entry):
 
    ```json
    {
@@ -71,9 +56,7 @@ connected calendar.
    }
    ```
 
-8. **Summarize to user.** The 3 moves inline in chat + the path. If
-   any meeting needs prep and doesn't have an AE artifact, suggest
-   running `@ae prepare-call` now.
+8. **Summarize to user.** 3 moves inline in chat + path. If any meeting needs prep and lacks AE artifact, suggest running `@ae prepare-call` now.
 
 ## Outputs
 

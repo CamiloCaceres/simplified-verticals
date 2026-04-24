@@ -5,37 +5,33 @@ description: "Use when you say 'plan onboarding for {customer}' / 'kickoff plan 
 
 # Plan Onboarding
 
-The first artifact after close. Sets the success metric explicitly so
-we can score health honestly against it for the next year.
+First artifact post-close. Sets success metric explicit so health score honest against it next year.
 
 ## When to use
 
 - "plan the onboarding for {customer}".
 - "kickoff plan for {customer}".
-- Triggered post-close when this agent's close-plan status flips to
-  `closed-won`.
+- Post-close trigger when close-plan status flips `closed-won`.
 
 ## Steps
 
 1. **Read the playbook.** `context/sales-context.md`.
 
 2. **Read this agent's close-plan + proposal.** `deals/{slug}/
-   close-plan.md` and `proposal-v*.md` (latest). Extract: customer's
-   stated problem, their success metric (verbatim), champion,
-   economic buyer, stakeholders, timeline.
+   close-plan.md` and `proposal-v*.md` (latest). Extract: customer
+   problem, their success metric (verbatim), champion, economic
+   buyer, stakeholders, timeline.
 
-3. **Read config/success-metric.json** — our canonical success
-   framing. Cross-reference with THEIR success metric. Flag
-   divergence.
+3. **Read config/success-metric.json** — our canonical framing.
+   Cross-reference vs THEIR metric. Flag divergence.
 
-4. **Draft the onboarding plan:**
+4. **Draft onboarding plan:**
 
-   1. **Kickoff agenda** — 5–7 items, 60 min total. Intros, success
-      metric confirmation (we restate and THEY confirm verbally),
-      access / provisioning, team handoff, cadence.
+   1. **Kickoff agenda** — 5–7 items, 60 min. Intros, success metric
+      confirmation (we restate, THEY confirm verbally), access /
+      provisioning, team handoff, cadence.
    2. **Success metric (explicit)** — both versions: ours + theirs.
-      If they diverge, explain which one we're committing to drive
-      the first-90 health score against.
+      If diverge, state which one drives first-90 health score.
    3. **90-day time-to-value timeline:**
       - Day 0 — kickoff.
       - Day 7 — access + first use.
@@ -44,8 +40,8 @@ we can score health honestly against it for the next year.
       - Day 60 — mid-term adjustment.
       - Day 90 — first quarterly outcome.
    4. **Champions + blockers** — named. Execs to introduce.
-   5. **First-30-day risk list** — anything we already see that
-      could derail.
+   5. **First-30-day risk list** — anything visible that could
+      derail.
 
 5. **Write atomically** to `customers/{slug}/onboarding.md.tmp` →
    rename. Create `customers/{slug}/` if missing.
@@ -55,7 +51,7 @@ we can score health honestly against it for the next year.
 
 7. **Append to `outputs.json`** with `type: "onboarding"`.
 
-8. **Summarize.** The explicit success metric + the 30-day milestone.
+8. **Summarize.** Explicit success metric + 30-day milestone.
 
 ## Outputs
 

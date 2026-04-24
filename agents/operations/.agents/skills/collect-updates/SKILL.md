@@ -8,9 +8,7 @@ integrations:
 
 # Collect Updates
 
-Team-facing weekly update loop. This skill is deliberately dormant
-for the true solo founder — the moment the founder hires 1+ people
-and lists them in operating context, it lights up.
+Team-facing weekly update loop. Skill dormant for true solo founder — moment founder hires 1+ people and lists in operating context, lights up.
 
 ## When to use
 
@@ -20,27 +18,17 @@ and lists them in operating context, it lights up.
 
 ## Steps
 
-1. **Read `context/operations-context.md`.** If the "Key contacts /
-   Team" section is absent, empty, or N≤1 (founder only), stop and
-   say:
+1. **Read `context/operations-context.md`.** If "Key contacts / Team" section absent, empty, or N≤1 (founder only), stop and say:
 
-   > "This skill collects weekly updates from a team. Your operating
-   > context doesn't list anyone yet — so there's no one to collect
-   > from. Run `define-operating-context` and add a Team section
-   > when you hire, then this skill turns on."
+   > "This skill collects weekly updates from a team. Your operating context doesn't list anyone yet — so there's no one to collect from. Run `define-operating-context` and add a Team section when you hire, then this skill turns on."
 
-   Do NOT run against external contacts who aren't on the team list.
+   Do NOT run against external contacts not on team list.
 
-2. **Read `config/update-template.md` if present.** Otherwise use
-   the default template below.
+2. **Read `config/update-template.md` if present.** Else use default template below.
 
-3. **Send reminders.** For each team member listed in the Team
-   section:
-   - `composio search chat` (preferred) or `composio search inbox`
-     — execute the send-message tool for the founder's team-chat
-     provider.
-   - Deliver the prompt template as a DM or thread reply, addressed
-     to that person. Use the founder's voice per `config/voice.md`.
+3. **Send reminders.** For each team member in Team section:
+   - `composio search chat` (preferred) or `composio search inbox` — execute send-message tool for founder's team-chat provider.
+   - Deliver prompt template as DM or thread reply, addressed to that person. Use founder voice per `config/voice.md`.
    - Default template:
 
      > "Hi {name} — weekly update time. Three questions, 2 minutes:
@@ -49,40 +37,26 @@ and lists them in operating context, it lights up.
      > bet? Reply here whenever you have 2 minutes — due by EOD
      > {reviewDay}."
 
-   **Note the carve-out from workspace-level hard nos:** this
-   skill sends internal team reminders. It is NOT sending external
-   communications. External sends are still prohibited.
+   **Carve-out from workspace-level hard nos:** skill sends internal team reminders. NOT external communications. External sends still prohibited.
 
-4. **Wait for responses.** User sets the window (default: until
-   EOD of `rhythm.json.reviewDay`, or 48h from send if rhythm isn't
-   configured). If the user invokes the skill a second time in the
-   same week, consume the window-so-far.
+4. **Wait for responses.** User sets window (default: until EOD of `rhythm.json.reviewDay`, or 48h from send if rhythm not configured). If user invokes skill second time same week, consume window-so-far.
 
-5. **Collect responses.** Pull the replies from the same chat /
-   inbox tool, matched by thread / conversation.
+5. **Collect responses.** Pull replies from same chat / inbox tool, matched by thread / conversation.
 
-6. **Analyze alignment** with active priorities from
-   `context/operations-context.md`:
+6. **Analyze alignment** with active priorities from `context/operations-context.md`:
 
-   - **On track** — shipped items that ladder up to an active
-     priority.
+   - **On track** — shipped items laddering up to active priority.
    - **Drifting** — work happening that doesn't ladder.
-   - **Blocked** — stated blockers, with who's expected to unblock.
+   - **Blocked** — stated blockers, with who expected to unblock.
    - **Silent** — team members who didn't respond.
 
-7. **Write** the roundup to `updates/{YYYY-MM-DD}-roundup.md`
-   with the four sections + a "What founder should do" list at the
-   bottom (1-3 items: unblock {person} on {thing}, re-scope
-   {project}, recognize {win}).
+7. **Write** roundup to `updates/{YYYY-MM-DD}-roundup.md` with four sections + "What founder should do" list at bottom (1-3 items: unblock {person} on {thing}, re-scope {project}, recognize {win}).
 
 8. **Atomic writes** — `*.tmp` → rename.
 
-9. **Append to `outputs.json`** with `type: "updates"`, status
-   "ready".
+9. **Append to `outputs.json`** with `type: "updates"`, status "ready".
 
-10. **Summarize to user** — counts (N on track / M drifting / P
-    blocked / Q silent) + the top founder-action from the
-    roundup.
+10. **Summarize to user** — counts (N on track / M drifting / P blocked / Q silent) + top founder-action from roundup.
 
 ## Outputs
 
@@ -91,9 +65,6 @@ and lists them in operating context, it lights up.
 
 ## What I never do
 
-- **Send reminders to external contacts.** The Team section in
-  operating context is the allowlist; everyone else is external.
-- **Modify HRIS / payroll records** on the back of collected
-  updates — read-only on systems of record.
-- **Run if the Team section is missing.** Stop with the "no team
-  yet" message; do not try to DIY a team list from other sources.
+- **Send reminders to external contacts.** Team section in operating context is allowlist; everyone else external.
+- **Modify HRIS / payroll records** on back of collected updates — read-only on systems of record.
+- **Run if Team section missing.** Stop with "no team yet" message; do not DIY team list from other sources.

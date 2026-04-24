@@ -7,79 +7,76 @@ description: "Use when you ask a data question ('how many signups this week' / '
 
 ## When to use
 
-The user asked a data question. Anything phrased as "how many,"
-"what's," "top N by," "trend of," "compare X to Y," "why did Z
-change." I translate to SQL, run it safely, return a result with
-citations.
+User asked data question. Anything phrased "how many," "what's," "top N by," "trend of," "compare X to Y," "why did Z change." Translate to SQL, run safely, return result with citations.
 
 ## Hard rules
 
 - **Read-only.** Any proposed query containing `INSERT`, `UPDATE`,
   `DELETE`, `MERGE`, `DROP`, `CREATE`, `ALTER`, `TRUNCATE`, `GRANT`,
-  or `REVOKE` is refused immediately.
-- **Warn before executing a potentially expensive query.** Use the
-  warehouse's explain / dry-run tool (discover via `composio search
-  warehouse explain` or the provider's equivalent) to estimate
-  scanned bytes and runtime. Compare against
+  or `REVOKE` refused immediately.
+- **Warn before executing potentially expensive query.** Use
+  warehouse explain / dry-run tool (discover via `composio search
+  warehouse explain` or provider equivalent) to estimate
+  scanned bytes + runtime. Compare against
   `config/data-sources.json` → `costCeilingScannedGb` and
-  `costCeilingSeconds` for the target source. If either is exceeded,
-  state the estimate and wait for explicit approval.
-- **Every result ships with**: the exact SQL, the run timestamp, the
+  `costCeilingSeconds` for target source. If exceeded,
+  state estimate, wait for explicit approval.
+- **Every result ships with**: exact SQL, run timestamp,
   row count, any data-quality caveats.
 
 ## Steps
 
 1. **Read `context/operations-context.md`.** If
-   missing or empty, stop and ask you to run the `define-operating-context` skill first. Priorities + tools anchor which
-   source to use and what "this number looks weird" means.
+   missing/empty, stop, ask user run `define-operating-context` skill first. Priorities + tools anchor which
+   source to use, what "this number looks weird" means.
 
-2. **Identify the source.** Read `config/data-sources.json`. If
-   empty or incomplete, ask ONE question: "Where does this live?
+2. **Identify source.** Read `config/data-sources.json`. If
+   empty/incomplete, ask ONE question: "Where does this live?
    *Best — connect your warehouse via Composio and tell me the name.
    Or describe the table and I'll flag this as unverified until
-   connected.*" Write and continue.
+   connected.*" Write, continue.
 
 3. **Lazy schema introspection.** Read `config/schemas.json`. For
-   the tables likely needed, if an entry is missing or
-   `lastIntrospectedAt` is older than 7 days, run the warehouse's
+   tables likely needed, if entry missing or
+   `lastIntrospectedAt` older than 7 days, run warehouse
    schema introspection tool (discover via `composio search`) to
    pull columns, types, nullability, primary key hints. Append to
-   `config/schemas.json`. If introspection is blocked because no
-   warehouse is connected, ask you to link one and stop — no
+   `config/schemas.json`. If introspection blocked (no
+   warehouse connected), ask user link one, stop — no
    guessing column names.
 
-4. **Draft the SQL.** Use the dialect from
+4. **Draft SQL.** Use dialect from
    `config/data-sources.json`. Prefer CTEs for readability. Apply
-   partition / cluster / date filters when available. Generate a
-   kebab-case slug from the question purpose (e.g.
+   partition / cluster / date filters when available. Generate
+   kebab-case slug from question purpose (e.g.
    `weekly-signups-last-7d`).
 
-5. **Self-check against the hard rules.** Scan the query text for
-   forbidden keywords (case-insensitive). If found, refuse and
+5. **Self-check against hard rules.** Scan query text for
+   forbidden keywords (case-insensitive). If found, refuse,
    stop.
 
-6. **Estimate cost.** Run the warehouse's explain / dry-run tool.
+6. **Estimate cost.** Run warehouse explain / dry-run tool.
    Compare to ceilings in `config/data-sources.json` for this
    source. If over ceiling:
 
    > "This will scan ~{bytes human} (~{rows}) — run it?"
 
-   Wait for approval. Otherwise continue.
+   Wait for approval. Else continue.
 
-7. **Execute via Composio.** Run the query through the connected
+7. **Execute via Composio.** Run query through connected
    warehouse tool (slug discovered via `composio search
    warehouse`). On success, capture result rows (cap at 10,000 for
    local storage; record real row count separately).
 
-8. **Capture data-quality caveats.** Check the result for null
-   percentages on key columns, surprisingly round numbers, zero-row
-   returns where the user expected data, ranges that look off
+8. **Capture data-quality caveats.** Check result for null
+   percentages on key columns, suspiciously round numbers, zero-row
+   returns where user expected data, ranges that look off
    (negative counts, future-dated events). List any in `notes.md`
-   — never hide a concern.
+   — never hide concern.
 
 9. **Save as reusable.** Write atomically:
-   - `queries/{slug}/query.sql` — the query body.
-   - `queries/{slug}/result-latest.csv` — the result.
+   - `queries/{slug}/query.sql` — query body.
+   - `queries/{slug}/result-latest.csv` — result.
    - `queries/{slug}/notes.md` — purpose, parameters, schema deps,
      caveats, last-run metadata (timestamp, row count, scanned
      bytes).
@@ -91,7 +88,7 @@ citations.
 11. **Append to `outputs.json`** with `type: "query-answer"`,
     status "ready".
 
-12. **Return the answer in chat.** Format:
+12. **Return answer in chat.** Format:
 
     ```
     {plain-English answer, 1–3 sentences}
@@ -113,8 +110,8 @@ citations.
 
 ## What I never do
 
-- **Run DML/DDL** — refuse and stop.
-- **Execute over the cost ceiling** without explicit approval.
-- **Hide a caveat** — every notable concern lands in `notes.md`.
-- **Invent column or table names** — if introspection is blocked,
-  stop and ask for the connection.
+- **Run DML/DDL** — refuse, stop.
+- **Execute over cost ceiling** without explicit approval.
+- **Hide caveat** — every notable concern lands in `notes.md`.
+- **Invent column/table names** — if introspection blocked,
+  stop, ask for connection.

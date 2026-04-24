@@ -9,34 +9,26 @@ description: "Use when you say 'build this week's forecast' / 'commit / best / p
 
 - "build this week's forecast".
 - "commit / best / pipeline rollup".
-- Scheduled: Friday afternoon (before the HoS review).
+- Scheduled: Friday afternoon, before HoS review.
 
 ## Steps
 
-1. **Read the playbook.** `context/sales-context.md`. Deal
-   stages + exit criteria drive confidence.
+1. **Read playbook.** `context/sales-context.md`. Deal stages + exit criteria drive confidence.
 
-2. **Load open deals.** `deals.json` joined with
-   `deals/*/close-plan.md` target-close dates.
+2. **Load open deals.** `deals.json` joined with `deals/*/close-plan.md` target-close dates.
 
-3. **Score confidence per deal.** Confidence = min(stage-confidence,
-   qualification-completeness, close-plan-completeness):
+3. **Score confidence per deal.** Confidence = min(stage-confidence, qualification-completeness, close-plan-completeness):
 
-   - **Commit (>80%):** last stage, economic buyer + champion known,
-     close plan all steps GREEN, date within the forecast window.
-   - **Best (40–80%):** in a mid-funnel stage, most pillars filled,
-     close plan present but has UNKNOWNs.
+   - **Commit (>80%):** last stage, economic buyer + champion known, close plan all steps GREEN, date within forecast window.
+   - **Best (40–80%):** mid-funnel stage, most pillars filled, close plan present but has UNKNOWNs.
    - **Pipeline (10–40%):** early stage, qualification thin.
-   - **Omit (<10%):** stalled, no recent touch, or health RED for a
-     reason unlikely to resolve.
+   - **Omit (<10%):** stalled, no recent touch, or health RED unlikely to resolve.
 
 4. **Roll up per bucket.** Count, sum ARR, list deals.
 
-5. **Compare to last week's forecast.** Load
-   `forecasts/{prior-week}.md`. For each deal, flag movement (moved
-   up / down / unchanged / new / gone).
+5. **Compare last week forecast.** Load `forecasts/{prior-week}.md`. Per deal, flag movement (up / down / unchanged / new / gone).
 
-6. **Write the forecast** to `forecasts/{YYYY-WW}.md.tmp` → rename:
+6. **Write forecast** to `forecasts/{YYYY-WW}.md.tmp` → rename:
 
    ```markdown
    # Forecast — Week {YYYY-WW}
@@ -62,8 +54,7 @@ description: "Use when you say 'build this week's forecast' / 'commit / best / p
 
 7. **Append to `outputs.json`** with `type: "forecast"`.
 
-8. **Summarize.** The headline number + the biggest week-over-week
-   move.
+8. **Summarize.** Headline number + biggest week-over-week move.
 
 ## Outputs
 

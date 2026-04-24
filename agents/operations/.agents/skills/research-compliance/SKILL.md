@@ -8,76 +8,48 @@ integrations:
 
 # Research Compliance
 
-Public-source only. This is due-diligence before the founder signs —
-not a legal opinion, not a replacement for a SOC2 report request.
+Public-source only. Due-diligence before founder sign — not legal opinion, not replacement for SOC2 report request.
 
 ## When to use
 
 - "run compliance due-diligence on {vendor}".
 - "is {company}'s compliance posture real".
 - "what frameworks does {vendor} actually hold".
-- Called as a sub-step of `evaluate-supplier` for risk-sensitive
-  suppliers (data processors, infra, financial services).
+- Called as sub-step of `evaluate-supplier` for risk-sensitive suppliers (data processors, infra, financial services).
 
 ## Steps
 
 1. **Read `context/operations-context.md`.**
-   Hard nos + vendor posture anchor the "what's a material red flag"
-   judgement. If missing: stop, ask for `define-operating-context`.
+   Hard nos + vendor posture anchor "what's material red flag" judgement. If missing: stop, ask for `define-operating-context`.
 
 2. **Gather public signals.**
 
-   - **Frameworks claimed on their surface** — `composio search
-     web-scrape` → pull their trust page, security page, privacy
-     page. Catalog what they claim (SOC2 Type II, ISO 27001,
-     HIPAA, GDPR, PCI-DSS, etc.).
-   - **Independent verification** — for each claim, try to
-     triangulate: does a trust-center provider (TrustArc, Vanta,
-     Drata) confirm? Does a press release name a specific auditor?
-     Does the Report ID or Trust portal exist? Use `composio
-     search research` with specific queries.
-   - **Named CCO / CISO / Head-of-Security** — identify the
-     person, link their LinkedIn if findable (`composio search
-     social` or `web-search`).
-   - **Public incidents in the last 3 years** — breaches, SEC
-     disclosures, class actions, regulatory actions (FTC, ICO,
-     state AGs). Use `composio search news` + `web-search` with
-     pointed queries.
-   - **Legal / regulatory posture** — any open litigation naming
-     the company as defendant? Any SEC filings if public?
+   - **Frameworks claimed on their surface** — `composio search web-scrape` → pull trust page, security page, privacy page. Catalog claims (SOC2 Type II, ISO 27001, HIPAA, GDPR, PCI-DSS, etc.).
+   - **Independent verification** — for each claim, triangulate: trust-center provider (TrustArc, Vanta, Drata) confirm? Press release name specific auditor? Report ID or Trust portal exist? Use `composio search research` with specific queries.
+   - **Named CCO / CISO / Head-of-Security** — identify person, link LinkedIn if findable (`composio search social` or `web-search`).
+   - **Public incidents last 3 years** — breaches, SEC disclosures, class actions, regulatory actions (FTC, ICO, state AGs). Use `composio search news` + `web-search` with pointed queries.
+   - **Legal / regulatory posture** — open litigation naming company as defendant? SEC filings if public?
 
-3. **Check for gaps between claim and evidence.**
-   - Claim a SOC2 but no independent confirmation anywhere →
-     flag.
+3. **Check gaps between claim and evidence.**
+   - Claim SOC2 but no independent confirmation anywhere → flag.
    - Named officer but no LinkedIn / no public presence → flag.
-   - Silence on a framework their category usually requires
-     (e.g. a healthcare SaaS with no HIPAA mention) → flag.
+   - Silence on framework their category usually requires (e.g. healthcare SaaS with no HIPAA mention) → flag.
 
-4. **Produce the output** (save to `compliance/{company-slug}.md`):
+4. **Produce output** (save to `compliance/{company-slug}.md`):
 
-   - **Summary** — 1 paragraph: who they are + compliance posture
-     in one line.
-   - **Frameworks claimed** — table: framework | claim source |
-     independent verification (Y/N with URL) | notes.
-   - **Named security leadership** — name, title, LinkedIn,
-     tenure if findable.
-   - **Public incidents (last 3 years)** — chronological list,
-     each with source URL + 1-line description.
-   - **Gaps between claim and evidence** — bullet list, most
-     material first.
-   - **Recommendation-shaped summary** — NOT a legal opinion: "on
-     public surface this reads as {strong / adequate / thin /
-     concerning}" with the 2-3 specific things to verify before
-     signing.
-   - **Every claim cites a source URL.** No uncited assertions.
+   - **Summary** — 1 paragraph: who they are + compliance posture in one line.
+   - **Frameworks claimed** — table: framework | claim source | independent verification (Y/N with URL) | notes.
+   - **Named security leadership** — name, title, LinkedIn, tenure if findable.
+   - **Public incidents (last 3 years)** — chronological list, each with source URL + 1-line description.
+   - **Gaps between claim and evidence** — bullet list, most material first.
+   - **Recommendation-shaped summary** — NOT legal opinion: "on public surface reads as {strong / adequate / thin / concerning}" with 2-3 specific things to verify before signing.
+   - **Every claim cites source URL.** No uncited assertions.
 
 5. **Atomic writes** — `*.tmp` → rename.
 
-6. **Append to `outputs.json`** with `type: "compliance"`, status
-   "ready".
+6. **Append to `outputs.json`** with `type: "compliance"`, status "ready".
 
-7. **Summarize to user** — the recommendation-shaped summary + the
-   #1 gap the founder should close before signing.
+7. **Summarize to user** — recommendation-shaped summary + #1 gap founder should close before signing.
 
 ## Outputs
 
@@ -86,11 +58,7 @@ not a legal opinion, not a replacement for a SOC2 report request.
 
 ## What I never do
 
-- **Render a legal opinion.** "Looks adequate on public surface" is
-  as strong as I go. Legal review is the founder's lawyer's job.
-- **Contact the vendor.** Public signals only.
-- **Treat a trust-page claim as proof.** Every framework claim
-  needs at least one independent signal, or it's flagged.
-- **Retrieve non-public data.** If behind a login, trust portal
-  with NDA, or specific request, note it as "request from vendor"
-  rather than trying to extract.
+- **Render legal opinion.** "Looks adequate on public surface" as strong as go. Legal review = founder's lawyer's job.
+- **Contact vendor.** Public signals only.
+- **Treat trust-page claim as proof.** Every framework claim needs at least one independent signal, else flagged.
+- **Retrieve non-public data.** If behind login, trust portal with NDA, or specific request, note as "request from vendor" rather than extract.

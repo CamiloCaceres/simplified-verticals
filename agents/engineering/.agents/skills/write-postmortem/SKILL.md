@@ -8,10 +8,7 @@ integrations:
 
 # Write Postmortem
 
-Turns a resolved incident into a blameless postmortem the founder can
-share with their team, investors, or customers. Grounds every claim
-in the incident timeline or linked observability logs — never invents
-events.
+Turn resolved incident into blameless postmortem founder share with team, investors, customers. Ground every claim in incident timeline or linked observability logs — never invent events.
 
 ## When to use
 
@@ -22,38 +19,21 @@ events.
 
 ## Principles
 
-- **Blameless language throughout.** No "Alice broke X" — "the change
-  to X did not anticipate Y." Focus on systems and decisions, not
-  individuals.
-- **Evidence or UNKNOWN.** Every timeline entry, every root-cause
-  claim, must cite the timeline or a log source. If the agent can't
-  see the evidence, mark `UNKNOWN` and ask the user to paste.
-- **Action items have owners and due dates.** An action item without
-  an owner is decoration.
+- **Blameless language throughout.** No "Alice broke X" — "change to X did not anticipate Y." Focus systems and decisions, not individuals.
+- **Evidence or UNKNOWN.** Every timeline entry, every root-cause claim must cite timeline or log source. If agent can't see evidence, mark `UNKNOWN`, ask user paste.
+- **Action items have owners and due dates.** Action item without owner = decoration.
 
 ## Steps
 
-1. **Read engineering context** at
-   `context/engineering-context.md`. If missing, tell
-   the user to run `define-engineering-context`
-   first and stop.
+1. **Read engineering context** at `context/engineering-context.md`. If missing, tell user run `define-engineering-context` first and stop.
 
-2. **Read config:** `config/observability.json`. If no observability
-   is connected, proceed but flag which sections will be thinner.
+2. **Read config:** `config/observability.json`. If no observability connected, proceed but flag which sections thinner.
 
-3. **Locate the incident.** Ask the user for the incident slug or
-   read the most recent `incidents/*.md`. If the file isn't
-   `Status: Resolved`, ask the user to confirm the incident is
-   actually resolved before writing a postmortem.
+3. **Locate incident.** Ask user for incident slug or read most recent `incidents/*.md`. If file not `Status: Resolved`, ask user confirm incident actually resolved before writing postmortem.
 
-4. **Pull supporting logs.** Run `composio search observability` to
-   find connected providers. For the time window of the incident,
-   fetch: error-rate time-series, top error messages, trace samples
-   on impacted endpoints, any alerts that fired. If a provider isn't
-   connected, mark those sections `logs UNKNOWN` and ask the user to
-   paste relevant dashboards or export a snippet.
+4. **Pull supporting logs.** Run `composio search observability` to find connected providers. For incident time window, fetch: error-rate time-series, top error messages, trace samples on impacted endpoints, any alerts fired. If provider not connected, mark sections `logs UNKNOWN`, ask user paste dashboards or export snippet.
 
-5. **Draft the postmortem** in this structure:
+5. **Draft postmortem** in this structure:
 
    ```markdown
    # Postmortem: {incident title}
@@ -103,18 +83,11 @@ events.
    | 2 | {...} | {...} | {...} | {...} |
    ```
 
-6. **Write** atomically to `postmortems/{incident-slug}.md`
-   (`*.tmp` → rename). Use the same slug as the incident file so the
-   pair is obvious.
+6. **Write** atomically to `postmortems/{incident-slug}.md` (`*.tmp` → rename). Use same slug as incident file so pair obvious.
 
-7. **Append to `outputs.json`** — new entry `{ id, type:
-   "postmortem", title, summary, path, status: "draft", createdAt,
-   updatedAt }`. Draft status until the user signs off.
+7. **Append to `outputs.json`** — new entry `{ id, type: "postmortem", title, summary, path, status: "draft", createdAt, updatedAt }`. Draft status until user signs off.
 
-8. **Summarize to user** — one paragraph covering root cause, top
-   action item, anything marked UNKNOWN that needs filling in, and
-   the path to the postmortem. Offer to update the `outputs.json`
-   status to `"ready"` once they've reviewed.
+8. **Summarize to user** — one paragraph covering root cause, top action item, anything marked UNKNOWN needs filling in, and path to postmortem. Offer update `outputs.json` status to `"ready"` once reviewed.
 
 ## Outputs
 

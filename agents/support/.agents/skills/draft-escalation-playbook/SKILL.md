@@ -10,28 +10,19 @@ integrations:
 
 ## When to use
 
-- "draft the P1 playbook" / "runbook for outages" / "security
-  incident playbook."
-- After an incident where you say "we need a real
-  playbook for this."
-- When onboarding identifies incident response as `TBD`.
+- "draft the P1 playbook" / "runbook for outages" / "security incident playbook."
+- After incident where you say "we need real playbook for this."
+- When onboarding marks incident response `TBD`.
 
 ## Steps
 
-1. **Read `context/support-context.md`.** Pull the current SLA tiers, VIP
-   list, and escalation contacts. If missing, run
-   `define-support-context` first.
+1. **Read `context/support-context.md`.** Pull current SLA tiers, VIP list, escalation contacts. Missing? Run `define-support-context` first.
 
 2. **Ask two targeted questions** — no more:
-   - **What counts as {type} for this product?** (P1 definition,
-     outage = what, security incident = what). Give 2–3 example
-     ticket phrasings.
-   - **Who needs to be looped in?** Engineering on-call, named
-     VIPs, legal/compliance contact, status page operator,
-     insurance (for data incidents).
+   - **What counts as {type} for this product?** (P1 definition, outage = what, security incident = what). Give 2–3 example ticket phrasings.
+   - **Who needs loop in?** Engineering on-call, named VIPs, legal/compliance contact, status page operator, insurance (for data incidents).
 
-3. **Synthesize the runbook** — markdown, roughly 300–500 words,
-   structured by timeline:
+3. **Synthesize runbook** — markdown, ~300–500 words, structured by timeline:
 
    ```markdown
    # {Playbook Title}
@@ -92,28 +83,15 @@ integrations:
      incident.
    ```
 
-4. **Template the filled sections** — use your actual VIP
-   names, internal-channel name, tracker tool (from
-   `context/support-context.md`). Pre-fill the customer comms templates
-   with their voice (from `context/support-context.md#voice`).
+4. **Template filled sections** — use actual VIP names, internal-channel name, tracker tool (from `context/support-context.md`). Pre-fill customer comms templates with their voice (from `context/support-context.md#voice`).
 
-5. **Write to `playbooks/{slug}.md`** atomically (`.tmp` →
-   rename). Slug = kebab-case (e.g. `p1-outage.md`,
-   `security-incident.md`, `data-loss.md`).
+5. **Write to `playbooks/{slug}.md`** atomically (`.tmp` → rename). Slug = kebab-case (e.g. `p1-outage.md`, `security-incident.md`, `data-loss.md`).
 
-6. **Append to `outputs.json`** with `type: "escalation-playbook"`,
-   `domain: "quality"`, title = playbook name, summary = 2
-   sentences on trigger + primary owner, path
-   `playbooks/{slug}.md`, status `draft`.
+6. **Append to `outputs.json`** with `type: "escalation-playbook"`, `domain: "quality"`, title = playbook name, summary = 2 sentences on trigger + primary owner, path `playbooks/{slug}.md`, status `draft`.
 
-7. **Summarize to me.** One paragraph: what's in the playbook,
-   what sections still need their judgement ("name the engineering
-   on-call contact," "pick the internal channel"), and the
-   reminder: "Edit once. Every incident after this just runs
-   through the same doc."
+7. **Summarize to me.** One paragraph: what's in playbook, what sections still need judgement ("name engineering on-call contact," "pick internal channel"), reminder: "Edit once. Every incident after this just runs through same doc."
 
 ## Outputs
 
 - `playbooks/{slug}.md`
-- Appends to `outputs.json` with `type: "escalation-playbook"`,
-  `domain: "quality"`.
+- Appends to `outputs.json` with `type: "escalation-playbook"`, `domain: "quality"`.

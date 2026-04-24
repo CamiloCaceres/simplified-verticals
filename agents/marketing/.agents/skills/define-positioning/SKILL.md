@@ -7,9 +7,9 @@ integrations:
 
 # Define Positioning
 
-The Head of Marketing OWNS `context/marketing-context.md`. No other
-agent writes it. This skill creates or updates it. Its existence is
-what unblocks the other four agents in the workspace.
+Head of Marketing OWNS `context/marketing-context.md`. No other agent
+write it. This skill create or update. Its existence unblock other
+four agents in workspace.
 
 ## When to use
 
@@ -17,62 +17,61 @@ what unblocks the other four agents in the workspace.
   "let's do positioning".
 - "update the positioning doc" / "our ICP changed, fix the context
   doc".
-- Called implicitly by any other skill that needs positioning and
-  finds the doc missing — but only after confirming with the user.
+- Called implicitly by any other skill needing positioning, finding
+  doc missing — only after confirming with user.
 
 ## Steps
 
 1. **Read config.** Load `config/company.json`, `config/icp.json`,
-   `config/voice.md`. If any is missing, run `onboard-me` first (or
-   ask the ONE missing piece just-in-time with the best-modality
-   hint: connected app > file > URL > paste).
+   `config/voice.md`. If any missing, run `onboard-me` first (or
+   ask ONE missing piece just-in-time with best-modality hint:
+   connected app > file > URL > paste).
 
-2. **Read the existing doc if present.** If
-   `context/marketing-context.md` exists, read it so this run is an
-   update, not a rewrite. Preserve anything the founder has already
-   sharpened; change only what's stale or new.
+2. **Read existing doc if present.** If
+   `context/marketing-context.md` exist, read so this run = update,
+   not rewrite. Preserve anything founder already sharpened; change
+   only stale or new.
 
-3. **Push for verbatim customer language.** Before drafting, ask the
-   founder for 2-3 verbatim customer quotes (pain they named, a
-   phrase they used about the category, an objection you heard). If
-   `call-insights/` has entries, mine those first. No marketer-speak
-   paraphrases — push back if the founder starts "translating"
-   customer words.
+3. **Push for verbatim customer language.** Before drafting, ask
+   founder for 2-3 verbatim customer quotes (pain they named, phrase
+   used about category, objection heard). If `call-insights/` has
+   entries, mine those first. No marketer-speak paraphrases — push
+   back if founder start "translating" customer words.
 
-4. **Draft the doc (~300-500 words, opinionated, direct).**
-   Structure, in this order:
+4. **Draft doc (~300-500 words, opinionated, direct).** Structure,
+   in order:
 
-   1. **Company overview** — one paragraph: what we make, who it's
-      for, what makes it worth building now.
+   1. **Company overview** — one paragraph: what we make, who for,
+      what make it worth building now.
    2. **ICP** — industry, size, role, triggers. Name **1-2 anchor
       accounts** (real closed-won or target).
-   3. **Jobs-to-be-done** — the 2-3 real jobs the buyer hires the
-      product for. Verbatim customer language preferred.
+   3. **Jobs-to-be-done** — 2-3 real jobs buyer hire product for.
+      Verbatim customer language preferred.
    4. **Positioning statement** — one-sentence category + audience +
       differentiated value. Opinionated.
-   5. **Category & differentiators** — what category we play in and
-      the 3 things that actually set us apart (not "we're faster").
-   6. **Top 3 competitors** — named, with a one-line "they're
-      strong at X, we're strong at Y" for each.
+   5. **Category & differentiators** — category we play in + 3
+      things actually set us apart (not "we're faster").
+   6. **Top 3 competitors** — named, one-line "they're strong at X,
+      we're strong at Y" each.
    7. **Brand voice notes** — 4-6 bullets on tone, forbidden
       phrases, sentence-length preference. Pull from
       `config/voice.md`.
-   8. **Pricing stance** — model + current range + the one thing
-      that is NOT negotiable.
-   9. **Primary CTA** — the one action every page / email /
-      campaign pushes toward right now.
+   8. **Pricing stance** — model + current range + one thing NOT
+      negotiable.
+   9. **Primary CTA** — one action every page / email / campaign
+      push toward right now.
 
-5. **Mark gaps honestly.** If a section is thin (no customer quotes
-   yet, no anchor account), write `TBD — {what the founder should
-   bring next}` rather than guessing. Never invent.
+5. **Mark gaps honestly.** If section thin (no customer quotes yet,
+   no anchor account), write `TBD — {what the founder should
+   bring next}` instead of guessing. Never invent.
 
 6. **Write atomically.** Write to
    `context/marketing-context.md.tmp`, then rename to
    `context/marketing-context.md`. Single file at agent root. NOT
-   under a subfolder. NOT under `.agents/`. NOT under
+   under subfolder. NOT under `.agents/`. NOT under
    `.houston/<agent>/`.
 
-7. **Append to `outputs.json`.** Read existing array, append a new
+7. **Append to `outputs.json`.** Read existing array, append new
    entry, write atomically:
 
    ```json
@@ -88,15 +87,15 @@ what unblocks the other four agents in the workspace.
    }
    ```
 
-   (The doc itself is a live file, but each substantive edit is
-   indexed so the founder sees the update on the dashboard.)
+   (Doc itself live file, but each substantive edit indexed so
+   founder see update on dashboard.)
 
-8. **Summarize to user.** One paragraph: what you changed, what's
-   still `TBD`, and the exact next move (e.g. "paste 3 customer
-   quotes and I'll tighten JTBD"). Remind them the other four
-   agents now have the context they need.
+8. **Summarize to user.** One paragraph: what changed, what still
+   `TBD`, exact next move (e.g. "paste 3 customer quotes and I'll
+   tighten JTBD"). Remind them other four agents now have context
+   they need.
 
 ## Outputs
 
-- `context/marketing-context.md` (at the agent root — live document)
+- `context/marketing-context.md` (at agent root — live document)
 - Appends to `outputs.json` with `type: "positioning"`.

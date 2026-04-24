@@ -5,8 +5,7 @@ description: "Use when you say 'draft a proposal for {Acme}' / 'one-pager propos
 
 # Draft Proposal
 
-A one-pager proposal. Not a statement of work — a tight, one-page
-document the champion can forward to the economic buyer and procurement.
+One-pager proposal. Not SOW — tight, one-page doc champion forward to economic buyer + procurement.
 
 ## When to use
 
@@ -16,48 +15,28 @@ document the champion can forward to the economic buyer and procurement.
 
 ## Steps
 
-1. **Read the playbook.** Load `context/sales-context.md`.
-   Required. Without it, stop.
+1. **Read the playbook.** Load `context/sales-context.md`. Required. Without it, stop.
 
-2. **Read pricing.** From the playbook's pricing-stance section.
-   Know the bands, the discount policy, and the non-negotiable.
-   **Never draft below the non-negotiable.** If the deal requires
-   that, write UNKNOWN and flag for approval.
+2. **Read pricing.** From playbook pricing-stance section. Know bands, discount policy, non-negotiable. **Never draft below non-negotiable.** If deal need that, write UNKNOWN + flag for approval.
 
-3. **Read the deal history** — all call notes and analyses under
-   `calls/` filtered by `dealSlug`. Extract: their problem
-   statement (verbatim), their success metric (verbatim), their
-   stakeholders, their timeline.
+3. **Read deal history** — all call notes + analyses under `calls/` filtered by `dealSlug`. Extract: problem statement (verbatim), success metric (verbatim), stakeholders, timeline.
 
-4. **Draft the proposal (~300–450 words):**
+4. **Draft proposal (~300–450 words):**
 
-   1. **Problem statement** — in THEIR words, cite which call.
+   1. **Problem statement** — THEIR words, cite which call.
    2. **Proposed approach** — one paragraph, concrete. No buzzwords.
-   3. **Scope** — what's in: bulleted. What's explicitly OUT:
-      bulleted. The out-of-scope list is as important as the in —
-      prevents scope creep.
-   4. **Pricing** — the proposed band, assumptions it rests on
-      (user count, volume, term), and any discount applied (within
-      policy). Show the math.
-   5. **Terms** — minimum viable terms from the playbook, adjusted
-      only within the discount policy.
-   6. **Success metrics** — how we'll both know this worked. Pulled
-      from call notes; this is the metric they already told us
-      mattered.
+   3. **Scope** — in: bulleted. Explicitly OUT: bulleted. Out-of-scope list important as in — prevents scope creep.
+   4. **Pricing** — proposed band, assumptions (user count, volume, term), any discount applied (within policy). Show math.
+   5. **Terms** — minimum viable terms from playbook, adjusted only within discount policy.
+   6. **Success metrics** — how both know worked. Pulled from call notes; metric they told us mattered.
    7. **Timeline** — kickoff, value-in-{N}-weeks milestones.
-   8. **Next step** — who signs, who legal-reviews, and target close
-      date (pulled from `close-plan.md` if it exists).
+   8. **Next step** — who signs, who legal-reviews, target close date (from `close-plan.md` if exists).
 
-5. **Sanity-check against the playbook.** Any commitment outside the
-   pricing stance or terms gets flagged inline with `FLAG: needs
-   approval — exceeds {non-negotiable}`. Surface these to the user in
-   the summary, not buried.
+5. **Sanity-check vs playbook.** Any commitment outside pricing stance or terms flagged inline with `FLAG: needs approval — exceeds {non-negotiable}`. Surface to user in summary, not buried.
 
-6. **Versioning.** If a prior proposal exists, increment the version.
-   First draft = `proposal-v1.md`; next = `v2.md`. Never overwrite.
+6. **Versioning.** If prior proposal exists, increment version. First draft = `proposal-v1.md`; next = `v2.md`. Never overwrite.
 
-7. **Write atomically** to `deals/{slug}/proposal-v{N}.md.tmp` →
-   rename.
+7. **Write atomically** to `deals/{slug}/proposal-v{N}.md.tmp` → rename.
 
 8. **Update `deals.json`** — set `lastProposalAt`, `proposalVersion`.
 
@@ -76,8 +55,7 @@ document the champion can forward to the economic buyer and procurement.
    }
    ```
 
-10. **Summarize.** The pricing ask + any flags that need the user's
-    decision. Path to full proposal. Never send.
+10. **Summarize.** Pricing ask + flags need user decision. Path to full proposal. Never send.
 
 ## Outputs
 

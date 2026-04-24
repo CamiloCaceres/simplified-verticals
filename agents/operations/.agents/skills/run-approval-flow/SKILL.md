@@ -5,16 +5,11 @@ description: "Use when you say 'review this inbound' / 'score this {vendor / par
 
 # Run Approval Flow
 
-Generic approval-rubric runner for any inbound type that needs a
-founder decision. For vendor-specific supplier triaging use the
-Vendor agent's `evaluate-supplier` skill — it has procurement-specific
-criteria and writes to a different folder.
+Generic approval-rubric runner for any inbound needing founder decision. Vendor-specific supplier triage → Vendor agent `evaluate-supplier` skill (procurement criteria, different folder).
 
 ## When to use
 
-- "review this vendor application against our criteria" (but
-  supplier-specific evaluations go to Vendor agent's
-  `evaluate-supplier`).
+- "review this vendor application against our criteria" (supplier-specific → Vendor agent `evaluate-supplier`).
 - "score these advisor candidates".
 - "is this partnership a fit".
 - "should I accept this press request".
@@ -22,51 +17,31 @@ criteria and writes to a different folder.
 
 ## Steps
 
-1. **Read `context/operations-context.md`.** The active priorities,
-   hard nos, and founder-specific positions anchor every rubric
-   evaluation. If missing: `define-operating-context` first, stop.
+1. **Read `context/operations-context.md`.** Active priorities, hard nos, founder-specific positions anchor every rubric eval. Missing → `define-operating-context` first, stop.
 
-2. **Read `config/approval-rubrics.md`.** Map the inbound-type to
-   a rubric. If the file is missing or has no matching rubric, ask
-   the founder: "What criteria should I use? Paste them, or I can
-   save a default rubric for {inbound-type} you can edit later."
+2. **Read `config/approval-rubrics.md`.** Map inbound-type to rubric. Missing file or no matching rubric → ask founder: "What criteria should I use? Paste them, or I can save a default rubric for {inbound-type} you can edit later."
 
-   **Default rubrics** (used if the founder says "default"):
+   **Default rubrics** (used if founder says "default"):
 
-   - **vendor-app** (generic inbound vendor / seller reaching out):
-     fit-to-priorities, size/stage-match, red-flags-search (public
-     incidents), reference-check (Y/N), friction-to-try.
-   - **advisor**: domain-authority, access (who they'd open),
-     time-commitment, compensation-alignment.
-   - **partnership**: mutual-audience, mutual-capability,
-     asymmetric-upside (do they need us more than we need them),
-     off-ramp-cost.
-   - **press**: audience-fit, question-quality, founder-time-cost,
-     reputational-upside.
+   - **vendor-app** (generic inbound vendor / seller): fit-to-priorities, size/stage-match, red-flags-search (public incidents), reference-check (Y/N), friction-to-try.
+   - **advisor**: domain-authority, access (who they'd open), time-commitment, compensation-alignment.
+   - **partnership**: mutual-audience, mutual-capability, asymmetric-upside (do they need us more than we need them), off-ramp-cost.
+   - **press**: audience-fit, question-quality, founder-time-cost, reputational-upside.
 
 3. **Gather evidence.**
-   - Read the submission the founder pastes or links to.
-   - `composio search research` → public signals on the
-     submitter (website, recent activity, mentions).
-   - `composio search inbox` → any prior correspondence with
-     this person or domain.
-   - If the submission references claims that are verifiable,
-     verify them (e.g. "we raised a Series B last month" → quick
-     news check).
+   - Read submission founder pastes or links.
+   - `composio search research` → public signals on submitter (website, recent activity, mentions).
+   - `composio search inbox` → prior correspondence with person or domain.
+   - Submission claims verifiable → verify (e.g. "raised Series B last month" → quick news check).
 
-4. **Score against the rubric.**
-   - Each criterion: rating (1-5 or green/yellow/red — whatever
-     the rubric specifies) + 1-2 lines of evidence. Cite evidence
-     links.
-   - Overall score: weighted sum if the rubric specifies weights;
-     otherwise a rolled-up qualitative call.
+4. **Score against rubric.**
+   - Each criterion: rating (1-5 or green/yellow/red per rubric) + 1-2 lines evidence. Cite links.
+   - Overall: weighted sum if rubric specifies weights; else rolled-up qualitative call.
 
-5. **Produce a recommendation.**
-   - **Approve** — fit + no red flags + evidence strong.
-   - **Decline** — clear mismatch or red flags; state the top
-     2 reasons.
-   - **More info** — genuinely on the fence; list the 2-3 specific
-     questions the founder should ask to break the tie.
+5. **Produce recommendation.**
+   - **Approve** — fit + no red flags + strong evidence.
+   - **Decline** — clear mismatch or red flags; state top 2 reasons.
+   - **More info** — on the fence; list 2-3 specific questions founder should ask to break tie.
 
 6. **Write** to `approvals/{slug}.md` with:
    - Submission summary (1 paragraph).
@@ -74,16 +49,13 @@ criteria and writes to a different folder.
    - Public-signal findings.
    - Prior-correspondence summary (if any).
    - Recommendation + 3-line rationale.
-   - If "more info", the exact follow-up questions.
+   - If "more info", exact follow-up questions.
 
 7. **Atomic writes** — `*.tmp` → rename.
 
-8. **Append to `outputs.json`** with `type: "approval"`, status
-   "draft" (only the founder marks it `ready` after deciding).
+8. **Append to `outputs.json`** with `type: "approval"`, status "draft" (founder marks `ready` after deciding).
 
-9. **Summarize to user** — the recommendation + the one most
-   load-bearing line of evidence. Never "approve" without naming
-   the #1 thing that would make the founder regret it.
+9. **Summarize to user** — recommendation + one most load-bearing line of evidence. Never "approve" without naming #1 thing that would make founder regret it.
 
 ## Outputs
 
@@ -92,9 +64,6 @@ criteria and writes to a different folder.
 
 ## What I never do
 
-- **Commit the decision.** I recommend; the founder approves/declines.
-- **Send an acknowledgement or rejection email to the submitter.**
-  That's `draft-reply`'s job after the founder decides.
-- **Use a rubric that isn't stored.** If I'm asked to score
-  without a rubric, I ask for one before scoring. Ad-hoc scoring
-  is not reproducible.
+- **Commit the decision.** I recommend; founder approves/declines.
+- **Send acknowledgement or rejection email to submitter.** That `draft-reply`'s job after founder decides.
+- **Use rubric not stored.** Asked to score without rubric → ask for one first. Ad-hoc scoring not reproducible.

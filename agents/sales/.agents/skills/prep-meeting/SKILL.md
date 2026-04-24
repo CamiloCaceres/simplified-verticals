@@ -10,126 +10,72 @@ integrations:
 
 # Prep Meeting
 
-One skill for two meeting-prep shapes. The `type` parameter picks the
-structure; playbook-grounding and "no generic templates" discipline
-are shared.
+One skill, two meeting-prep shapes. `type` param pick structure. Playbook-grounding + "no generic templates" shared.
 
 ## Parameter: `type`
 
-- `call` — the pre-call one-pager (discovery / demo / followup /
-  late-stage call). Meeting goal · attendees · question bank ·
-  objections · exit criteria.
-- `qbr` — the Quarterly Business Review pack for an existing
-  customer. Outcomes shipped · usage trend · open asks · risks ·
-  next-quarter goal.
+- `call` — pre-call one-pager (discovery / demo / followup / late-stage). Goal · attendees · questions · objections · exit criteria.
+- `qbr` — Quarterly Business Review pack for existing customer. Outcomes · usage trend · open asks · risks · next-quarter goal.
 
-If the user's ask names the type in plain English ("call prep",
-"QBR"), infer. Otherwise ask ONE question naming the 2 options.
+User ask names type plain English ("call prep", "QBR") → infer. Else ask ONE question naming 2 options.
 
 ## When to use
 
-- Explicit triggers listed in the description.
-- Implicit: `daily-brief` detects an imminent meeting with no prep
-  and chains here for `type=call`; the customer-retention routine
-  chains here for `type=qbr` before the renewal window.
+- Explicit triggers in description.
+- Implicit: `daily-brief` detect imminent meeting no prep, chain here for `type=call`; customer-retention routine chain here for `type=qbr` before renewal window.
 
 ## Ledger fields I read
 
-Reads `config/context-ledger.json` first.
+Read `config/context-ledger.json` first.
 
-- `playbook` — from `context/sales-context.md`. Required.
-  `type=call` needs qualification framework + deal stages + objection
-  handbook + primary first-call goal. `type=qbr` needs success-metric
-  definition + renewal pricing stance.
-- `domains.crm.slug` — deal / customer record. Ask ONE question if
-  missing.
-- `domains.meetings.callRecorder` — used to pull prior call
-  transcripts for `type=call`.
-- `domains.retention.productUsage` — used for `type=qbr` usage trend.
+- `playbook` — from `context/sales-context.md`. Required. `type=call` need qualification framework + deal stages + objection handbook + primary first-call goal. `type=qbr` need success-metric definition + renewal pricing stance.
+- `domains.crm.slug` — deal / customer record. Ask ONE question if missing.
+- `domains.meetings.callRecorder` — pull prior call transcripts for `type=call`.
+- `domains.retention.productUsage` — `type=qbr` usage trend.
 
 ## Steps
 
-1. **Read ledger + playbook.** Gather missing required fields (ONE
-   question each, best-modality first). Write atomically.
+1. **Read ledger + playbook.** Gather missing required fields (ONE question each, best-modality first). Write atomically.
 
 2. **Branch on type.**
    - `call`:
-     1. Read the deal row in `deals.json` and any prior call notes
-        in `calls/{slug}/`. Read any account brief in
-        `accounts/{slug}/brief-*.md` (chain into `research-account
-        depth=full-brief` if missing and user approves).
-     2. Pull meeting details from Google Calendar (via Composio) if
-        a meeting time is specified. Capture attendees (title +
-        role, enrich via LinkedIn if thin).
-     3. Compile the one-pager:
-        - **Meeting goal** — pulled from the playbook's primary
-          first-call goal, adjusted for stage (discovery / demo /
-          late-stage).
-        - **Attendees** — name, title, 1-line profile + their likely
-          motivation at this meeting.
-        - **Context recap** — 2-3 bullets from the account brief +
-          any prior call analysis.
-        - **Question bank** — 5-8 questions drawn from the playbook's
-          qualification framework. Prioritize the pillar weakest on
-          the current deal state (if we have prior call analyses,
-          reference them).
-        - **Likely objections** — top 2 from the playbook's objection
-          handbook + the current best reframe per.
-        - **Exit criteria** — what has to be true at call-end for
-          this deal to advance a stage (from the playbook's deal-
-          stages + exit-criteria section).
-        - **Landmines to avoid** — anything from `call-insights/*.md`
-          flagged as a loss pattern for this segment.
-     4. Save to `deals/{slug}/call-prep-{YYYY-MM-DD}.md` (atomic
-        `*.tmp` → rename). Create `deals/{slug}/` if missing.
+     1. Read deal row `deals.json` + prior call notes `calls/{slug}/`. Read account brief `accounts/{slug}/brief-*.md` (chain `research-account depth=full-brief` if missing + user approves).
+     2. Pull meeting details Google Calendar (via Composio) if meeting time specified. Capture attendees (title + role, enrich via LinkedIn if thin).
+     3. Compile one-pager:
+        - **Meeting goal** — from playbook primary first-call goal, adjust for stage (discovery / demo / late-stage).
+        - **Attendees** — name, title, 1-line profile + likely motivation this meeting.
+        - **Context recap** — 2-3 bullets from account brief + prior call analysis.
+        - **Question bank** — 5-8 questions from playbook qualification framework. Prioritize weakest pillar on current deal state (reference prior call analyses if exist).
+        - **Likely objections** — top 2 from playbook objection handbook + current best reframe per.
+        - **Exit criteria** — what must be true at call-end for deal advance stage (from playbook deal-stages + exit-criteria section).
+        - **Landmines to avoid** — anything from `call-insights/*.md` flagged loss pattern for segment.
+     4. Save `deals/{slug}/call-prep-{YYYY-MM-DD}.md` (atomic `*.tmp` → rename). Create `deals/{slug}/` if missing.
      5. Update `deals.json` row — set `lastCallPrepAt`.
    - `qbr`:
-     1. Read the customer row in `customers.json` and any prior QBR
-        (`customers/{slug}/qbr-*.md`) to make this an update, not a
-        rewrite.
-     2. Pull usage trend via PostHog / Mixpanel / Amplitude (if
-        connected). Pull billing state via Stripe. Pull open
-        support tickets if a ticket tool is connected.
-     3. Compile the QBR pack:
-        - **Outcomes shipped** — against the success metric locked
-          at kickoff (from `customers/{slug}/onboarding-plan.md` if
-          it exists). Show the numbers.
-        - **Usage trend** — quarter-over-quarter. Cite the metric
-          source.
-        - **Open asks** — their open feature requests + support
-          escalations.
-        - **Risks** — any yellow/red drivers from the latest `score
-          subject=customer-health` run.
-        - **Next-quarter goal** — one concrete outcome, tied to the
-          product roadmap if visible.
-        - **Renewal runway** — days to renewal + pricing stance
-          reminder (from the playbook).
-     4. Save to `customers/{slug}/qbr-{YYYY-QN}.md`.
+     1. Read customer row `customers.json` + prior QBR (`customers/{slug}/qbr-*.md`) to make this update, not rewrite.
+     2. Pull usage trend via PostHog / Mixpanel / Amplitude (if connected). Pull billing state via Stripe. Pull open support tickets if ticket tool connected.
+     3. Compile QBR pack:
+        - **Outcomes shipped** — against success metric locked at kickoff (from `customers/{slug}/onboarding-plan.md` if exists). Show numbers.
+        - **Usage trend** — quarter-over-quarter. Cite metric source.
+        - **Open asks** — open feature requests + support escalations.
+        - **Risks** — yellow/red drivers from latest `score subject=customer-health` run.
+        - **Next-quarter goal** — one concrete outcome, tied to product roadmap if visible.
+        - **Renewal runway** — days to renewal + pricing stance reminder (from playbook).
+     4. Save `customers/{slug}/qbr-{YYYY-QN}.md`.
      5. Update `customers.json` row — set `lastQbrAt`.
 
-3. **Append to `outputs.json`** — read-merge-write atomically:
-   `{ id (uuid v4), type: "call-prep" (for call) | "qbr-prep" (for
-   qbr), title, summary: "<meeting goal | top risk + top outcome>",
-   path, status: "ready", createdAt, updatedAt, domain:
-   "<meetings | retention>" }`.
+3. **Append to `outputs.json`** — read-merge-write atomically: `{ id (uuid v4), type: "call-prep" (for call) | "qbr-prep" (for qbr), title, summary: "<meeting goal | top risk + top outcome>", path, status: "ready", createdAt, updatedAt, domain: "<meetings | retention>" }`.
 
-4. **Summarize to user.** The meeting goal (or top outcome for qbr)
-   + the top 3 questions (or top risk for qbr) inline. Path to full
-   prep.
+4. **Summarize to user.** Meeting goal (or top outcome for qbr) + top 3 questions (or top risk for qbr) inline. Path to full prep.
 
 ## What I never do
 
-- Invent attendees, usage numbers, or prior-call facts. Every row
-  cites a source.
-- Ship a generic discovery-call template — every question bank is
-  prioritized against the deal's current qualification state.
-- Write the QBR as a dashboard — it's a narrative with 3 risks and
-  3 wins, not a graph.
+- Invent attendees, usage numbers, prior-call facts. Every row cite source.
+- Ship generic discovery-call template — every question bank prioritized against deal current qualification state.
+- Write QBR as dashboard — narrative with 3 risks + 3 wins, not graph.
 
 ## Outputs
 
-- `call` → `deals/{slug}/call-prep-{YYYY-MM-DD}.md`; updates
-  `deals.json`.
-- `qbr` → `customers/{slug}/qbr-{YYYY-QN}.md`; updates
-  `customers.json`.
-- Appends to `outputs.json`.
+- `call` → `deals/{slug}/call-prep-{YYYY-MM-DD}.md`; updates `deals.json`.
+- `qbr` → `customers/{slug}/qbr-{YYYY-QN}.md`; updates `customers.json`.
+- Append `outputs.json`.

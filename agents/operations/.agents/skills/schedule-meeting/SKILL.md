@@ -12,56 +12,32 @@ integrations:
 
 - "book a meeting with {X}" / "find 30 min with {team}".
 - "let's schedule {Y}" / "propose times for {Z}".
-- Handoff from the `triage-inbox` skill when a thread is
-  classified as `schedule-meeting` and you say "book it."
+- Handoff from `triage-inbox` skill when thread classified as `schedule-meeting` and you say "book it."
 
 ## Steps
 
-1. **Read `context/operations-context.md`.** If
-   missing or empty, stop and ask you to run Head of
-   Operations' `define-operating-context` first. Voice, priorities,
-   and key-contacts shape the draft message.
+1. **Read `context/operations-context.md`.** If missing/empty, stop. Ask you to run Head of Operations' `define-operating-context` first. Voice, priorities, key-contacts shape draft.
 
-2. **Clarify the ask.** Extract from your message:
-   counterparty name(s), desired duration (default 30 min), purpose,
-   desired timezone (default user's). If anything material is
-   missing, ask ONE question.
+2. **Clarify ask.** Extract from message: counterparty name(s), duration (default 30 min), purpose, timezone (default user's). If material missing, ask ONE question.
 
-3. **Read `config/schedule-preferences.json` and `config/vips.json`.**
-   If preferences are missing, ask ONE question (best: connect the
-   calendar so I can infer) and continue.
+3. **Read `config/schedule-preferences.json` and `config/vips.json`.** If preferences missing, ask ONE question (best: connect calendar so I infer) and continue.
 
-4. **Resolve the calendar.** `composio search calendar` → free/busy
-   and create-event slugs. If no calendar is connected, tell the
-   user which category to link and stop.
+4. **Resolve calendar.** `composio search calendar` → free/busy + create-event slugs. No calendar connected → tell user which category to link, stop.
 
-5. **Fetch free/busy.** Pull your busy blocks for the next 10
-   business days. Compute candidate slots that:
+5. **Fetch free/busy.** Pull busy blocks next 10 business days. Compute candidate slots that:
    - fall inside `workingHours`,
    - do NOT intersect any `focusBlock`,
    - respect `minBufferMinutes` on both sides of existing busy,
-   - keep the day's total meetings ≤ `maxMeetingsPerDay`,
+   - keep day's total meetings ≤ `maxMeetingsPerDay`,
    - avoid `blackoutPeriods`.
 
-   Thresholds come from config — do NOT hardcode.
+   Thresholds from config — do NOT hardcode.
 
-6. **Pick 3 options.** Spread across days (e.g. tomorrow AM,
-   day-after PM, end-of-week AM). Prefer mid-morning (10–11:30) and
-   early afternoon (2–4). Avoid Mondays before noon and Friday
-   afternoons unless nothing else fits. For VIPs, prefer
-   higher-energy morning slots and larger buffers.
+6. **Pick 3 options.** Spread across days (e.g. tomorrow AM, day-after PM, end-of-week AM). Prefer mid-morning (10–11:30) and early afternoon (2–4). Avoid Mondays before noon, Friday afternoons unless nothing else fits. VIPs → prefer morning slots, bigger buffers.
 
-7. **Draft the message.** Read `config/voice.md` (or the voice block
-   in the operating context). If voice samples are missing, ask ONE
-   targeted question (best: connect your inbox via Composio so I can
-   pull 20–30 recent sent messages for calibration) and continue.
-   Pattern: one-line ack → 3 proposed times (bulleted, both user and
-   counterparty timezones labeled if different) → soft fallback ("or
-   suggest a time that works better"). Cap at ~80 words.
+7. **Draft message.** Read `config/voice.md` (or voice block in operating context). Voice samples missing → ask ONE targeted question (best: connect inbox via Composio for 20–30 recent sent messages calibration) and continue. Pattern: one-line ack → 3 proposed times (bulleted, both user + counterparty timezones labeled if different) → soft fallback ("or suggest a time that works better"). Cap ~80 words.
 
-8. **Write `scheduling/{slug}/proposal.md`** (slug =
-   kebab-cased counterparty or thread id — prefixed `sched-` if
-   standalone). Overwrite per iteration. Structure:
+8. **Write `scheduling/{slug}/proposal.md`** (slug = kebab-cased counterparty or thread id — prefix `sched-` if standalone). Overwrite per iteration. Structure:
 
    ```markdown
    ## Counterparty
@@ -83,26 +59,15 @@ integrations:
    draft
    ```
 
-9. **Present to user.** "Here are 3 options + a draft message. Send
-   this? Tweak? Add a 4th option?" Never send.
+9. **Present to user.** "Here 3 options + draft message. Send? Tweak? Add 4th?" Never send.
 
-10. **Iterate on the reply.** When the counterparty replies picking
-    a slot or counter-proposing, update the proposal's `## Status`
-    (draft → sent → counter-proposed) and either confirm or loop
-    back to step 5–6 with a narrowed window.
+10. **Iterate on reply.** Counterparty reply picks slot or counter-proposes → update proposal `## Status` (draft → sent → counter-proposed). Confirm or loop back step 5–6 with narrowed window.
 
-11. **Book on approval.** When you say "book {time} with
-    {counterparty}," call the Composio create-event slug. Add the
-    counterparty as attendee, include a video link if the calendar
-    provider supports it, title per user instruction or inferred
-    purpose. Update proposal status to `confirmed`.
+11. **Book on approval.** You say "book {time} with {counterparty}" → call Composio create-event slug. Add counterparty as attendee, include video link if provider supports, title per user instruction or inferred purpose. Update proposal status `confirmed`.
 
-12. **Append to `outputs.json`** with `type: "scheduling"`, status
-    "draft" until confirmed, then flip to "ready" on booking.
+12. **Append to `outputs.json`** with `type: "scheduling"`, status "draft" until confirmed, flip to "ready" on booking.
 
-13. **Hand off prep.** After booking, if the attendee is a VIP or
-    the meeting is high-stakes, offer: "Want me to run
-    `prep-meeting-briefing` on this one now?"
+13. **Hand off prep.** After booking, if attendee VIP or meeting high-stakes, offer: "Want me run `prep-meeting-briefing` on this one now?"
 
 ## Outputs
 
@@ -112,12 +77,7 @@ integrations:
 
 ## What I never do
 
-- **Book** a calendar event without your explicit "book it" on
-  a specific time.
-- **Send** the counterparty message — draft only; the user sends
-  from their own inbox, or approves me to send via Composio after
-  review.
-- **Override a focus block or daily cap** without the user
-  explicitly waiving it for this one meeting.
-- **Propose slots without reading preferences** — if
-  `schedule-preferences.json` is missing I ask once and continue.
+- **Book** calendar event without your explicit "book it" on specific time.
+- **Send** counterparty message — draft only. User sends from own inbox, or approves me to send via Composio after review.
+- **Override focus block or daily cap** without user explicitly waiving for this one meeting.
+- **Propose slots without reading preferences** — `schedule-preferences.json` missing → ask once, continue.

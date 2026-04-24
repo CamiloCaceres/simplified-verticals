@@ -8,14 +8,13 @@ integrations:
 
 # Triage Bug Report
 
-A single raw report → a structured ticket. I never file or close the
-ticket — the output is markdown you paste into your tracker.
+Raw report → structured ticket. Never file or close — output markdown, you paste into tracker.
 
 ## When to use
 
 - User: "triage this bug" / "here's a bug report" / "is this P0?" /
   "is this a hotfix?" / "how should I file this?"
-- User forwards a Sentry alert, user email, Slack snippet, screenshot
+- User forwards Sentry alert, user email, Slack snippet, screenshot
   description, or error trace.
 
 ## Steps
@@ -25,54 +24,54 @@ ticket — the output is markdown you paste into your tracker.
    empty, say: "I need the engineering context doc first. Run the
    `define-engineering-context` skill (5 minutes), then come back."
    Stop.
-2. **Read `domains.triage.severityRules` from the context ledger
+2. **Read `domains.triage.severityRules` from context ledger
    (`config/context-ledger.json`).** If missing, ask ONE question:
    "I need your severity rules before I can assign P0/P1/P2/P3.
    Paste them, or accept the documented defaults (P0=outage,
    P1=broken feature, P2=degraded with workaround, P3=cosmetic) and
-   we move on." Write them into the ledger atomically and continue.
-3. **Optionally read**: `runbooks/` — if a
-   runbook exists for the affected system, reference it in the route
+   we move on." Write into ledger atomically, continue.
+3. **Optionally read**: `runbooks/` — if
+   runbook exists for affected system, reference in route
    recommendation. Graceful on miss.
-4. **Parse the report.** Extract: observed behavior, expected
+4. **Parse report.** Extract: observed behavior, expected
    behavior (if stated), affected surface (endpoint / page / job),
    environment (browser / OS / plan tier / version, if known), first
    seen timestamp (if known), user / customer (if shared), error
-   text / stack trace (if included). Mark anything missing as
-   UNKNOWN — don't fabricate.
-5. **Draft reproduction steps** if the report has enough detail.
+   text / stack trace (if included). Mark missing as
+   UNKNOWN — no fabrication.
+5. **Draft reproduction steps** if report has enough detail.
    Numbered, terse, imperative ("1. Open /settings. 2. Click
-   Export."). If steps can't be inferred, write `**Repro:** needs
+   Export."). If steps not inferable, write `**Repro:** needs
    more info — {specific thing missing, e.g. 'which browser',
    'which plan tier'}` and route as `needs-more-info`.
 6. **Assign severity.** Apply `config/severity-rules.md` line by
-   line. State the severity AND the one-sentence rationale naming the
+   line. State severity AND one-sentence rationale naming
    rule that triggered ("P1 per rule 'broken feature with no
    workaround' — checkout page errors on submit with no fallback
-   path"). Never invent severity without the rules doc.
-7. **Pick a route.** One of:
-   - `hotfix` — severity P0, or P1 touching a sensitive area per the
+   path"). Never invent severity without rules doc.
+7. **Pick route.** One of:
+   - `hotfix` — severity P0, or P1 touching sensitive area per
      engineering context.
-   - `current sprint` — severity P1 with a workaround, or P2 on a
+   - `current sprint` — severity P1 with workaround, or P2 on
      high-priority surface.
-   - `backlog` — severity P2/P3 not on the critical path.
+   - `backlog` — severity P2/P3 not on critical path.
    - `close as not-a-bug` — expected behavior, user misconfiguration,
      feature request in disguise. State why.
-   - `needs-more-info` — repro or severity inputs are missing.
-8. **Draft the paste-ready issue description.** Format suited to the
+   - `needs-more-info` — repro or severity inputs missing.
+8. **Draft paste-ready issue description.** Format suited to
    user's tracker (from `config/issue-tracker.json`) — Linear and
-   GitHub Issues share a Markdown-friendly shape; Jira gets sections
+   GitHub Issues share Markdown-friendly shape; Jira gets sections
    with `h3.` headings if specified. Include: title (≤80 chars,
    action-verb-led), summary (2-3 sentences), reproduction steps,
    expected vs. actual, severity + route, affected surface, and any
-   artifact links (Sentry URL, Slack permalink) if the user shared
+   artifact links (Sentry URL, Slack permalink) if user shared
    them.
 9. **Write** `bug-triage/{slug}.md` atomically (`.tmp` → rename). Slug
-   is short kebab-case derived from the issue (e.g.
+   = short kebab-case from issue (e.g.
    `login-500-safari-ios.md`). Front-matter: `severity`, `route`,
    `affectedSurface`, `reporter` (if known), `firstSeen` (if known).
 10. **Append to `outputs.json`** — type `"bug-triage"`, status
-    `"draft"`, 2-3-sentence summary naming severity + route + the
+    `"draft"`, 2-3-sentence summary naming severity + route +
     surface. Read-merge-write atomically.
 11. **Summarize to user** — one paragraph: "Triaged as {severity} /
     {route}. Reasoning: {one line}. Paste-ready description is at
@@ -82,10 +81,10 @@ ticket — the output is markdown you paste into your tracker.
 
 ## Hard nos
 
-- Never file the ticket in the tracker. Never close an existing
+- Never file ticket in tracker. Never close existing
   ticket. Never assign severity without reading
   `config/severity-rules.md` first.
-- Never invent reproduction steps. If the report is thin, mark it
+- Never invent reproduction steps. If report thin, mark
   `needs-more-info` and name what's missing.
 
 ## Outputs

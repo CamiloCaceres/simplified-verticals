@@ -8,10 +8,7 @@ integrations:
 
 # Run Incident Response
 
-Live coach + scribe for an active incident. The user is under stress.
-My job is to run the checklist so they don't forget a step, and to
-write the timeline so they don't have to. **I never take an action.
-I tell the user the next action; they execute; I log what happened.**
+Live coach + scribe for active incident. User stressed. My job: run checklist so no step forgotten, write timeline so user no write. **I never act. I tell next action; user execute; I log outcome.**
 
 ## When to use
 
@@ -21,34 +18,25 @@ I tell the user the next action; they execute; I log what happened.**
 - "Run the incident playbook with me"
 - "Coach me through this outage"
 
-This is the one skill where speed matters more than polish. Start the
-incident file immediately — don't block on config reads.
+Only skill where speed > polish. Start incident file immediately — no block on config reads.
 
 ## Hard nos (the posture)
 
-- **Never auto-rollback.** Even if the rollback command is obvious.
-  Tell the user the rollback command; let them run it.
-- **Never execute a command in production.** Not a restart, not a
-  scale-up, not a feature-flag flip. I produce the command; user runs.
-- **Never invent timestamps or events.** If you say "something
-  happened around 2pm," I log "~14:00 (approx)". If you don't know,
-  I log `UNKNOWN`.
-- **Never close the incident unilaterally.** User confirms resolved.
+- **Never auto-rollback.** Even if rollback command obvious. Tell user rollback command; user run.
+- **Never execute command in production.** No restart, no scale-up, no feature-flag flip. I produce command; user run.
+- **Never invent timestamps or events.** User say "something happened around 2pm" → log "~14:00 (approx)". Unknown → log `UNKNOWN`.
+- **Never close incident unilaterally.** User confirm resolved.
 
 ## Steps
 
 1. **Read engineering context** at
-   `context/engineering-context.md`. If missing, say so
-   briefly and proceed anyway — an incident is not the time to block
-   on onboarding. Note "engineering-context MISSING" in the timeline.
+   `context/engineering-context.md`. Missing → say so brief, proceed anyway — incident no time to block on onboarding. Note "engineering-context MISSING" in timeline.
 
-2. **Read config:** `config/observability.json`, `config/on-call.md`.
-   Missing is OK — proceed with what we have.
+2. **Read config:** `config/observability.json`, `config/on-call.md`. Missing OK — proceed with what we have.
 
-3. **Open the incident file immediately.** Generate a slug from the
-   user's one-line description (e.g. `prod-api-500s`,
+3. **Open incident file immediately.** Generate slug from user one-line description (e.g. `prod-api-500s`,
    `auth-login-broken`). Create
-   `incidents/{YYYY-MM-DD}-{slug}.md` with this skeleton:
+   `incidents/{YYYY-MM-DD}-{slug}.md` with skeleton:
 
    ```markdown
    # Incident: {one-line title}
@@ -72,45 +60,23 @@ incident file immediately — don't block on config reads.
    _TBD_
    ```
 
-   Atomic write. Append an `outputs.json` entry with `type:
-   "incident"`, `status: "draft"` now — the dashboard should show
-   the active incident immediately.
+   Atomic write. Append `outputs.json` entry with `type:
+   "incident"`, `status: "draft"` now — dashboard show active incident immediately.
 
-4. **Run the stabilize step.** Ask ONE question: "What's the impact
-   right now — who's affected, how many, what's broken?" When the
-   user answers, log it into `## Impact`. Then propose the least-
-   destructive containment move (e.g. "flip the feature flag off,"
-   "shed traffic to the healthy region," "disable the offending
-   cron"). **Tell the user to run it. Do not run it.** Log
-   "proposed: {action}" to the timeline with a timestamp.
+4. **Run stabilize step.** Ask ONE question: "What's the impact right now — who's affected, how many, what's broken?" User answer → log to `## Impact`. Then propose least-destructive containment move (e.g. "flip feature flag off," "shed traffic to healthy region," "disable offending cron"). **Tell user run it. No run it.** Log "proposed: {action}" to timeline with timestamp.
 
-5. **Run the communicate step.** Decide whether to post a public
-   status (status page / customer email) based on severity. Draft
-   the status-page update and the customer email (if warranted) and
-   paste them in chat for the user to send. **Never send without
-   approval.** Log "comms drafted — awaiting send" with the drafts'
-   paths or the content inline.
+5. **Run communicate step.** Decide public status post (status page / customer email) by severity. Draft status-page update and customer email (if warranted), paste in chat for user send. **Never send without approval.** Log "comms drafted — awaiting send" with draft paths or content inline.
 
-6. **Run the mitigate step.** Rank possible mitigations by blast
-   radius (least destructive first): feature flag off → config
-   rollback → code rollback → full deploy rollback → emergency
-   patch → DB restore. For each the user considers, log
-   "attempted: {action} — result: {user-reported outcome}". If a
-   mitigation succeeds, proceed to verify. If all fail, escalate.
+6. **Run mitigate step.** Rank mitigations by blast radius (least destructive first): feature flag off → config rollback → code rollback → full deploy rollback → emergency patch → DB restore. Each user consider → log "attempted: {action} — result: {user-reported outcome}". Mitigation succeed → verify. All fail → escalate.
 
-7. **Run the verify step.** Propose 2–3 signals that would confirm
-   resolution (error rate back to baseline, dashboard green, probe
-   passing, customer confirms). Ask the user to check each. Log
-   "verified: {signal} — {OK / still broken}" per signal.
+7. **Run verify step.** Propose 2–3 signals confirm resolution (error rate back to baseline, dashboard green, probe passing, customer confirms). User check each. Log "verified: {signal} — {OK / still broken}" per signal.
 
-8. **Run the document step (ongoing).** Every significant event the
-   user reports gets appended to the timeline with a timestamp.
-   Don't editorialize — capture facts as reported.
+8. **Run document step (ongoing).** Every significant event user reports → append to timeline with timestamp. No editorialize — capture facts as reported.
 
-9. **When you say resolved:** update the file header to
+9. **When say resolved:** update file header to
    `Status: Resolved`, add `Resolved at: {ISO}` and `Duration:
-   {HH:MM}`. Write the final timeline entry. Update the
-   `outputs.json` entry to `status: "ready"` and refresh
+   {HH:MM}`. Write final timeline entry. Update
+   `outputs.json` entry to `status: "ready"`, refresh
    `updatedAt`.
 
 10. **Offer hand-off to postmortem.** Ask: "Want me to draft the
@@ -121,5 +87,4 @@ incident file immediately — don't block on config reads.
 ## Outputs
 
 - `incidents/{YYYY-MM-DD}-{slug}.md` — live-updated timeline.
-- Entry in `outputs.json` with `type: "incident"` (starts `draft`,
-  becomes `ready` on resolution).
+- Entry in `outputs.json` with `type: "incident"` (starts `draft`, becomes `ready` on resolution).

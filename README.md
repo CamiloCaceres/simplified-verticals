@@ -30,6 +30,7 @@ Use this workspace when:
 | **Legal** | Full-stack legal operator | Contracts · compliance · entity · IP · advisory | "Review this NDA and flag the risks" |
 | **Operations** | Full-stack operations operator | Planning · scheduling · finance · vendors · data | "Prep me for this morning's meetings" |
 | **Support** | Full-stack customer support operator | Inbox · help center · success · quality | "Triage my support inbox this morning" |
+| **Bookkeeping** | Full-stack startup bookkeeper | Setup · transactions · close · reporting · compliance | "Process these bank statements" |
 
 ---
 
@@ -100,7 +101,8 @@ simplified-verticals/
     ├── people/             # 17 skills across 5 domain chips
     ├── legal/              # 12 skills across 5 domain chips
     ├── operations/         # 23 skills across 5 domain chips
-    └── support/            # 16 skills across 4 domain chips
+    ├── support/            # 16 skills across 4 domain chips
+    └── bookkeeping/        # 20 skills across 5 domain chips
         ├── houston.json        # includes useCases for the tile grid
         ├── CLAUDE.md           # identity + domain-grouped skill index
         ├── data-schema.md      # context ledger + artifact folders

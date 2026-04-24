@@ -10,45 +10,21 @@ integrations:
 # Triage Incoming
 
 ## When to use
-A new inbound message has landed and no `conversations.json` entry exists for its thread yet, OR an existing entry needs re-triage because the content materially changed (e.g. a how-to turned into an outage report). For the solo founder, triage happens constantly — every fresh reply that arrives needs this skill run before anything else.
+New inbound message landed, no `conversations.json` entry for thread yet, OR existing entry need re-triage because content changed (e.g. how-to turned outage report). Solo founder: triage constant — every fresh reply need this skill run first.
 
 ## Steps
-0. **Read `context/support-context.md`.** If missing, stop and
-   tell me to run `define-support-context` first. Read the
-   routing rules + SLA tiers + VIP list from this doc — never
-   hardcode them.
-1. **Identify the source** — you name the channel or the message is
-   referenced by external id. Use `composio search <channel>` to
-   find the correct fetch slug (e.g. Gmail thread fetch, Intercom
-   conversation fetch). Do NOT hardcode tool slugs.
-2. **Fetch the raw thread** via Composio. Pull subject, all
-   messages, sender email, external message ids.
-3. **Resolve the customer.** Look up `customers.json` by sender
-   email. If not found, create a new index entry (slug =
-   kebab-cased email local-part, deduped if needed).
-4. **Categorize** the content against the routing categories in
-   `context/support-context.md` (typical set: `bug | how-to |
-   feature | billing | account | security | other`). Content
-   signals: error messages and stack traces lean bug; "how do I…"
-   leans how-to; "can you add…" leans feature; keywords like
-   "refund", "invoice", "charge" lean billing.
-5. **Assign priority (P1–P4)** using the tier thresholds from
-   `context/support-context.md`. Typical starting rules: MRR >=
-   $500/mo → base P2; VIP tag → P1 floor. Escalate on content:
-   "down", "can't log in", "data loss", "production" → bump one
-   level (max P1). De-escalate on "whenever you get a chance".
-6. **Set SLA fields** using
-   `domains.inbox.slaTargets.firstResponseHours` (fallback to the
-   tier table in the context doc). `breached = false` initially.
-7. **Write atomically.** Upsert into `conversations.json`. Write
-   full messages to `conversations/{id}/thread.json`.
-8. **Append to `outputs.json`** with `type: "triage"`,
-   `domain: "inbox"`, title = `{customer} — {subject}`, summary =
-   category + priority, path.
+0. **Read `context/support-context.md`.** If missing, stop. Tell me run `define-support-context` first. Read routing rules + SLA tiers + VIP list from doc — never hardcode.
+1. **Identify source** — you name channel or message referenced by external id. Use `composio search <channel>` to find correct fetch slug (e.g. Gmail thread fetch, Intercom conversation fetch). Do NOT hardcode tool slugs.
+2. **Fetch raw thread** via Composio. Pull subject, all messages, sender email, external message ids.
+3. **Resolve customer.** Look up `customers.json` by sender email. If not found, create new index entry (slug = kebab-cased email local-part, deduped if needed).
+4. **Categorize** content against routing categories in `context/support-context.md` (typical set: `bug | how-to | feature | billing | account | security | other`). Content signals: error messages + stack traces lean bug; "how do I…" lean how-to; "can you add…" lean feature; keywords "refund", "invoice", "charge" lean billing.
+5. **Assign priority (P1–P4)** using tier thresholds from `context/support-context.md`. Typical start rules: MRR >= $500/mo → base P2; VIP tag → P1 floor. Escalate on content: "down", "can't log in", "data loss", "production" → bump one level (max P1). De-escalate on "whenever you get a chance".
+6. **Set SLA fields** using `domains.inbox.slaTargets.firstResponseHours` (fallback to tier table in context doc). `breached = false` initially.
+7. **Write atomically.** Upsert into `conversations.json`. Write full messages to `conversations/{id}/thread.json`.
+8. **Append to `outputs.json`** with `type: "triage"`, `domain: "inbox"`, title = `{customer} — {subject}`, summary = category + priority, path.
 
 ## Outputs
 - Writes to `conversations.json` (index upsert)
 - Writes to `conversations/{id}/thread.json` (full thread)
 - Writes to `customers.json` (new customer row if needed)
-- Appends to `outputs.json` with `type: "triage"`,
-  `domain: "inbox"`.
+- Appends to `outputs.json` with `type: "triage"`, `domain: "inbox"`.

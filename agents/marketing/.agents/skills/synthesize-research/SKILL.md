@@ -8,73 +8,44 @@ integrations:
 
 # Synthesize Research
 
-Source template: Gumloop "AI Research Agent with Automated Report
-Generation". Adapted to produce briefs shaped for hand-off to the
-other four marketing agents, not 20-page investor memos.
+Source template: Gumloop "AI Research Agent with Automated Report Generation". Adapted for hand-off to other four marketing agents, not 20-page investor memos.
 
 ## When to use
 
-- "research {topic}" / "I need a brief on {topic}" / "what's the
-  state of {topic}".
+- "research {topic}" / "I need a brief on {topic}" / "what's state of {topic}".
 - "summarize what's happening in {category}".
-- Called implicitly by other HoM skills (`plan-launch`,
-  `track-competitors`, `profile-icp`) when they hit an evidence gap
-  that needs a dedicated research run.
+- Called implicitly by other HoM skills (`plan-launch`, `track-competitors`, `profile-icp`) when hit evidence gap needing dedicated research run.
 
 ## Steps
 
-1. **Clarify scope in one short exchange (skip if the user's prompt
-   is already specific).** Ask:
-   - Who is this brief for — you, or to hand to one of the other
-     agents (SEO, Growth, Lifecycle, Social)?
-   - What decision does it need to unblock?
-   - Depth — 15-minute scan, 60-minute dive, or deep?
+1. **Clarify scope in one short exchange (skip if user prompt already specific).** Ask:
+   - Who brief for — you, or hand to other agent (SEO, Growth, Lifecycle, Social)?
+   - What decision must unblock?
+   - Depth — 15-min scan, 60-min dive, or deep?
 
-2. **Read positioning doc** (own file):
-   `context/marketing-context.md`. Ground the brief in our ICP and
-   category — generic internet research is not a brief.
+2. **Read positioning doc** (own file): `context/marketing-context.md`. Ground brief in our ICP and category — generic internet research not a brief.
 
-3. **Discover research tools at runtime.** Do NOT hardcode tool
-   names. Run `composio search research`, `composio search
-   web-search`, `composio search web-scrape` and pick the best
-   connected slug for each step. If nothing is connected, tell the
-   user which category to link (e.g. "connect a web-search
-   provider — Integrations tab") and stop.
+3. **Discover research tools at runtime.** Do NOT hardcode tool names. Run `composio search research`, `composio search web-search`, `composio search web-scrape` and pick best connected slug per step. If nothing connected, tell user which category to link (e.g. "connect web-search provider — Integrations tab") and stop.
 
-4. **Run the research in layers.** Log sources as you go — the
-   final brief needs citations:
-   1. **Landscape scan** — who the players are, category
-      terminology, top 5-10 authoritative sources.
-   2. **Evidence drill** — fetch the top sources, extract claims,
-      quotes, data points. Cite URL + fetch timestamp per claim.
-   3. **Contradiction check** — where do sources disagree? Name
-      both sides; don't average them into mush.
-   4. **Relevance filter** — which findings actually matter for
-      OUR ICP / OUR positioning / the decision at hand? Cut the
-      rest.
+4. **Run research in layers.** Log sources as you go — final brief needs citations:
+   1. **Landscape scan** — players, category terminology, top 5-10 authoritative sources.
+   2. **Evidence drill** — fetch top sources, extract claims, quotes, data points. Cite URL + fetch timestamp per claim.
+   3. **Contradiction check** — where sources disagree? Name both sides; don't average to mush.
+   4. **Relevance filter** — which findings matter for OUR ICP / OUR positioning / decision at hand? Cut rest.
 
-5. **Structure the brief (markdown, ~500-900 words for a standard
-   depth).**
+5. **Structure brief (markdown, ~500-900 words standard depth).**
 
    1. **The question** — one sentence.
-   2. **TL;DR** — 3-5 bullets the user can act on today.
-   3. **Key findings** — numbered. Each finding: the claim, the
-      evidence (cite), the implication for us.
-   4. **Where sources disagree** — short section. Don't hide it.
-   5. **What we don't know** — explicit gaps. Mark `UNKNOWN` + the
-      kind of source that would resolve it.
-   6. **Recommended next moves** — tagged by agent. Example:
-      `[seo-content] Target cluster "{keyword}" — 8 of 10 top-
-      ranking pages are thin.`
+   2. **TL;DR** — 3-5 bullets user can act on today.
+   3. **Key findings** — numbered. Each: claim, evidence (cite), implication for us.
+   4. **Where sources disagree** — short section. Don't hide.
+   5. **What we don't know** — explicit gaps. Mark `UNKNOWN` + kind of source that resolve.
+   6. **Recommended next moves** — tagged by agent. Example: `[seo-content] Target cluster "{keyword}" — 8 of 10 top-ranking pages are thin.`
    7. **Sources** — URL + title + fetch timestamp.
 
-6. **Never invent.** No synthesized "it seems likely that…"
-   statements without a cited source. If the research is thin, say
-   so and stop there — bad briefs cost more than no brief.
+6. **Never invent.** No synthesized "it seems likely that…" statements without cited source. If research thin, say so and stop — bad briefs cost more than no brief.
 
-7. **Write atomically** to `research/{topic-slug}.md` —
-   `{path}.tmp` then rename. `{topic-slug}` is kebab-case of the
-   topic (e.g. `research/geo-audits-category.md`).
+7. **Write atomically** to `research/{topic-slug}.md` — `{path}.tmp` then rename. `{topic-slug}` is kebab-case of topic (e.g. `research/geo-audits-category.md`).
 
 8. **Append to `outputs.json`.** Read-merge-write atomically:
 
@@ -91,8 +62,7 @@ other four marketing agents, not 20-page investor memos.
    }
    ```
 
-9. **Summarize to user.** One paragraph: the question, TL;DR in one
-   line, the 1 move to make next, path to the brief.
+9. **Summarize to user.** One paragraph: question, TL;DR one line, 1 move next, path to brief.
 
 ## Outputs
 

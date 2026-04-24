@@ -9,132 +9,73 @@ integrations:
 
 # Manage CRM
 
-One skill for four CRM actions. The `action` parameter picks the
-operation; "read-first, mutate-only-with-approval" discipline is
-shared.
+One skill, four CRM actions. `action` param pick op. "Read-first, mutate-only-with-approval" shared.
 
 ## Parameter: `action`
 
-- `clean` — hygiene sweep: dupes, missing required fields, stage
-  mismatches (e.g. deal in Stage 3 with no champion captured). Writes
-  a diff list. Mutates only on explicit user approval per row.
-- `query` — natural-language question → read-only CRM query → answer
-  + the query it ran. "How many deals are in Stage 2?" / "Show me
-  deals closing this month." / "Who owns Acme?"
-- `route` — read the latest lead scores, apply the playbook's routing
-  policy (default: GREEN → assign to owner, YELLOW → nurture queue,
-  RED → drop). Writes routing decisions; mutates CRM owner fields
-  only on approval.
-- `queue-followup` — push a task into your connected task tool
-  (Linear / Notion / Asana-style). Task content: who, what, when,
-  linked deal / lead.
+- `clean` — hygiene sweep: dupes, missing required fields, stage mismatches (e.g. deal Stage 3, no champion captured). Write diff list. Mutate only on explicit per-row approval.
+- `query` — natural-language question → read-only CRM query → answer + query ran. "How many deals in Stage 2?" / "Show deals closing this month." / "Who owns Acme?"
+- `route` — read latest lead scores, apply playbook routing policy (default: GREEN → assign owner, YELLOW → nurture queue, RED → drop). Write decisions; mutate CRM owner fields only on approval.
+- `queue-followup` — push task to connected task tool (Linear / Notion / Asana-style). Task content: who, what, when, linked deal / lead.
 
-If the user's ask implies the action ("clean up the CRM", "what's
-my pipeline", "route leads", "queue a followup"), infer. Otherwise
-ask ONE question naming the 4 options.
+User ask imply action ("clean up CRM", "what's my pipeline", "route leads", "queue followup") → infer. Else ask ONE question naming 4 options.
 
 ## When to use
 
-- Explicit triggers listed in the description.
-- Implicit: after `score subject=lead` completes, chain into
-  `action=route`. After `analyze subject=discovery-call` or
-  `draft-outreach stage=followup`, chain into `action=queue-followup`
-  for the next step.
+- Explicit triggers in description.
+- Implicit: after `score subject=lead` done, chain `action=route`. After `analyze subject=discovery-call` or `draft-outreach stage=followup`, chain `action=queue-followup` for next step.
 
 ## Ledger fields I read
 
-Reads `config/context-ledger.json` first.
+Read `config/context-ledger.json` first.
 
-- `domains.crm.slug` — required for all actions. Ask ONE question if
-  missing: "Which CRM — HubSpot, Salesforce, Attio, Pipedrive, Close?
-  Open Integrations to connect."
+- `domains.crm.slug` — required all actions. Ask ONE question if missing: "Which CRM — HubSpot, Salesforce, Attio, Pipedrive, Close? Open Integrations to connect."
 - `domains.crm.dealStages` + `ownerMap` — `clean` + `route` use them.
-- `domains.crm.leadRouting` — defines the routing policy (default
-  "green-ae-yellow-sdr-red-drop").
-- `playbook` — from `context/sales-context.md`. Required for `clean`
-  (stage-exit-criteria drives stage-mismatch detection) and `route`
-  (ICP grounds the RED drop).
+- `domains.crm.leadRouting` — routing policy (default "green-ae-yellow-sdr-red-drop").
+- `playbook` — from `context/sales-context.md`. Required for `clean` (stage-exit-criteria drive stage-mismatch detect) and `route` (ICP ground RED drop).
 
 ## Steps
 
-1. **Read ledger + playbook.** Gather missing required fields (ONE
-   question each, best-modality first). Write atomically.
+1. **Read ledger + playbook.** Gather missing required fields (ONE question each, best-modality first). Write atomic.
 
-2. **Discover the CRM slug via Composio.** `composio search crm` →
-   pick the connected one. If none, name the category to link and
-   stop.
+2. **Discover CRM slug via Composio.** `composio search crm` → pick connected. None → name category to link and stop.
 
 3. **Branch on action.**
    - `clean`:
-     1. Pull the full contact + deal list via CRM read tools.
+     1. Pull full contact + deal list via CRM read tools.
      2. Detect issues:
-        - **Dupes** — contacts with matching email domain + last name
-          + first-name fuzzy; deals with same account + overlapping
-          amount.
-        - **Missing required fields** — per the playbook's
-          qualification framework (e.g. Stage-3 deal with no
-          champion captured).
-        - **Stage mismatches** — deal in Stage N but exit criteria
-          for Stage N-1 not met; stale deals (no activity >30 days
-          in active stages).
-     3. Write the diff list to `crm-reports/clean-{YYYY-MM-DD}.md` —
-        one section per issue type, each row with a **recommended
-        mutation** and the command to approve (per row, not
-        blanket). Nothing is mutated yet.
-     4. Present the top 10 issues inline + the path. Wait for
-        explicit approval per row before executing mutations via
-        `composio <crm> <action>`.
+        - **Dupes** — contacts matching email domain + last name + first-name fuzzy; deals same account + overlapping amount.
+        - **Missing required fields** — per playbook qualification framework (e.g. Stage-3 deal, no champion captured).
+        - **Stage mismatches** — deal Stage N but Stage N-1 exit criteria not met; stale deals (no activity >30 days, active stages).
+     3. Write diff list to `crm-reports/clean-{YYYY-MM-DD}.md` — one section per issue type, each row with **recommended mutation** + approve command (per row, not blanket). Nothing mutated yet.
+     4. Show top 10 issues inline + path. Wait explicit per-row approval before execute mutations via `composio <crm> <action>`.
    - `query`:
-     1. Parse the user's question into a structured query
-        (entity + filters + grouping).
-     2. Run the query read-only via the connected CRM.
-     3. Return the answer + the query it ran (so the user can
-        adjust). Save to `crm-reports/query-{YYYY-MM-DD}.md` with
-        the question, the query, the answer table. Don't mutate.
+     1. Parse question into structured query (entity + filters + grouping).
+     2. Run query read-only via connected CRM.
+     3. Return answer + query ran (user adjust). Save to `crm-reports/query-{YYYY-MM-DD}.md` with question, query, answer table. No mutate.
    - `route`:
-     1. Read the latest `scores/lead-*.md` (or run `score
-        subject=lead` first if stale) and
-        `leads.json`.
-     2. Apply the routing policy:
-        - **GREEN** → assign to the default owner from
-          `ownerMap` (or ask once if missing).
-        - **YELLOW** → nurture queue (surface for `draft-outreach
-          stage=cold-email` later).
-        - **RED** → drop (with the disqualifier cited).
-     3. Write the routing decisions to
-        `crm-reports/route-{YYYY-MM-DD}.md`. Present the top 10
-        inline + the counts per bucket. Wait for approval before
-        mutating CRM owner fields.
+     1. Read latest `scores/lead-*.md` (or run `score subject=lead` first if stale) and `leads.json`.
+     2. Apply routing policy:
+        - **GREEN** → assign default owner from `ownerMap` (ask once if missing).
+        - **YELLOW** → nurture queue (surface for `draft-outreach stage=cold-email` later).
+        - **RED** → drop (disqualifier cited).
+     3. Write decisions to `crm-reports/route-{YYYY-MM-DD}.md`. Show top 10 inline + counts per bucket. Wait approval before mutate CRM owner fields.
    - `queue-followup`:
-     1. Parse the ask: who, what action, when. Pull the deal / lead
-        reference if named.
-     2. Discover the task tool via `composio search task`. If none,
-        ask once which one to use.
-     3. Push the task via the tool's create-task slug. Capture the
-        task URL.
-     4. Log to `tasks/{YYYY-MM-DD}.md` (append — this is a running
-        log, not a per-task file).
+     1. Parse ask: who, what, when. Pull deal / lead reference if named.
+     2. Discover task tool via `composio search task`. None → ask once which to use.
+     3. Push task via tool's create-task slug. Capture task URL.
+     4. Log to `tasks/{YYYY-MM-DD}.md` (append — running log, not per-task file).
 
-4. **Append to `outputs.json`** — read-merge-write atomically:
-   `{ id (uuid v4), type: "crm-sweep" (clean) | "crm-query"
-   (query) | "routing-decision" (route) | "task-queued"
-   (queue-followup), title, summary, path, status: "ready" (or
-   "draft" for clean / route until mutations approved), createdAt,
-   updatedAt, domain: "crm" }`.
+4. **Append to `outputs.json`** — read-merge-write atomic: `{ id (uuid v4), type: "crm-sweep" (clean) | "crm-query" (query) | "routing-decision" (route) | "task-queued" (queue-followup), title, summary, path, status: "ready" (or "draft" for clean / route until mutations approved), createdAt, updatedAt, domain: "crm" }`.
 
-5. **Summarize to user.** The top finding + the next required
-   approval (for clean / route) or confirmation (for query /
-   queue-followup). Never mutate without explicit per-row approval.
+5. **Summarize to user.** Top finding + next required approval (clean / route) or confirmation (query / queue-followup). Never mutate without explicit per-row approval.
 
 ## What I never do
 
-- Mutate CRM records (stage change, owner reassign, contact delete)
-  without explicit per-row approval.
-- Invent a CRM field or a deal — every row cites the real record ID
-  pulled from the connected CRM.
-- Query anything outside the read-only scope the user authorized.
-- Push a task to an unconnected tool — always discover via
-  Composio.
+- Mutate CRM records (stage change, owner reassign, contact delete) without explicit per-row approval.
+- Invent CRM field or deal — every row cites real record ID from connected CRM.
+- Query outside read-only scope user authorized.
+- Push task to unconnected tool — always discover via Composio.
 
 ## Outputs
 
@@ -142,4 +83,4 @@ Reads `config/context-ledger.json` first.
 - `query` → `crm-reports/query-{YYYY-MM-DD}.md`
 - `route` → `crm-reports/route-{YYYY-MM-DD}.md`
 - `queue-followup` → append to `tasks/{YYYY-MM-DD}.md`
-- Appends to `outputs.json`.
+- Append to `outputs.json`.

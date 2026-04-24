@@ -11,44 +11,43 @@ integrations:
 
 - User: "LinkedIn digest" / "how did my posts do this week" / "weekly
   LinkedIn roundup" / "what did my network post".
-- Weekly — natural Friday / Sunday-evening routine.
+- Weekly — Friday / Sunday-evening routine.
 
 ## Steps
 
 1. **Read positioning doc**:
    `context/marketing-context.md`. If missing or
-   empty, stop and tell the user to run `define-positioning` first.
+   empty, stop. Tell user run `define-positioning` first.
 
 2. **Read `config/platforms.json`, `config/topics.json`.** Confirm
-   LinkedIn is in `active` and `connectedViaComposio`. If LinkedIn is
-   not connected, tell the user to link it via the Integrations tab
-   and stop — this skill needs the API.
+   LinkedIn in `active` and `connectedViaComposio`. If not connected,
+   tell user link via Integrations tab and stop — skill needs API.
 
-3. **Pull own-post stats.** Run `composio search linkedin` to discover
-   the post-stats / list-own-posts tool. Execute to pull the user's
-   posts from the last 7 days with:
+3. **Pull own-post stats.** Run `composio search linkedin` to find
+   post-stats / list-own-posts tool. Execute. Pull user posts from
+   last 7 days with:
    - impressions / reach
    - reactions / comments / shares / reposts
    - new followers gained that day if available
-   If any metric is missing, mark it TBD and note the likely cause
+   Missing metric → mark TBD, note likely cause
    (e.g. "LinkedIn API doesn't expose per-post new-follower delta").
 
-4. **Pull network posts.** Use the same LinkedIn category to discover
-   a feed-read tool. Pull the last 7 days of posts from the user's
-   connections, filter for high-engagement (top decile by reactions)
-   OR topical relevance to `config/topics.json`. Keep top 5-10.
+4. **Pull network posts.** Same LinkedIn category, find feed-read
+   tool. Pull last 7 days from user connections. Filter for
+   high-engagement (top decile by reactions) OR topical relevance to
+   `config/topics.json`. Keep top 5-10.
 
-5. **Compute the roundup.** Produce:
+5. **Compute roundup.** Produce:
    - **Your week at a glance** — post count, total impressions, total
-     engagement, follower delta, best-performing post, worst-performing.
+     engagement, follower delta, best post, worst post.
    - **Patterns** — one-line read on what worked (hook length, topic,
      time-of-day if surfaceable). Cite specific posts.
-   - **Network highlights** — 5-10 posts from connections worth a
-     reaction or a reply. For each, one-line relevance + suggested
-     action (reply / react / ignore).
+   - **Network highlights** — 5-10 connection posts worth reaction or
+     reply. Each: one-line relevance + suggested action (reply / react
+     / ignore).
 
-6. **Write** to `linkedin-digests/{YYYY-MM-DD}.md` atomically. File
-   structure:
+6. **Write** to `linkedin-digests/{YYYY-MM-DD}.md` atomically.
+   Structure:
    ```markdown
    # LinkedIn Digest — week ending {YYYY-MM-DD}
 

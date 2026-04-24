@@ -6,27 +6,27 @@ description: "Use when you approve a draft reply containing a commitment ('I'll 
 # Promise Tracker
 
 ## When to use
-- You say "send it" / "approved" on a `draft.md` that contains time-bound language.
-- You write their own reply in chat and it contains a date, day, or timeframe.
-- Reviewing an existing thread, you mention "oh right, I told them I'd…".
+- Say "send it" / "approved" on `draft.md` with time-bound language.
+- Write own reply in chat with date, day, or timeframe.
+- Review existing thread, mention "oh right, I told them I'd…".
 
-Any phrase resembling: "I'll X by Y", "next week", "tomorrow", "by Friday", "end of day", "within the hour" triggers this.
+Any phrase like: "I'll X by Y", "next week", "tomorrow", "by Friday", "end of day", "within the hour" triggers this.
 
 ## Steps
-1. **Extract the promise text** verbatim from the message or draft (keep the original phrasing — you may want to see what they actually said).
-2. **Parse the due date.**
-   - Explicit date ("Friday", "March 3") → next occurrence in your local timezone → ISO-8601 UTC.
+1. **Extract promise text** verbatim from message or draft (keep original phrasing — may want see what they said).
+2. **Parse due date.**
+   - Explicit date ("Friday", "March 3") → next occurrence in local timezone → ISO-8601 UTC.
    - Relative ("tomorrow", "next week") → apply relative to now.
-   - Vague ("soon", "asap", no date) → default to `now + 48h` and note the ambiguity in the promise text.
-3. **Link to the conversation.** Pull `conversationId` and `customerSlug` from the thread.
+   - Vague ("soon", "asap", no date) → default `now + 48h`, note ambiguity in promise text.
+3. **Link to conversation.** Pull `conversationId` and `customerSlug` from thread.
 4. **Append atomically** to `followups.json`:
    ```json
    { "id": "<uuid>", "conversationId": "...", "customerSlug": "...", "promise": "...", "dueAt": "...", "status": "open", "createdAt": "...", "updatedAt": "..." }
    ```
-5. **Mirror the promise** as a dated line in `conversations/{id}/notes.md`.
-6. If an existing open followup on the same conversation is now contradicted by the new promise (e.g. date pushed), mark the old one `status: "cancelled"` and reference the new id.
+5. **Mirror promise** as dated line in `conversations/{id}/notes.md`.
+6. If existing open followup on same conversation contradicted by new promise (e.g. date pushed), mark old one `status: "cancelled"`, reference new id.
 
 ## Outputs
 - Appends to `followups.json`
-- Appends a dated line to `conversations/{id}/notes.md`
-- Optionally cancels a superseded followup
+- Appends dated line to `conversations/{id}/notes.md`
+- Optionally cancels superseded followup

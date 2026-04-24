@@ -10,7 +10,7 @@ integrations:
 
 # Find Leads
 
-Surface net-new leads in a segment.
+Surface net-new leads in segment.
 
 ## When to use
 
@@ -29,43 +29,43 @@ Reads `config/context-ledger.json` first.
 - `universal.icp` — industry, roles, pains, triggers,
   disqualifiers. Used to quick-score candidates.
 - `domains.outbound.sources` — if missing, ask ONE question naming
-  the best modality ("Which source — your connected CRM for
+  best modality ("Which source — your connected CRM for
   lookalikes of closed-won, a LinkedIn post URL, a recent-funding
   feed, Google Maps, or a subreddit?").
 
 ## Steps
 
-1. **Read the ledger + playbook.** Gather missing required fields
+1. **Read ledger + playbook.** Gather missing required fields
    (ONE question each, best-modality first). Write atomically.
 
-2. **Pick a source.** Based on the segment + the user's intent, ask
-   which source (unless they named one):
+2. **Pick source.** Based on segment + user intent, ask
+   which source (unless named):
    - **Connected CRM** — expand from lookalike of closed-won.
-   - **LinkedIn comment thread** — paste a post URL; compile
+   - **LinkedIn comment thread** — paste post URL; compile
      commenters.
    - **Search engine / funding feed** — recent-funding or
-     recent-hire signals in the segment.
-   - **Google Maps** — for local-biz segments.
+     recent-hire signals in segment.
+   - **Google Maps** — local-biz segments.
    - **Subreddit / community** — recent high-engagement posts.
 
 3. **Pull candidates.** Via `composio search <category>` per picked
-   source. Cap at ~3× the requested count to allow filtering.
+   source. Cap ~3× requested count for filtering.
 
-4. **Per-candidate quick-score** — apply the playbook's hard
-   disqualifiers. Drop RED. For each surviving candidate, capture:
+4. **Per-candidate quick-score** — apply playbook's hard
+   disqualifiers. Drop RED. Per surviving candidate, capture:
    - Company + LinkedIn / website URL.
    - Primary contact name + title + LinkedIn (if available).
-   - The trigger signal that surfaced them (hiring post, Series B,
+   - Trigger signal that surfaced them (hiring post, Series B,
      commented on X thread, 4.8-star review — cite specifically).
-   - Quick fit: GREEN / YELLOW (don't score RED — we dropped them).
+   - Quick fit: GREEN / YELLOW (skip RED — dropped).
 
-5. **Write the batch file** to `leads/batches/{segment-slug}-{YYYY-
+5. **Write batch file** to `leads/batches/{segment-slug}-{YYYY-
    MM-DD}.md` (atomic `*.tmp` → rename) — query, source, date, lead
    list with trigger signals cited.
 
-6. **Append to `leads.json`.** For each surviving candidate, append
-   a new row with `status: "new"`, `source` (the slug of this
-   search), `fitScore` (GREEN/YELLOW). Don't duplicate — check
+6. **Append to `leads.json`.** Per surviving candidate, append
+   new row with `status: "new"`, `source` (slug of this
+   search), `fitScore` (GREEN/YELLOW). No duplicates — check
    existing rows by company + name. Read-merge-write atomic.
 
 7. **Append to `outputs.json`:**
@@ -84,15 +84,15 @@ Reads `config/context-ledger.json` first.
    }
    ```
 
-8. **Summarize to user.** The top 3 leads inline + the full file
+8. **Summarize to user.** Top 3 leads inline + full file
    path. Suggest: "`research-account depth=enrich-contact` on #1
    next?" or "`score subject=icp-fit` in bulk across these?".
 
 ## What I never do
 
-- Invent leads, names, titles, or trigger signals. Every lead ties
-  to a real tool response or URL observation.
-- Contact anyone or push leads into your CRM without your approval.
+- Invent leads, names, titles, trigger signals. Every lead ties
+  to real tool response or URL observation.
+- Contact anyone or push leads into CRM without approval.
 - Hardcode tool names — Composio discovery at runtime only.
 
 ## Outputs

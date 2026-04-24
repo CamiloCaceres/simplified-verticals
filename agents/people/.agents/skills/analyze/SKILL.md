@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: "Use when you say 'Monday people review' / 'score retention risk' / 'who's a flight risk' / 'synthesize Glassdoor' / 'what's our employer brand' — I run the `subject` you pick: `people-health` rolls up what shipped this week across hiring, onboarding, performance, and compliance from `outputs.json` · `retention-risk` fuses check-in, sentiment, tenure, and comp signals into GREEN/YELLOW/RED per person · `employer-brand` clusters reviews and survey themes into a leadership readout. Writes to `analyses/{subject}-{YYYY-MM-DD}.md`."
+description: "Use when you say 'Monday people review' / 'score retention risk' / 'who's a flight risk' / 'synthesize Glassdoor' / 'what's our employer brand' — run `subject` you pick: `people-health` roll up what shipped this week across hiring, onboarding, performance, compliance from `outputs.json` · `retention-risk` fuse check-in, sentiment, tenure, comp signals into GREEN/YELLOW/RED per person · `employer-brand` cluster reviews + survey themes into leadership readout. Writes to `analyses/{subject}-{YYYY-MM-DD}.md`."
 integrations:
   messaging: [slack]
   crm: [hubspot]
@@ -10,9 +10,9 @@ integrations:
 
 # Analyze
 
-Three analyses behind one skill — all structured the same way (gather
-→ classify → write to `analyses/`), differing only by subject. Pick
-the subject; I pick the sources and the output shape.
+Three analyses, one skill — same structure (gather → classify → write
+to `analyses/`), differ by subject. Pick subject; I pick sources +
+output shape.
 
 ## When to use
 
@@ -24,88 +24,87 @@ the subject; I pick the sources and the output shape.
   Glassdoor", "leadership readout on what the team is saying", "review
   pulse".
 
-Chains inline from routines (Monday review surfaces `people-health`;
-after a manager change, you might run `retention-risk`).
+Chains inline from routines (Monday review surface `people-health`;
+after manager change, run `retention-risk`).
 
 ## Ledger fields I read
 
-- `universal.company` — stage + team size inform the lens.
-- `universal.icp` — skipped; not relevant here.
-- `domains.people.roster` — for retention scoring, I need the current
-  team (HRIS connection preferred; paste fallback).
-- `domains.people.hris` — the connected HRIS slug.
-- `domains.people.reviewSources` — where we pull external reviews /
-  surveys / anonymous feedback from (for `employer-brand` only).
+- `universal.company` — stage + team size inform lens.
+- `universal.icp` — skipped; not relevant.
+- `domains.people.roster` — for retention scoring, need current team
+  (HRIS connection preferred; paste fallback).
+- `domains.people.hris` — connected HRIS slug.
+- `domains.people.reviewSources` — where pull external reviews /
+  surveys / anonymous feedback from (`employer-brand` only).
 
-If any required field is missing, I ask ONE targeted question with a
-modality hint (Composio connection > file drop > URL > paste), write
-it, continue.
+Missing required field → ask ONE targeted question with modality hint
+(Composio connection > file drop > URL > paste), write, continue.
 
 ## Parameter: `subject`
 
-- `people-health` — rolls up everything in `outputs.json` produced in
-  the review window (default last 7 days). Groups by domain (Hiring,
-  Onboarding, Performance, Compliance, Culture). Per domain: what
-  shipped, what's stale (>7 days as `draft`), and gaps. Writes to
+- `people-health` — roll up everything in `outputs.json` from review
+  window (default last 7 days). Group by domain (Hiring, Onboarding,
+  Performance, Compliance, Culture). Per domain: what shipped, what
+  stale (>7 days as `draft`), gaps. Writes to
   `analyses/people-health-{YYYY-MM-DD}.md`.
-- `retention-risk` — fuses four signal families per team member
+- `retention-risk` — fuse four signal families per team member
   (engagement from `checkins/`, sentiment from recent check-in tone,
-  tenure milestones from HRIS, comp exposure vs. bands in
-  `context/people-context.md`). Classifies GREEN / YELLOW / RED with
-  the signal combination written on every RED. Writes to
+  tenure milestones from HRIS, comp exposure vs bands in
+  `context/people-context.md`). Classify GREEN / YELLOW / RED with
+  signal combination on every RED. Writes to
   `analyses/retention-risk-{YYYY-MM-DD}.md`. Founder-eyes-only.
-- `employer-brand` — pulls reviews / survey responses / feedback items
+- `employer-brand` — pull reviews / survey responses / feedback items
   from connected sources (Glassdoor / anonymous-feedback / survey
-  platforms), clusters themes, derives top 3 strengths + top 3
-  concerns + emerging patterns, flags contradictions vs stated values.
-  Writes to `analyses/employer-brand-{YYYY-MM-DD}.md`. Leadership
-  readout — never published externally.
+  platforms), cluster themes, derive top 3 strengths + top 3 concerns
+  + emerging patterns, flag contradictions vs stated values. Writes
+  to `analyses/employer-brand-{YYYY-MM-DD}.md`. Leadership readout —
+  never publish externally.
 
 ## Steps
 
-1. **Read the ledger**; fill gaps with one targeted question.
-2. **Read `context/people-context.md`.** The review / score / brief is
-   framed against current values, leveling, comp stance, review-cycle
-   rhythm, escalation rules — not generic HR benchmarks.
+1. **Read ledger**; fill gaps with one targeted question.
+2. **Read `context/people-context.md`.** Review / score / brief framed
+   against current values, leveling, comp stance, review-cycle rhythm,
+   escalation rules — not generic HR benchmarks.
 3. **Branch on `subject`:**
 
    - **If `subject = people-health`:**
-     1. Read `outputs.json`. Filter to the review window (default 7
-        days by `createdAt` / `updatedAt`; accept "last 2 weeks" or
-        "since last cycle" as overrides).
+     1. Read `outputs.json`. Filter to review window (default 7 days
+        by `createdAt` / `updatedAt`; accept "last 2 weeks" or "since
+        last cycle" as overrides).
      2. Group entries by `domain`: Hiring, Onboarding, Performance,
         Compliance, Culture.
      3. Per domain: count by `type`, top 3 recent items (title + path
         + status), drafts >7 days old.
-     4. Cross-cutting patterns: open-req drift (a req in the context
-        doc with no candidate moves in 2+ weeks), retention reds with
-        no stay-conversation follow-up, compliance items due in <14
-        days not closed, review-cycle drift.
+     4. Cross-cutting patterns: open-req drift (req in context doc
+        with no candidate moves in 2+ weeks), retention reds with no
+        stay-conversation follow-up, compliance items due in <14 days
+        not closed, review-cycle drift.
      5. Draft (~400-700 words): Window + TL;DR (3-5 bullets) → What
         shipped, per domain → Gaps (severity-ranked) → Cross-cutting
         issues → Top 3 next moves → What to flip to `ready`.
 
    - **If `subject = retention-risk`:**
-     1. Resolve the roster via connected HRIS or
+     1. Resolve roster via connected HRIS or
         `domains.people.roster`.
-     2. Per person, fuse four signal families (mark UNKNOWN when the
-        source isn't available):
+     2. Per person, fuse four signal families (mark UNKNOWN when
+        source unavailable):
         - **Engagement:** check-in response rate over last 4
           `checkins/`, chat activity delta vs 30-day baseline via
           connected Slack / Discord, PR / commit / ticket cadence via
           GitHub / Linear / Jira for eng ICs.
         - **Sentiment:** check-in response tone drift, cross-team
-          mentions, anonymous-feedback mentions if a feedback source
-          is connected.
+          mentions, anonymous-feedback mentions if feedback source
+          connected.
         - **Tenure milestones:** approaching cliff vesting (month 12
-          on a 4-yr / 1-yr-cliff — confirm from the context doc),
+          on 4-yr / 1-yr-cliff — confirm from context doc),
           post-promotion honeymoon (90 days), recent manager change.
         - **Comp exposure:** time since last comp review vs cadence;
-          gap vs band midpoint (>15% below is a flag) if comp bands
+          gap vs band midpoint (>15% below = flag) if comp bands
           exist.
-     3. Classify: RED = 2+ families negative AND a tenure or comp
-        trigger. YELLOW = 1 family negative OR a standalone
-        tenure/comp trigger. GREEN = clean. Do NOT publish the formula.
+     3. Classify: RED = 2+ families negative AND tenure or comp
+        trigger. YELLOW = 1 family negative OR standalone tenure/comp
+        trigger. GREEN = clean. Do NOT publish formula.
      4. Write each RED's signal combination (e.g. "check-in response
         dropped 4/4 → 1/4 over 30 days + 12-month cliff + 14 months
         since last comp review"). Recommend `draft-performance-doc
@@ -115,9 +114,8 @@ it, continue.
 
    - **If `subject = employer-brand`:**
      1. Discover review sources: `composio search reviews`, `composio
-        search survey`, `composio search feedback`. If nothing is
-        connected, name the category to link (reviews, survey,
-        feedback) and stop.
+        search survey`, `composio search feedback`. Nothing connected
+        → name category to link (reviews, survey, feedback) + stop.
      2. Ask ONE scope question: "Window — 30, 90, or 365 days?"
         Default 90.
      3. Fetch items per source: date, rating, full text, role /
@@ -126,21 +124,20 @@ it, continue.
         verbatim quotes, valence (+/0/-).
      5. Derive top 3 strengths, top 3 concerns, emerging patterns
         (clusters growing in recent window vs earlier).
-     6. Compare against stated values and hard nos in
+     6. Compare vs stated values + hard nos in
         `context/people-context.md`. Flag contradictions as items to
         address.
-     7. Recommend 3 moves: where to double down, where to close a
-        gap, which concern routes to a human lawyer (discrimination /
+     7. Recommend 3 moves: where to double down, where to close gap,
+        which concern routes to human lawyer (discrimination /
         harassment / wage-dispute shapes).
      8. Structure (~500-900 words): Scope → Top strengths → Top
         concerns → Emerging patterns → Contradictions vs values →
         Recommended responses → Routing flags → Sources.
 
-4. **Never invent.** Every cluster, every signal, every metric ties
-   to a fetched record. Mark `UNKNOWN` where a signal family has no
-   source. For `people-health`, never invent activity an agent didn't
-   produce.
-5. **Write atomically** to the per-subject path above (`*.tmp` →
+4. **Never invent.** Every cluster, signal, metric ties to fetched
+   record. Mark `UNKNOWN` where signal family has no source. For
+   `people-health`, never invent activity agent didn't produce.
+5. **Write atomically** to per-subject path above (`*.tmp` →
    rename).
 6. **Append to `outputs.json`** with:
    ```json
@@ -156,10 +153,10 @@ it, continue.
      "domain": "<performance for retention-risk, culture for employer-brand, performance for people-health>"
    }
    ```
-7. **Summarize.** One paragraph with counts + top finding + path.
-   For `retention-risk`, remind: founder-eyes-only, not for public
-   channels. For `employer-brand`, remind: leadership readout, not
-   for external publishing.
+7. **Summarize.** One paragraph with counts + top finding + path. For
+   `retention-risk`, remind: founder-eyes-only, not public channels.
+   For `employer-brand`, remind: leadership readout, not external
+   publishing.
 
 ## Outputs
 
@@ -170,9 +167,9 @@ it, continue.
 
 ## What I never do
 
-- Invent activity, signals, or quotes — thin sources get UNKNOWN.
+- Invent activity, signals, quotes — thin sources get UNKNOWN.
 - Publish `retention-risk` or `employer-brand` artifacts outside of
-  you (optional: forward to a named team lead in the founder →
-  manager chain, never public).
-- Recommend a counter-offer on a retention RED unless
-  `context/people-context.md` explicitly allows it.
+  you (optional: forward to named team lead in founder → manager
+  chain, never public).
+- Recommend counter-offer on retention RED unless
+  `context/people-context.md` explicitly allows.

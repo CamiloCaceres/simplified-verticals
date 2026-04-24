@@ -8,10 +8,7 @@ integrations:
 
 # Review Deploy Readiness
 
-Last gate before a deploy. Runs a green/yellow/red checklist against
-the quality bar from the engineering-context doc and outputs a verdict.
-**The agent does NOT deploy. It produces the readiness doc; the user
-deploys.**
+Last gate before deploy. Run green/yellow/red checklist against quality bar from engineering-context doc, output verdict. **Agent does NOT deploy. Produces readiness doc; user deploys.**
 
 ## When to use
 
@@ -22,67 +19,45 @@ deploys.**
 
 ## Hard nos (the posture)
 
-- **Never runs `deploy` or any deploy-adjacent command.** No
-  `kubectl apply`, no `gh workflow run deploy`, no CLI that pushes
-  to prod.
-- **Never flips a feature flag.** Even to verify one is set — ask
-  the user to check.
-- **Never merges or tags on the user's behalf.**
+- **Never run `deploy` or any deploy-adjacent command.** No `kubectl apply`, no `gh workflow run deploy`, no CLI push to prod.
+- **Never flip feature flag.** Even to verify — ask user to check.
+- **Never merge or tag on user's behalf.**
 
 ## Steps
 
-1. **Read engineering context** at
-   `context/engineering-context.md`. If missing or
-   empty, tell the user to run the `define-engineering-context` skill first and stop. The context doc
-   defines the quality bar (required checks, deploy cadence,
-   release gating) — the gates below are graded against it.
+1. **Read engineering context** at `context/engineering-context.md`. If missing or empty, tell user to run `define-engineering-context` skill first and stop. Context doc defines quality bar (required checks, deploy cadence, release gating) — gates below graded against it.
 
-2. **Read config:** `config/ci-cd.json`, `config/observability.json`,
-   `config/on-call.md`. If `config/release-cadence.json` doesn't
-   exist and the engineering-context doc doesn't clearly state the
-   cadence, ask ONE question to capture it (ship daily / weekly /
-   gated / whenever ready) and write the config.
+2. **Read config:** `config/ci-cd.json`, `config/observability.json`, `config/on-call.md`. If `config/release-cadence.json` missing and engineering-context doesn't state cadence, ask ONE question to capture (ship daily / weekly / gated / whenever ready) and write config.
 
-3. **Get the release identifier.** Ask for the release slug or
-   reference (tag, branch, release notes draft). Without it I can't
-   read the right run / PRs.
+3. **Get release identifier.** Ask for release slug or reference (tag, branch, release notes draft). Without it can't read right run / PRs.
 
 4. **Pull release data.** Via `composio search code-hosting`:
-   - The PR(s) included in the release (or the merge commits since
-     the last tag).
-   - The required-check status on the merge target.
-   - Any migrations in the diff (search for `migrations/`,
-     `schema.prisma`, `alembic/`, or language-specific patterns from
-     the stack section of engineering-context).
-   - Feature-flag references in the diff.
+   - PR(s) in release (or merge commits since last tag).
+   - Required-check status on merge target.
+   - Migrations in diff (search `migrations/`, `schema.prisma`, `alembic/`, or stack-specific patterns from engineering-context).
+   - Feature-flag references in diff.
 
-5. **Run the gate checklist.** For each gate below, write a
-   one-line reason + color (🟢 green / 🟡 yellow / 🔴 red):
+5. **Run gate checklist.** Per gate, write one-line reason + color (🟢 green / 🟡 yellow / 🔴 red):
 
    | Gate | What I check |
    |------|--------------|
-   | **Tests green** | All required checks on the release commit are passing. |
-   | **Migrations backwards-compatible** | Any schema change has a reversible path; no destructive migrations without a two-phase plan. |
-   | **Feature flags in place for risky changes** | Non-trivial behavior changes are behind a flag defaulted off. |
-   | **Rollback plan documented** | There's a rollback procedure either in the release notes or a linked runbook. |
-   | **On-call aware** | On-call is notified (config/on-call.md tells me who). |
-   | **Runbook updated** | If the release adds a new failure mode (new service, new critical path), a runbook for it exists. |
-   | **Customer comms drafted** | If user-facing, a release note + any proactive comms are drafted (even if not sent). |
-   | **Observability coverage** | Critical paths in this release are instrumented (errors tracked, logs structured, alert present for the new surface). |
+   | **Tests green** | All required checks on release commit passing. |
+   | **Migrations backwards-compatible** | Schema change has reversible path; no destructive migrations without two-phase plan. |
+   | **Feature flags in place for risky changes** | Non-trivial behavior changes behind flag defaulted off. |
+   | **Rollback plan documented** | Rollback procedure in release notes or linked runbook. |
+   | **On-call aware** | On-call notified (config/on-call.md tells who). |
+   | **Runbook updated** | If release adds new failure mode (new service, new critical path), runbook exists. |
+   | **Customer comms drafted** | If user-facing, release note + proactive comms drafted (even if not sent). |
+   | **Observability coverage** | Critical paths instrumented (errors tracked, logs structured, alert present for new surface). |
 
-6. **Flag anything I can't see.** If the PR list is unavailable, or
-   the migration diff can't be read, mark the relevant gate 🟡 with
-   reason "logs UNKNOWN — agent couldn't fetch {thing}; user should
-   confirm."
+6. **Flag anything I can't see.** If PR list unavailable or migration diff unreadable, mark gate 🟡 with reason "logs UNKNOWN — agent couldn't fetch {thing}; user should confirm."
 
-7. **Decide the verdict:**
-   - **GO 🟢** — all gates green, or at most one yellow with a
-     concrete mitigation named.
-   - **SOFT-GO 🟡** — ship with caveats. Multiple yellows or a
-     specific risk the user accepts; the caveats are spelled out.
+7. **Decide verdict:**
+   - **GO 🟢** — all gates green, or at most one yellow with concrete mitigation named.
+   - **SOFT-GO 🟡** — ship with caveats. Multiple yellows or specific risk user accepts; caveats spelled out.
    - **NO-GO 🔴** — any red gate. Ship blocked; what to fix first.
 
-8. **Draft the readiness doc** in this structure:
+8. **Draft readiness doc** in this structure:
 
    ```markdown
    # Deploy readiness: {release-slug}
@@ -121,16 +96,11 @@ deploys.**
    3. {e.g. "Monitor {dashboard URL} for the first 15 minutes."}
    ```
 
-9. **Write** atomically to `deploy-readiness/{release-slug}.md`
-   (`*.tmp` → rename).
+9. **Write** atomically to `deploy-readiness/{release-slug}.md` (`*.tmp` → rename).
 
-10. **Append to `outputs.json`** — new entry `{ id, type:
-    "deploy-readiness", title, summary, path, status: "ready",
-    createdAt, updatedAt }`. Summary names the verdict.
+10. **Append to `outputs.json`** — new entry `{ id, type: "deploy-readiness", title, summary, path, status: "ready", createdAt, updatedAt }`. Summary names verdict.
 
-11. **Summarize to user** — one paragraph with the verdict, the
-    reason(s) behind any yellow/red gates, and the path to the doc.
-    **Final sentence: "You deploy. I don't — even if it's green."**
+11. **Summarize to user** — one paragraph with verdict, reason(s) behind any yellow/red gates, path to doc. **Final sentence: "You deploy. I don't — even if it's green."**
 
 ## Outputs
 

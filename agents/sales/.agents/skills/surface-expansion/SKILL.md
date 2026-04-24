@@ -13,28 +13,19 @@ description: "Use when you say 'any expansion opportunities in my book' / 'who's
 
 ## Steps
 
-1. **Read the playbook.** `context/sales-context.md` for
-   pricing stance + any SKUs list.
+1. **Read playbook.** `context/sales-context.md` for pricing stance + SKU list.
 
-2. **Read `customers.json`.** Filter to `health: "GREEN"` customers
-   only.
+2. **Read `customers.json`.** Filter to `health: "GREEN"` only.
 
-3. **For each GREEN customer, check signals:**
-   - **Usage spikes** — past the current tier's threshold (query
-     product-analytics).
-   - **Team-size growth** — new seats detected, LinkedIn headcount
-     growth (query CRM + LinkedIn if connected).
-   - **Feature requests** — from tickets that map to an existing SKU
-     (query support).
-   - **New-product adoption** — % using the newest feature / SKU.
+3. **Per GREEN customer, check signals:**
+   - **Usage spikes** — past current tier threshold (query product-analytics).
+   - **Team-size growth** — new seats, LinkedIn headcount growth (query CRM + LinkedIn if connected).
+   - **Feature requests** — from tickets mapping to existing SKU (query support).
+   - **New-product adoption** — % using newest feature / SKU.
 
-4. **Score each candidate.** ARR impact (low / med / high) ×
-   effort-to-close (low / med / high). Rank by impact/effort ratio.
+4. **Score candidate.** ARR impact (low / med / high) × effort-to-close (low / med / high). Rank by impact/effort ratio.
 
-5. **For high-signal candidates, write a per-customer brief:**
-   `customers/{slug}/expansion-{YYYY-MM-DD}.md` — the signal cited,
-   the proposed SKU / seat / tier, the estimated ARR, the
-   effort-to-close, and the one-line pitch this agent would use.
+5. **High-signal candidates, write per-customer brief:** `customers/{slug}/expansion-{YYYY-MM-DD}.md` — cited signal, proposed SKU / seat / tier, estimated ARR, effort-to-close, one-line pitch agent would use.
 
 6. **Append to `expansion.json`:**
 
@@ -53,8 +44,7 @@ description: "Use when you say 'any expansion opportunities in my book' / 'who's
 
 8. **Append to `outputs.json`** with `type: "expansion"`.
 
-9. **Summarize.** Top 3 opportunities (customer · type · est ARR).
-   Suggest handoff: "Run `@ae draft-proposal` on the top one."
+9. **Summarize.** Top 3 opportunities (customer · type · est ARR). Suggest handoff: "Run `@ae draft-proposal` on top one."
 
 ## Outputs
 
